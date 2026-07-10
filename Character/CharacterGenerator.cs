@@ -12,15 +12,15 @@ public static class CharacterGenerator
         "Роберт"
     };
 
-    private static readonly Random Random = new();
+    private static readonly Random Random = new(); // Генератор случайных чисел
 
-    public static Character Create()
+    public static Character Create()   // Метод для создания нового персонажа
     {
         return new Character
         {
-            Name = Names[Random.Next(Names.Length)],
-            Age = Random.Next(16, 60),
-            Alive = true
+            Name = Names[Random.Next(Names.Length)],    // Случайное имя из массива Names
+            Age = Random.Next(16, 60),                  // Случайный возраст от 16 до 60 лет
+            Alive = true                                // Персонаж жив
         };
     }
 }

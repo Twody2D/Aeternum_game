@@ -2,9 +2,9 @@ namespace Aeternum.WorldGen.Characters;
 
 public class Character
 {
-    public string Name { get; set; } = "";
+    public string Name { get; set; } = ""; //Имя
 
-    public int Age { get; set; }
+    public int Age { get; set; } //Возраст
 
-    public bool Alive { get; set; } = true;
+    public bool Alive { get; set; } = true; //Жив ли
 }
