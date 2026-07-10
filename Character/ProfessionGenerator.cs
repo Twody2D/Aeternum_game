@@ -10,6 +10,8 @@ public class ProfessionGenerator
             Random.Next(ProfessionsList.Length)
         ];
     }
+
+    public static string school = "Школьник"; // Профессия для возраста 7 лет
     public static readonly string[] ProfessionsList =
     {
         "Кузнец",

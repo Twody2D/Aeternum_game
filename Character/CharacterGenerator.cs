@@ -63,6 +63,15 @@ public static class CharacterGenerator
             Profession = ProfessionGenerator.GetRandom() // Случайная профессия из массива Professions
         };
     }
+    public static Character CreateNewborn()
+    {
+        return new Character
+        {
+            Name = Names[Random.Next(Names.Length)],    // Случайное имя из массива Names
+            Age = 0,                  // Возраст новорожденного персонажа устанавливается в 0
+            Alive = true,                         // Персонаж жив
+        };
+    }
     //  if(Age >= 16 && Actionge <= 25)
     //         {
     //             Profession = "Студент"; // Профессия для возраста

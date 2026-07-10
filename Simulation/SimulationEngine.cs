@@ -18,15 +18,26 @@ public class SimulationEngine
 
             world.CurrentYear++;                        // Увеличиваем текущий год на 1
 
+
+
             foreach (var character in world.Characters) // Цикл по всем персонажам в мире
             {
                 if (!character.Alive)                        // Если персонаж мертв
                 {
                     continue;                            // Переходим к следующему персонажу, если текущий мертв
                 }
-                character.Age++; 
-                                       // Увеличиваем возраст персонажа на 1
-                
+                character.Age++;                
+                                      // Увеличиваем возраст персонажа на 1
+
+
+            if (character.Age == 7 && character.Profession == null)
+                {
+                    character.Profession = ProfessionGenerator.school; // Назначаем профессию "Школьник" для персонажей, достигших возраста 7 лет
+                }
+             if (character.Age == 16 && character.Profession == ProfessionGenerator.school)
+                {
+                    character.Profession = ProfessionGenerator.GetRandom(); // Назначаем случайную профессию для персонажей в возрасте от 16
+                }
 
             if (character.Age > 60)                      // Если возраст персонажа больше 80 лет
                 {
@@ -42,12 +53,11 @@ public class SimulationEngine
                         }
                 }
                 Console.WriteLine(
-                    $"{character.Name}, возраст {character.Age}, профессия {character.Profession}"); // Выводим информацию о персонаже
+                    $"{character.Name}, возраст {character.Age}, {character.Profession}"); // Выводим информацию о персонаже
                             }
             if (_random.Next(100) < 20)
             {
-            var newborn = CharacterGenerator.Create();
-            newborn.Age = 0; // Устанавливаем возраст новорожденного персонажа в 0
+            var newborn = CharacterGenerator.CreateNewborn();
             world.Characters.Add(newborn); // Добавляем новорожденного персонажа в список Characters
             world.TotalBirths++;
 
