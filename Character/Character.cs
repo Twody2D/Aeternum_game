@@ -9,6 +9,10 @@ public class Character
 
     public bool Alive { get; set; } = true; //Жив ли
 
+    public DeathReason DeathReason { get; set; } = DeathReason.None; //Причина смерти
+
     public string? Profession { get; set; }  //Профессия
     public LifeStage LifeStage { get; set; } //Этап жизни
+
+    public Gender Gender { get; set; }
 }

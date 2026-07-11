@@ -11,4 +11,6 @@ public class World
     public int TotalBirths { get; set; } //Всего рождений в мире
 
     public int TotalDeaths { get; set; } //Всего смертей в мире
+
+    public int AliveCount { get; set; } //Количество живых персонажей
 }
