@@ -1,0 +1,55 @@
+Aeternum.WorldGen
+
+│
+├── Core
+│   ├── World.cs
+│   ├── SimulationEngine.cs
+│   └── GameTime.cs
+│
+├── Models
+│   ├── Character.cs
+│   ├── Family.cs
+│   ├── Dynasty.cs
+│   ├── Kingdom.cs
+│   ├── Settlement.cs
+│   └── Enums
+│       ├── Gender.cs
+│       ├── LifeStage.cs
+│       ├── Profession.cs
+│       └── DeathReason.cs
+│
+├── Systems
+│   ├── BirthSystem.cs
+│   ├── DeathSystem.cs
+│   ├── LifeSystem.cs
+│   ├── FamilySystem.cs
+│   ├── DynastySystem.cs
+│   ├── ProfessionSystem.cs
+│   └── EventSystem.cs
+│
+├── Generators
+│   ├── CharacterGenerator.cs
+│   ├── NameGenerator.cs
+│   ├── WorldGenerator.cs
+│   └── MapGenerator.cs
+│
+├── Events
+│   ├── WorldEvent.cs
+│   ├── BirthEvent.cs
+│   └── DeathEvent.cs
+│
+├── Data
+│   ├── Names.json
+│   ├── Professions.json
+│   ├── Cultures.json
+│   └── Religions.json
+│
+├── Simulation
+│   ├── YearProcessor.cs
+│   └── SimulationSettings.cs
+│
+├── Save
+│   ├── SaveManager.cs
+│   └── SaveData.cs
+│
+└── Program.cs
