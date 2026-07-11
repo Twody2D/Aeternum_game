@@ -7,6 +7,7 @@ public class World
     public int CurrentYear { get; set; } //Текущий год
 
     public List<Character> Characters { get; set; } = []; //Список жителей
+    public List<Family> Families { get; set; } = []; //Список семей
 
     public int TotalBirths { get; set; } //Всего рождений в мире
 

@@ -1,0 +1,1 @@
+namespace Aeternum.WorldGen.Characters;
