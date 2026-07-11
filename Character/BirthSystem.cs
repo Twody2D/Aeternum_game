@@ -35,6 +35,14 @@ public static class BirthSystem
             var newborn = CharacterGenerator.CreateNewborn();
             newborn.Mother = mother; // Устанавливаем ссылку на мать новорожденного
             newborn.Father = father; // Устанавливаем ссылку на отца новорожден
+            
+            FamilySystem.CreateFamily(
+                mother,
+                father,
+                newborn,
+                world
+        );
+            
             newborns.Add(newborn); // Добавляем новорожденного персонажа в список newborns
             
             world.TotalBirths++;
