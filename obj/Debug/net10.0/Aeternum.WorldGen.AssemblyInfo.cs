@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Aeternum.WorldGen")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+daba5c47f07f1b311f4fd8dd80a3646812c5e4af")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0b203c557764397e160409a85bf34b26e9d3c6d4")]
 [assembly: System.Reflection.AssemblyProductAttribute("Aeternum.WorldGen")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Aeternum.WorldGen")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
