@@ -19,6 +19,8 @@ public static class YearProcessor
         // 1. Старение людей
         AgeSystem.Process(world);
 
+        MarriageSystem.Process(world);
+
 
         // 2. Проверка смертей
         DeathSystem.Process(world);
