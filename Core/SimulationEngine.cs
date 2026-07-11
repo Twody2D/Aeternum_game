@@ -30,7 +30,7 @@ public class SimulationEngine
                                       // Увеличиваем возраст персонажа на 1
                 
                 LifeSystem.UpdateLifeStage(character); 
-                DeathSystem.Process(character, world); // Проверяем, жив ли персонаж, и обрабатываем его смерть, если необходимо    
+                DeathSystem.Process(world); // Проверяем, жив ли персонаж, и обрабатываем его смерть, если необходимо    
                 if (!character.Alive)
                 {
                     continue;
