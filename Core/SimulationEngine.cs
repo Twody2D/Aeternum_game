@@ -1,7 +1,7 @@
-using Aeternum.WorldGen.GameWorld;
-using Aeternum.WorldGen.Characters;
+using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Systems;
 
-namespace Aeternum.WorldGen.Simulation;
+namespace Aeternum.WorldGen.Core;
 
 public class SimulationEngine
 {

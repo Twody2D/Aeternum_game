@@ -1,6 +1,5 @@
-using Aeternum.WorldGen.Characters;
 
-namespace Aeternum.WorldGen.GameWorld;
+namespace Aeternum.WorldGen.Models;
 public class Dynasty
 {
     public string Name { get; set; } = "";

@@ -1,6 +1,7 @@
-using Aeternum.WorldGen.Characters;
-using Aeternum.WorldGen.GameWorld;
-namespace Aeternum.WorldGen.Simulation;
+using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Core;
+using Aeternum.WorldGen.Generators;
+namespace Aeternum.WorldGen.Systems;
 
 public static class BirthSystem
 {

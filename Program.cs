@@ -1,6 +1,5 @@
-﻿using Aeternum.WorldGen.Characters;
-using Aeternum.WorldGen.GameWorld;
-using Aeternum.WorldGen.Simulation;
+﻿using Aeternum.WorldGen.Core;
+using Aeternum.WorldGen.Generators;
 
 
 

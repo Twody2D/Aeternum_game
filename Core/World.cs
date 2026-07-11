@@ -1,6 +1,6 @@
-using Aeternum.WorldGen.Characters;
+using Aeternum.WorldGen.Models;
 
-namespace Aeternum.WorldGen.GameWorld;
+namespace Aeternum.WorldGen.Core;
 
 public class World
 {

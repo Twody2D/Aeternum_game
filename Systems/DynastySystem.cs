@@ -1,6 +1,7 @@
-using Aeternum.WorldGen.Characters;
+using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Core;
 
-namespace Aeternum.WorldGen.GameWorld;
+namespace Aeternum.WorldGen.Systems;
 
 public static class DynastySystem
 {

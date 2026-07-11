@@ -1,6 +1,6 @@
+using Aeternum.WorldGen.Models;
 
-
-namespace Aeternum.WorldGen.Characters;
+namespace Aeternum.WorldGen.Systems;
 
 public static class LifeSystem
 {
@@ -32,11 +32,11 @@ public static class LifeSystem
     {
         if (character.Age == 7 && character.Profession == null)
         {
-            character.Profession = ProfessionGenerator.school; // Назначаем профессию "Школьник" для персонажей, достигших возраста 7 лет
+            character.Profession = ProfessionSystem.school; // Назначаем профессию "Школьник" для персонажей, достигших возраста 7 лет
         }
-        else if (character.Age == 16 && character.Profession == ProfessionGenerator.school)
+        else if (character.Age == 16 && character.Profession == ProfessionSystem.school)
         {
-            character.Profession = ProfessionGenerator.GetRandom(); // Назначаем случайную профессию для персонажей в возрасте от 16
+            character.Profession = ProfessionSystem.GetRandom(); // Назначаем случайную профессию для персонажей в возрасте от 16
         }
     }
 }

@@ -1,4 +1,7 @@
-namespace Aeternum.WorldGen.Characters;
+using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Systems;
+
+namespace Aeternum.WorldGen.Generators;
 
 
 public static class CharacterGenerator
@@ -26,7 +29,7 @@ public static class CharacterGenerator
             Age = Random.Next(16, 60),                  // Случайный возраст от 16 до 60 лет
             Gender = GetRandomGender(),                  // Случайный пол персонажа
             Alive = true,                         // Персонаж жив
-            Profession = ProfessionGenerator.GetRandom() // Случайная профессия из массива Professions
+            Profession = ProfessionSystem.GetRandom() // Случайная профессия из массива Professions
         };
     }
     public static Character CreateNewborn()

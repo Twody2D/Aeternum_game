@@ -1,7 +1,7 @@
-using Aeternum.WorldGen.Characters;
-using Aeternum.WorldGen.GameWorld;
+using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Core;
 
-namespace Aeternum.WorldGen.Simulation;
+namespace Aeternum.WorldGen.Systems;
 public static class DeathSystem
 {
     private static readonly Random _random = new();

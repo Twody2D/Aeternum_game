@@ -1,4 +1,4 @@
-namespace Aeternum.WorldGen.Characters;
+namespace Aeternum.WorldGen.Models;
 
 public class Family
 {
