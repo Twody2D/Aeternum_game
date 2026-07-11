@@ -10,4 +10,5 @@ public class Character
     public bool Alive { get; set; } = true; //Жив ли
 
     public string? Profession { get; set; }  //Профессия
+    public LifeStage LifeStage { get; set; } //Этап жизни
 }

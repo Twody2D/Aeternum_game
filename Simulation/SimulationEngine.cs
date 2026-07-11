@@ -29,15 +29,8 @@ public class SimulationEngine
                 character.Age++;                
                                       // Увеличиваем возраст персонажа на 1
 
-
-            if (character.Age == 7 && character.Profession == null)
-                {
-                    character.Profession = ProfessionGenerator.school; // Назначаем профессию "Школьник" для персонажей, достигших возраста 7 лет
-                }
-             if (character.Age == 16 && character.Profession == ProfessionGenerator.school)
-                {
-                    character.Profession = ProfessionGenerator.GetRandom(); // Назначаем случайную профессию для персонажей в возрасте от 16
-                }
+                LifeSystem.UpdateLifeStage(character);                 // Обновляем этап жизни персонажа на основе его возраста
+                LifeSystem.AssignProfession(character);                // Назначаем профессию персонажу на основе его возраста
 
             if (character.Age > 60)                      // Если возраст персонажа больше 80 лет
                 {
@@ -55,7 +48,7 @@ public class SimulationEngine
                 Console.WriteLine(
                     $"{character.Name}, возраст {character.Age}, {character.Profession}"); // Выводим информацию о персонаже
                             }
-            if (_random.Next(100) < 20)
+            if (_random.Next(100) < 90)
             {
             var newborn = CharacterGenerator.CreateNewborn();
             world.Characters.Add(newborn); // Добавляем новорожденного персонажа в список Characters
