@@ -7,7 +7,7 @@ namespace Aeternum.WorldGen.Simulation;
 
 public static class YearProcessor
 {
-    public static void ProcessYear(World world)
+    public static void Process(World world)
     {
         world.CurrentYear++;
 
