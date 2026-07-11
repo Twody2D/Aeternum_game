@@ -1,4 +1,5 @@
 using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Events;
 
 namespace Aeternum.WorldGen.Core;
 
@@ -15,4 +16,6 @@ public class World
     public int TotalDeaths { get; set; } //Всего смертей в мире
 
     public int AliveCount { get; set; } //Количество живых персонажей
+
+    public List<WorldEvent> Events { get; set; } = new(); //Список событий в мире
 }

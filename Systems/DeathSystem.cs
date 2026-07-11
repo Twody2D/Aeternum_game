@@ -1,5 +1,6 @@
 using Aeternum.WorldGen.Models;
 using Aeternum.WorldGen.Core;
+using Aeternum.WorldGen.Events;
 
 namespace Aeternum.WorldGen.Systems;
 public static class DeathSystem
@@ -31,9 +32,12 @@ public static class DeathSystem
 
         world.TotalDeaths++;
         world.AliveCount--;
-
-        Console.WriteLine(
-            $"{character.Name} умер в возрасте {character.Age}"
-        );
+        
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.Death,
+            Description = $"{character.Name} умер в возрасте {character.Age}"
+        });
     }
 }

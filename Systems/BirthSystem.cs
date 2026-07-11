@@ -1,6 +1,7 @@
 using Aeternum.WorldGen.Models;
 using Aeternum.WorldGen.Core;
 using Aeternum.WorldGen.Generators;
+using Aeternum.WorldGen.Events;
 namespace Aeternum.WorldGen.Systems;
 
 public static class BirthSystem
@@ -79,9 +80,14 @@ public static class BirthSystem
             
             world.TotalBirths++;
             world.AliveCount++;
-
-                Console.WriteLine($"Родился {newborn.Name}. Родители: {mother.Name} и {father.Name}"); // Выводим информацию о рождении новорожденного
                 
+                world.Events.Add(new WorldEvent
+                {
+                    Year = world.CurrentYear,
+                    Type = EventType.Birth,
+                    Description = $"Родился {newborn.Name}. " +
+                     $"Родители: {mother.Name} и {father.Name}"
+                });
             }
         }
     }

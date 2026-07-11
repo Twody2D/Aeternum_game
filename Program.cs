@@ -25,8 +25,9 @@ var engine = new SimulationEngine();
 engine.Run(world, ProjectSetting.SimulationYears); // Запускаем симуляцию на указанное количество лет
 
 
-// foreach (var character in world.Characters) // Выводим информацию о каждом персонаже
-// {
-//     Console.WriteLine(
-//         $"{character.Name}, возраст {character.Age}");
-// }
+foreach(var e in world.Events)
+{
+    Console.WriteLine(
+        $"{e.Year}: {e.Description}"
+    );
+}
