@@ -19,7 +19,7 @@ public class SimulationEngine
             world.CurrentYear++;                        // Увеличиваем текущий год на 1
 
 
-
+            List<Character> newborns = new();
             foreach (var character in world.Characters) // Цикл по всем персонажам в мире
             {
                 if (!character.Alive)
@@ -30,22 +30,23 @@ public class SimulationEngine
                                       // Увеличиваем возраст персонажа на 1
                 
                 LifeSystem.UpdateLifeStage(character); 
-                DeathSystem.Process(character, world); // Проверяем, жив ли персонаж, и обрабатываем его смерть, если необходимо                // Обновляем этап жизни персонажа на основе его возраста
+                DeathSystem.Process(character, world); // Проверяем, жив ли персонаж, и обрабатываем его смерть, если необходимо    
+                if (!character.Alive)
+                {
+                    continue;
+                }
                 LifeSystem.AssignProfession(character);                // Назначаем профессию персонажу на основе его возраста
-                
+               
                 Console.WriteLine(
                     $"{character.Name}, возраст {character.Age}, {character.Profession}"); // Выводим информацию о персонаже
-                            }
-            if (_random.Next(100) < 90)
-            {
-            var newborn = CharacterGenerator.CreateNewborn();
-            world.Characters.Add(newborn); // Добавляем новорожденного персонажа в список Characters
-            world.TotalBirths++;
-
-
-                Console.WriteLine($"Родился {newborn.Name}");
-                world.AliveCount++;
             }
+            BirthSystem.ProcessBirths(newborns,world); // Обрабатываем рождение новых персонажей в мире
+
+            world.Characters.AddRange(newborns); // Добавляем новорожденных персонажей в список Characters
+                            
+
+                            
+                
         }
         Console.WriteLine();
         Console.WriteLine("=================================");
