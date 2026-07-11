@@ -8,6 +8,7 @@ public class World
 
     public List<Character> Characters { get; set; } = []; //Список жителей
     public List<Family> Families { get; set; } = []; //Список семей
+    public List<Dynasty> Dynasties { get; set; } = []; //Список династий
 
     public int TotalBirths { get; set; } //Всего рождений в мире
 

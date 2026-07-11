@@ -36,6 +36,37 @@ public static class BirthSystem
             newborn.Mother = mother; // Устанавливаем ссылку на мать новорожденного
             newborn.Father = father; // Устанавливаем ссылку на отца новорожден
             
+            //if (mother.Dynasty == null && father.Dynasty == null)
+            if (father.Dynasty !=null)
+            {
+                // Если у обоих родителей нет династии, создаем новую династию
+                // var newDynasty = new Dynasty
+                // {
+                //     Name = $"{mother.Name} & {father.Name} Dynasty"
+                // };
+                // mother.Dynasty = newDynasty;
+                // father.Dynasty = newDynasty;
+                // world.Dynasties.Add(newDynasty);
+                newborn.Dynasty = father.Dynasty; // Устанавливаем династию новорожденного на основе родителей
+                DynastySystem.AddMember(
+                father.Dynasty,
+                newborn
+                );
+            }
+            // else if (mother.Dynasty != null && father.Dynasty == null)
+            // {
+            //     // Если у матери есть династия, а у отца нет, присваиваем династию матери отцу
+            //     father.Dynasty = mother.Dynasty;
+            // }
+            // else if (mother.Dynasty == null && father.Dynasty != null)
+            // {
+            //     // Если у отца есть династия, а у матери нет, присваиваем династию отца матери
+            //     mother.Dynasty = father.Dynasty;
+            // }
+            //newborn.Dynasty = father.Dynasty; // Устанавливаем династию новорожденного на основе родителей
+            
+            
+            
             FamilySystem.CreateFamily(
                 mother,
                 father,
