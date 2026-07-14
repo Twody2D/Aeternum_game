@@ -1,6 +1,7 @@
 ﻿using Aeternum.WorldGen.Core;
 using Aeternum.WorldGen.Generators;
 using Aeternum.WorldGen.Settings;
+using Aeternum.WorldGen.Systems;
 
 
 
@@ -17,18 +18,15 @@ for (int i = 0; i < ProjectSettings.StartingPopulation; i++)    // Создае�
         CharacterGenerator.Create() // Добавляем нового персонажа в список Characters
     );
 }
+StatisticsSystem.PrintInitialPopulation(world);
 
-Console.WriteLine();
-Console.WriteLine("Созданные жители:");
-Console.WriteLine();
+// Console.WriteLine();
+// Console.WriteLine("Созданные жители:");
+// Console.WriteLine();
+
+
 
 var engine = new SimulationEngine();
 engine.Run(world, ProjectSettings.SimulationYears); // Запускаем симуляцию на указанное количество лет
 
 
-foreach(var e in world.Events)
-{
-    Console.WriteLine(
-        $"{e.Year}: {e.Description}"
-    );
-}

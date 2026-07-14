@@ -14,19 +14,19 @@ public class WorldSettings
     // Рождение
 
     // Базовый коэффициент рождаемости (25% шанс на рождение ребенка в год)
-    public double BaseBirthRate { get; set; } = 0.25;
+    public double BaseBirthRate { get; set; } = 0.10;
 
     // Порог низкого населения
     public int LowPopulationThreshold { get; set; } = 100;
 
     // 40% шанс на рождение ребенка в год при низком населении
-    public double LowPopulationBirthRate { get; set; } = 0.40; 
+    public double LowPopulationBirthRate { get; set; } = 0.30; 
 
     // Порог критически низкого населения
-    public int CriticalPopulationThreshold { get; set; } = 50; 
+    public int CriticalPopulationThreshold { get; set; } = 10; 
 
     // 70% шанс на рождение ребенка в год при критически низком населении
-    public double CriticalBirthRate { get; set; } = 0.70; 
+    public double CriticalBirthRate { get; set; } = 0.50; 
 
 
 

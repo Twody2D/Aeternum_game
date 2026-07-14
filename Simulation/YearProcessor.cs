@@ -15,27 +15,27 @@ public static class YearProcessor
             $"===== Год {world.CurrentYear} ====="
         );
 
-
         // 1. Старение людей
         AgeSystem.Process(world);
 
+        // 2. Браки
         MarriageSystem.Process(world);
 
-
-        // 2. Проверка смертей
+        // 3. Проверка смертей
         DeathSystem.Process(world);
 
-
-        // 3. Рождение детей
+        // 4. Рождение детей
         List<Character> newborns = new();
-
+        
         BirthSystem.ProcessBirths(
             newborns,
             world
         );
 
-
-        // 4. Добавляем новых жителей
+        // 5. Добавляем детей
         world.Characters.AddRange(newborns);
+
+        // 6. Вывод events
+        //EventSystem.PrintYearEvents(world);
     }
 }

@@ -15,14 +15,6 @@ public class SimulationEngine
             YearProcessor.Process(world);
         }
 
-        
-        Console.WriteLine();
-        Console.WriteLine("=================================");
-        Console.WriteLine("Статистика мира");
-        Console.WriteLine("=================================");
-        Console.WriteLine($"Возраст мира: {world.CurrentYear} лет");
-        Console.WriteLine($"Всего рождений: {world.TotalBirths}");
-        Console.WriteLine($"Всего смертей: {world.TotalDeaths}");
-        Console.WriteLine($"Живых персонажей: {world.AliveCount}");
+        StatisticsSystem.Print(world);
     }
 }

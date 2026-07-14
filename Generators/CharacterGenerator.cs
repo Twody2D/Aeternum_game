@@ -22,7 +22,6 @@ public static class CharacterGenerator
     public static Character Create()   // Метод для создания нового персонажа
     {              
         
-        //profession = TakeProfession.ProfessionsList[Random.Next(TakeProfession.ProfessionsList.Length)]; // Случайная профессия из массива Professions    
         return new Character
         {
             Name = Names[Random.Next(Names.Length)],    // Случайное имя из массива Names
