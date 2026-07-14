@@ -36,6 +36,6 @@ public static class YearProcessor
         world.Characters.AddRange(newborns);
 
         // 6. Вывод events
-        //EventSystem.PrintYearEvents(world);
+        EventSystem.PrintYearEvents(world);
     }
 }
