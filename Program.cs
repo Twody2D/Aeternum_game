@@ -1,5 +1,6 @@
 ﻿using Aeternum.WorldGen.Core;
 using Aeternum.WorldGen.Generators;
+using Aeternum.WorldGen.Settings;
 
 
 
@@ -8,9 +9,9 @@ Console.WriteLine("      Aeternum WorldGen");
 Console.WriteLine("=================================");
 
 var world = new World();
-world.AliveCount = ProjectSetting.StartingPopulation; // Инициализируем счетчик живых персонажей
+world.AliveCount = ProjectSettings.StartingPopulation; // Инициализируем счетчик живых персонажей
 
-for (int i = 0; i < ProjectSetting.StartingPopulation; i++)    // Создаем указанное количество случайных персонажей
+for (int i = 0; i < ProjectSettings.StartingPopulation; i++)    // Создаем указанное количество случайных персонажей
 {
     world.Characters.Add(
         CharacterGenerator.Create() // Добавляем нового персонажа в список Characters
@@ -22,7 +23,7 @@ Console.WriteLine("Созданные жители:");
 Console.WriteLine();
 
 var engine = new SimulationEngine();
-engine.Run(world, ProjectSetting.SimulationYears); // Запускаем симуляцию на указанное количество лет
+engine.Run(world, ProjectSettings.SimulationYears); // Запускаем симуляцию на указанное количество лет
 
 
 foreach(var e in world.Events)

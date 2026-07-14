@@ -1,8 +1,5 @@
 namespace Aeternum.WorldGen.Models;
 
-//using Aeternum.WorldGen.GameWorld;
-//namespace Aeternum.WorldGen.Characters;
-
 
 public class Character
 {
