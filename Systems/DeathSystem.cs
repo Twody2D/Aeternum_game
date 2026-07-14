@@ -37,7 +37,7 @@ public static class DeathSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Death,
-            Description = $"{character.Name} умер в возрасте {character.Age}"
+            Description = $"{character.Name} {character.LastName} умер в возрасте {character.Age}"
         });
     }
 }

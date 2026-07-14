@@ -35,6 +35,7 @@ public static class BirthSystem
                 var newborn = CharacterGenerator.CreateNewborn();
                 newborn.Mother = mother; // Устанавливаем ссылку на мать новорожденного
                 newborn.Father = father; // Устанавливаем ссылку на отца новорожден
+                newborn.LastName = father.LastName;
                 
                 if (father.Family !=null)
                 {
@@ -67,8 +68,8 @@ public static class BirthSystem
                     {
                         Year = world.CurrentYear,
                         Type = EventType.Birth,
-                        Description = $"Родился {newborn.Name}. " +
-                        $"Родители: {mother.Name} и {father.Name}"
+                        Description = $"Родился {newborn.Name} {newborn.LastName}. " +
+                        $"Родители: {mother.Name} {mother.LastName} и {father.Name} {father.LastName}"
                     });
             }
     }

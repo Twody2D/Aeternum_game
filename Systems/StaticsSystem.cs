@@ -13,7 +13,7 @@ public static class StatisticsSystem
         foreach (var character in world.Characters)
     {
         Console.WriteLine(
-            $"{character.Name}, {character.Age} лет, {character.Profession}");
+            $"{character.Name} {character.LastName}, {character.Age} лет, {character.Profession}");
     }
 
     Console.WriteLine();

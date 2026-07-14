@@ -19,9 +19,11 @@ public static class FamilySystem
             Father = father,
             Mother = mother
         };
+        //Фамилия семьи идёт от отца
+        mother.LastName = father.LastName;
+
         father.Family = family;
         mother.Family = family;
-
 
         world.Families.Add(family);
 

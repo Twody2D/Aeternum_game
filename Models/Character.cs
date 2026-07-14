@@ -5,6 +5,8 @@ public class Character
 {
     public string Name { get; set; } = ""; //Имя
 
+    public string LastName { get; set; } = "";
+
     public int Age { get; set; } //Возраст
     public string? Profession { get; set; }  //Профессия
 

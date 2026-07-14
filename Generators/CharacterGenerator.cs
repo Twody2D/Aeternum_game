@@ -29,6 +29,17 @@ public static class CharacterGenerator
         "Любава",
         "Мария"
     };
+
+    private static readonly string[] LastNames =
+    {
+        "Захаров",
+        "Борисов",
+        "Кузнецов",
+        "Иванов",
+        "Кулачкин",
+        "Прохоров",
+        "Пастухов"
+    };
     
     private static Character CreateBaseCharacter()
     {
@@ -37,6 +48,7 @@ public static class CharacterGenerator
         return new Character
         {
             Name = GenerateName(gender),
+            LastName = GenerateLastName(),
             Gender = gender,
             Alive = true
         };
@@ -78,5 +90,10 @@ public static class CharacterGenerator
 
             _ => "Безымянный"
         };
+    }
+
+    private static string GenerateLastName()
+    {
+        return LastNames[Random.Next(LastNames.Length)];
     }
 }
