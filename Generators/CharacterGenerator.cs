@@ -30,30 +30,36 @@ public static class CharacterGenerator
         "Мария"
     };
     
-    public static Character Create()   // Метод для создания нового персонажа
-    {              
+    private static Character CreateBaseCharacter()
+    {
         var gender = GetRandomGender();
+
         return new Character
         {
-            Name = GenerateName(gender),    // Случайное имя из массива Names
-            Age = Random.Next(16, 60),                  // Случайный возраст от 16 до 60 лет
-            Gender = gender,                  // Случайный пол персонажа
-            Alive = true,                         // Персонаж жив
-            Profession = ProfessionSystem.GetRandom() // Случайная профессия из массива Professions
+            Name = GenerateName(gender),
+            Gender = gender,
+            Alive = true
         };
+    }
+    public static Character Create()   // Метод для создания нового персонажа
+    {              
+
+        var character = CreateBaseCharacter();
+
+        character.Age = Random.Next(16, 60);
+        character.Profession = ProfessionSystem.GetRandom();
+
+        return character;
+   
     }
     public static Character CreateNewborn()
     {
-        var gender = GetRandomGender();
-        return new Character
-        
-        {
-            Name = GenerateName(gender),    // Случайное имя из массива Names
-            Age = 0,                  // Возраст новорожденного персонажа устанавливается в 0
-            Gender = gender,                  // Случайный пол персонажа
-            Alive = true,                         // Персонаж жив
-            LifeStage = LifeStage.Infant          // Этап жизни для новорожденного
-        };
+        var character = CreateBaseCharacter();
+
+        character.Age = 0;
+        character.LifeStage = LifeStage.Infant;
+
+        return character;
     }
     private static Gender GetRandomGender()
     {
@@ -61,16 +67,16 @@ public static class CharacterGenerator
     }
 
     private static string GenerateName(Gender gender)
-{
-    return gender switch
     {
-        Gender.Male =>
-            MaleNames[Random.Next(MaleNames.Length)],
+        return gender switch
+        {
+            Gender.Male =>
+                MaleNames[Random.Next(MaleNames.Length)],
 
-        Gender.Female =>
-            FemaleNames[Random.Next(FemaleNames.Length)],
+            Gender.Female =>
+                FemaleNames[Random.Next(FemaleNames.Length)],
 
-        _ => "Безымянный"
-    };
-}
+            _ => "Безымянный"
+        };
+    }
 }

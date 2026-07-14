@@ -9,11 +9,11 @@ public static class StatisticsSystem
     {
         Console.WriteLine();
         Console.WriteLine("===== Начальное население =====");
-        
+
         foreach (var character in world.Characters)
     {
         Console.WriteLine(
-            $"{character.Name}, {character.Age} лет");
+            $"{character.Name}, {character.Age} лет, {character.Profession}");
     }
 
     Console.WriteLine();
