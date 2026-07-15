@@ -12,53 +12,40 @@ public static class BirthSystem
     {
             var mothers = PopulationSystem.GetAdultFemales(world);
             var fathers = PopulationSystem.GetPotentialFathers(world);
+            var families = world.Families.Where(f => f.Father.Alive && f.Mother.Alive).ToList();
+            if (families.Count == 0)
+            {
+                return;
+            }
+
             if(mothers.Count == 0)
             {
                 return;
             }
             double birthRate = PopulationSystem.GetBirthRate(world);
 
+            int birthAttempts = (int)(families.Count * birthRate); // Количество попыток рождения, пропорциональное количеству взрослых женщин и коэффициенту рождаемости
 
-            int birthAttempts = (int)(mothers.Count * birthRate); // Количество попыток рождения, пропорциональное количеству взрослых женщин и коэффициенту рождаемости
             for (int i = 0; i < birthAttempts; i++)
             {
-                 
                 //Ищем родителей для рождения ребенка
-                var mother = mothers[_random.Next(mothers.Count)];
+                var family = families[_random.Next(families.Count)];
+                var mother = family.Mother;
+                var father = family.Father;
 
-                var father = fathers[_random.Next(fathers.Count)];
-                if (mother == null || father == null)
-                    {
-                        continue; // Если нет подходящей пары родителей, пропускаем попытку рождения
-                    }
-
+                if(_random.NextDouble() > birthRate)
+                {
+                    continue;
+                }
+              
                 var newborn = CharacterGenerator.CreateNewborn();
+
                 newborn.Mother = mother; // Устанавливаем ссылку на мать новорожденного
                 newborn.Father = father; // Устанавливаем ссылку на отца новорожден
                 newborn.LastName = father.LastName;
-                
-                if (father.Family !=null)
-                {
-                    FamilySystem.AddChildToFamily(
-                        father.Family,
-                        newborn
-                    );
-                }
-                else
-                    {
-                        var family = FamilySystem.CreateFamily(
-                            mother,
-                            father,
-                            world
-                        );
 
-                            FamilySystem.AddChildToFamily(
-                                family,
-                                newborn
-                            );
-                    
-                    }
-            
+                FamilySystem.AddChildToFamily(family, newborn);
+                                          
                 newborns.Add(newborn); // Добавляем новорожденного персонажа в список newborns
                 
                 world.TotalBirths++;
