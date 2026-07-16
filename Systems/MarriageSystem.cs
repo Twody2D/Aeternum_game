@@ -17,7 +17,9 @@ public static class MarriageSystem
                 c.Alive &&
                 c.Gender == Gender.Male &&
                 c.Age >= 18 &&
-                c.Family == null)
+                c.Age <= 60 &&
+                c.CurrentFamily == null)
+            .OrderBy(x => _random.Next())
             .ToList();
 
 
@@ -26,7 +28,9 @@ public static class MarriageSystem
                 c.Alive &&
                 c.Gender == Gender.Female &&
                 c.Age >= 18 &&
-                c.Family == null)
+                c.Age <= 45 &&
+                c.CurrentFamily == null)
+            .OrderBy(x => _random.Next())
             .ToList();
 
 
@@ -40,16 +44,23 @@ public static class MarriageSystem
         for(int i = 0; i < couples; i++)
         {
             var man = availableMen[i];
-
             var woman = availableWomen[i];
+
+            availableMen = availableMen
+                .OrderBy(x => _random.Next())
+                .ToList();
+
+            availableWomen = availableWomen
+                .OrderBy(x => _random.Next())
+                .ToList();
 
 
             // вероятность брака
             if(_random.Next(100) < 50)
             {
                 FamilySystem.CreateFamily(
-                    man,
                     woman,
+                    man,
                     world
                 );
 

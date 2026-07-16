@@ -11,7 +11,8 @@ public class Character
     public string? Profession { get; set; }  //Профессия
 
     public Gender Gender { get; set; }
-    public Family? Family { get; set; }
+    public Family? BirthFamily { get; set; } //Где родился
+    public Family? CurrentFamily { get; set; } //Где живёт сейчас
     public Dynasty? Dynasty { get; set; } //Ссылка на династию персонажа
     public Character? Mother { get; set; } //Ссылка на мать персонажа
     public Character? Father { get; set; } //Ссылка на отца персонажа

@@ -25,6 +25,8 @@ public static class BirthSystem
             double birthRate = PopulationSystem.GetBirthRate(world);
 
             int birthAttempts = (int)(families.Count * birthRate); // Количество попыток рождения, пропорциональное количеству взрослых женщин и коэффициенту рождаемости
+          
+            Console.WriteLine($"Семей: {world.Families.Count}, активных семей: {families.Count}");
 
             for (int i = 0; i < birthAttempts; i++)
             {
@@ -32,6 +34,11 @@ public static class BirthSystem
                 var family = families[_random.Next(families.Count)];
                 var mother = family.Mother;
                 var father = family.Father;
+
+                if (mother == null || father == null)
+                {
+                    continue;
+                }
 
                 if(_random.NextDouble() > birthRate)
                 {

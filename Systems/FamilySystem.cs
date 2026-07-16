@@ -20,13 +20,13 @@ public static class FamilySystem
             Mother = mother
         };
         //Фамилия семьи идёт от отца
+        
+        father.CurrentFamily = family;
+        mother.CurrentFamily = family;
+
         mother.LastName = father.LastName;
 
-        father.Family = family;
-        mother.Family = family;
-
         world.Families.Add(family);
-
 
         return family;
     }
@@ -35,6 +35,6 @@ public static class FamilySystem
         Character child)
     {
         family.Children.Add(child);
-        child.Family = family;
+        child.BirthFamily = family;
     }
 }
