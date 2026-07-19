@@ -13,15 +13,14 @@ public static class DynastySystem
 
         var dynasty = new Dynasty
         {
-            Name = $"Дом {founder.Name}"
+            Name = $"Дом {founder.LastName}"
         };
 
 
         dynasty.Members.Add(founder);
-
+        founder.Dynasty = dynasty;
 
         world.Dynasties.Add(dynasty);
-
 
         return dynasty;
     }

@@ -9,4 +9,6 @@ public class Family
     public Character Mother { get; set; } = null!;
 
     public List<Character> Children { get; set; } = new();
+
+    public Dynasty? dynasty { get; set; }
 }

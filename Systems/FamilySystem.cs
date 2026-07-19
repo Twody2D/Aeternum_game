@@ -9,24 +9,55 @@ public static class FamilySystem
 {
 
     public static Family CreateFamily(
-        Character mother,
-        Character father,
-        World world)
+    Character mother,
+    Character father,
+    World world)
+{
+    var family = new Family
     {
-        var family = new Family
-        {
-            Id = world.Families.Count + 1,
-            Father = father,
-            Mother = mother
-        };
-        //Фамилия семьи идёт от отца
-        
-        father.CurrentFamily = family;
-        mother.CurrentFamily = family;
+        Id = world.Families.Count + 1,
+        Father = father,
+        Mother = mother
+    };
 
-        mother.LastName = father.LastName;
+
+    father.CurrentFamily = family;
+    mother.CurrentFamily = family;
+
+
+    mother.LastName = father.LastName;
+
+
+    // Работа с династией
+        if (father.Dynasty == null)
+        {
+            var dynasty = DynastySystem.CreateDynasty(
+                father,
+                world
+            );
+
+            mother.Dynasty = dynasty;
+
+            family.Dynasty = dynasty;
+
+            DynastySystem.AddMember(
+                dynasty,
+                mother
+            );
+        }
+        else
+        {
+            family.Dynasty = father.Dynasty;
+
+            DynastySystem.AddMember(
+                father.Dynasty,
+                mother
+            );
+        }
+
 
         world.Families.Add(family);
+
 
         return family;
     }
