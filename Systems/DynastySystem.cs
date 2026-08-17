@@ -1,5 +1,6 @@
 using Aeternum.WorldGen.Models;
 using Aeternum.WorldGen.Core;
+using Aeternum.WorldGen.Events;
 
 namespace Aeternum.WorldGen.Systems;
 
@@ -21,6 +22,13 @@ public static class DynastySystem
         founder.Dynasty = dynasty;
 
         world.Dynasties.Add(dynasty);
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.CreationOfDynasty,
+            Description = $"Основан {dynasty.Name} ({founder.Name} {founder.LastName})"
+        });
 
         return dynasty;
     }

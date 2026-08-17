@@ -7,6 +7,7 @@ namespace Aeternum.WorldGen.Systems;
 
 public static class FamilySystem
 {
+    private static int _nextFamilyId = 1;
 
     public static Family CreateFamily(
     Character mother,
@@ -15,7 +16,7 @@ public static class FamilySystem
 {
     var family = new Family
     {
-        Id = world.Families.Count + 1,
+        Id = _nextFamilyId++,
         Father = father,
         Mother = mother
     };
@@ -55,6 +56,8 @@ public static class FamilySystem
             );
         }
 
+        family.Dynasty!.Families.Add(family);
+
 
         world.Families.Add(family);
 
@@ -67,5 +70,15 @@ public static class FamilySystem
     {
         family.Children.Add(child);
         child.BirthFamily = family;
+
+        if (family.Dynasty != null)
+        {
+            child.Dynasty = family.Dynasty;
+
+            DynastySystem.AddMember(
+                family.Dynasty,
+                child
+            );
+        }
     }
 }
