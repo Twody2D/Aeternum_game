@@ -8,5 +8,7 @@ public enum EventType
     Marriage,          // Заключение брака
     Divorce,           // Развод
     CreationOfDynasty, // Основание новой династии
-    Migration          // Переезд в другое поселение
+    Migration,         // Переезд в другое поселение
+    CreationOfKingdom, // Образование государства
+    Succession         // Смена правителя государства
 }

@@ -59,4 +59,36 @@ public static class DynastyEncyclopediaSystem
 
         return lines;
     }
+
+    // Список государств: правитель, год основания, число подконтрольных поселений
+    public static List<string> BuildKingdomsReport(World world)
+    {
+        var lines = new List<string>
+        {
+            "",
+            "===== Государства ====="
+        };
+
+        if (world.Kingdoms.Count == 0)
+        {
+            lines.Add("За это время в мире не возникло ни одного государства.");
+            lines.Add("");
+
+            return lines;
+        }
+
+        foreach (var kingdom in world.Kingdoms.OrderByDescending(k => k.Settlements.Count))
+        {
+            var rulerStatus = kingdom.Ruler.Alive ? "правит" : "правил(а) последним(ей)";
+
+            lines.Add(
+                $"{kingdom.Name}: основано в {kingdom.FoundedYear} году, " +
+                $"{SurnameSystem.GetDisplayFullName(kingdom.Ruler)} {rulerStatus}, " +
+                $"поселений под контролем: {kingdom.Settlements.Count}");
+        }
+
+        lines.Add("");
+
+        return lines;
+    }
 }

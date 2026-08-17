@@ -56,6 +56,7 @@ PrintLines(StatisticsSystem.BuildFinalReport(world));
 PrintLines(ChronicleSystem.BuildChronicle(world));
 PrintLines(NotablePeopleSystem.BuildReport(world));
 PrintLines(DynastyEncyclopediaSystem.BuildReport(world));
+PrintLines(DynastyEncyclopediaSystem.BuildKingdomsReport(world));
 
 const string savePath = "world_save.json";
 

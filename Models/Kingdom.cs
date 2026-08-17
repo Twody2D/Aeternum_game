@@ -1,0 +1,19 @@
+namespace Aeternum.WorldGen.Models;
+
+// Государство: возникает, когда одна династия становится доминирующей
+// в нескольких поселениях (см. KingdomSystem). Без карты/географии — "территория"
+// здесь это просто список Settlement, контроль над которыми пересчитывается каждый год
+public class Kingdom
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; } = "";
+
+    public Dynasty Dynasty { get; set; } = null!; // Правящая династия
+
+    public Character Ruler { get; set; } = null!; // Старший живой член правящей династии
+
+    public int FoundedYear { get; set; }
+
+    public List<Settlement> Settlements { get; set; } = new(); // Контролируемые поселения на текущий год
+}

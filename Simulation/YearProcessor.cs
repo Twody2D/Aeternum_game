@@ -30,7 +30,10 @@ public static class YearProcessor
         // 6. Миграция из голодающих поселений
         MigrationSystem.Process(world);
 
-        // 7. Рождение детей
+        // 7. Государства: обновление контроля территорий, престолонаследие, новые королевства
+        KingdomSystem.Process(world);
+
+        // 8. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -38,7 +41,7 @@ public static class YearProcessor
             world
         );
 
-        // 8. Добавляем детей
+        // 9. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }
