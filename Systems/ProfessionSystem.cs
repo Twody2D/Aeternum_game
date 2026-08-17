@@ -21,6 +21,11 @@ public static class ProfessionSystem
         ["Мельник"] = ProfessionCategory.FoodProducer,
         ["Охотник"] = ProfessionCategory.FoodProducer,
         ["Садовник"] = ProfessionCategory.FoodProducer,
+        ["Виноградарь"] = ProfessionCategory.FoodProducer,
+        ["Пчеловод"] = ProfessionCategory.FoodProducer,
+        ["Мясник"] = ProfessionCategory.FoodProducer,
+        ["Птицевод"] = ProfessionCategory.FoodProducer,
+        ["Свинопас"] = ProfessionCategory.FoodProducer,
 
         // Ремесленники и строители
         ["Кузнец"] = ProfessionCategory.Craft,
@@ -31,16 +36,27 @@ public static class ProfessionSystem
         ["Каменщик"] = ProfessionCategory.Craft,
         ["Строитель"] = ProfessionCategory.Craft,
         ["Ремесленник"] = ProfessionCategory.Craft,
+        ["Гончар"] = ProfessionCategory.Craft,
+        ["Ювелир"] = ProfessionCategory.Craft,
+        ["Кожевник"] = ProfessionCategory.Craft,
+        ["Стекольщик"] = ProfessionCategory.Craft,
+        ["Оружейник"] = ProfessionCategory.Craft,
 
         // Торговля
         ["Торговец"] = ProfessionCategory.Trade,
         ["Купец"] = ProfessionCategory.Trade,
+        ["Трактирщик"] = ProfessionCategory.Trade,
+        ["Извозчик"] = ProfessionCategory.Trade,
+        ["Ростовщик"] = ProfessionCategory.Trade,
 
         // Военные и опасные профессии
         ["Воин"] = ProfessionCategory.Military,
         ["Солдат"] = ProfessionCategory.Military,
         ["Офицер"] = ProfessionCategory.Military,
         ["Моряк"] = ProfessionCategory.Military,
+        ["Стражник"] = ProfessionCategory.Military,
+        ["Разведчик"] = ProfessionCategory.Military,
+        ["Наёмник"] = ProfessionCategory.Military,
 
         // Знания и услуги
         ["Лекарь"] = ProfessionCategory.Knowledge,
@@ -50,12 +66,19 @@ public static class ProfessionSystem
         ["Музыкант"] = ProfessionCategory.Knowledge,
         ["Артист"] = ProfessionCategory.Knowledge,
         ["Пастырь"] = ProfessionCategory.Knowledge,
+        ["Алхимик"] = ProfessionCategory.Knowledge,
+        ["Астроном"] = ProfessionCategory.Knowledge,
+        ["Летописец"] = ProfessionCategory.Knowledge,
+        ["Философ"] = ProfessionCategory.Knowledge,
 
         // Разнорабочие без узкой специализации
         ["Деревенский житель"] = ProfessionCategory.General,
         ["Сельский житель"] = ProfessionCategory.General,
         ["Путешественник"] = ProfessionCategory.General,
         ["Повар"] = ProfessionCategory.General,
+        ["Слуга"] = ProfessionCategory.General,
+        ["Батрак"] = ProfessionCategory.General,
+        ["Бродяга"] = ProfessionCategory.General,
     };
 
     // Сколько условной еды в год производит один взрослый работник данной категории
@@ -76,7 +99,10 @@ public static class ProfessionSystem
         "Охотник",
         "Солдат",
         "Офицер",
-        "Моряк"
+        "Моряк",
+        "Стражник",
+        "Разведчик",
+        "Наёмник"
     };
 
     public static readonly string[] ProfessionsList = Categories.Keys.ToArray();
