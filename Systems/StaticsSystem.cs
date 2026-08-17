@@ -53,10 +53,10 @@ public static class StatisticsSystem
             .Where(c => c.Alive)
             .GroupBy(c =>
             {
-                if(c.Age < 18)
+                if(c.Age < world.Settings.AdultAge)
                     return "Дети";
 
-                if(c.Age < 65)
+                if(c.Age < world.Settings.ElderAge)
                     return "Взрослые";
 
                 return "Пожилые";

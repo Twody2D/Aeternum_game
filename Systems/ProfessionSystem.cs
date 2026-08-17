@@ -1,6 +1,6 @@
 namespace Aeternum.WorldGen.Systems;
 
-public class ProfessionSystem
+public static class ProfessionSystem
 {
     private static readonly Random Random = new();
 
