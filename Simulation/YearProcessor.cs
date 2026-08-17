@@ -11,10 +11,6 @@ public static class YearProcessor
     {
         world.CurrentYear++;
 
-        Console.WriteLine(
-            $"===== Год {world.CurrentYear} ====="
-        );
-
         // 1. Старение людей
         AgeSystem.Process(world);
 
@@ -26,7 +22,7 @@ public static class YearProcessor
 
         // 4. Рождение детей
         List<Character> newborns = new();
-        
+
         BirthSystem.ProcessBirths(
             newborns,
             world
@@ -34,8 +30,5 @@ public static class YearProcessor
 
         // 5. Добавляем детей
         world.Characters.AddRange(newborns);
-
-        // 6. Вывод events
-        EventSystem.PrintYearEvents(world);
     }
 }
