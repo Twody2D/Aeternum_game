@@ -65,11 +65,13 @@ public static class MigrationSystem
 
         var verb = character.Gender == Gender.Female ? "переехала" : "переехал";
 
+        // "из X в Y" потребовало бы падежей произвольных названий поселений,
+        // которые мы не умеем склонять — используем стрелку вместо предлогов
         world.Events.Add(new WorldEvent
         {
             Year = world.CurrentYear,
             Type = EventType.Migration,
-            Description = $"{SurnameSystem.GetDisplayFullName(character)} {verb} из {origin.Name} в {destination.Name}"
+            Description = $"{SurnameSystem.GetDisplayFullName(character)} {verb}: {origin.Name} → {destination.Name}"
         });
     }
 }

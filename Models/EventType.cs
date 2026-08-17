@@ -10,5 +10,7 @@ public enum EventType
     CreationOfDynasty, // Основание новой династии
     Migration,         // Переезд в другое поселение
     CreationOfKingdom, // Образование государства
-    Succession         // Смена правителя государства
+    Succession,        // Смена правителя государства
+    Disaster,          // Катастрофа (эпидемия или неурожай)
+    War                // Война за спорное поселение
 }

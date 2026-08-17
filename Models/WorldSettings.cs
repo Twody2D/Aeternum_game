@@ -62,4 +62,22 @@ public class WorldSettings
     // Миграция
 
     public double MigrationChance { get; set; } = 0.2; // Шанс в год для одинокого взрослого без детей уехать из голодающего поселения
+
+
+
+    // Катастрофы
+
+    public double DisasterChance { get; set; } = 0.02; // Шанс катастрофы в поселении за год (эпидемия либо неурожай, 50/50)
+
+    public double EpidemicMortalityRate { get; set; } = 0.15; // Доля погибших от эпидемии среди всех живых жителей поселения
+
+    public double CropFailureFoodLossFactor { get; set; } = 1.0; // Неурожай отнимает у поселения столько лет его суммарного потребления из запаса
+
+
+
+    // Войны
+
+    public double WarChance { get; set; } = 0.1; // Шанс в год, что спор за поселение между государствами обернётся войной
+
+    public double WarCasualtyRate { get; set; } = 0.1; // Доля погибших среди живых жителей спорного поселения за одну войну
 }

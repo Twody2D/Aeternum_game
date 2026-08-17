@@ -24,16 +24,22 @@ public static class YearProcessor
         // 4. Проверка смертей
         DeathSystem.Process(world);
 
-        // 5. Еда: производство/потребление, голод при дефиците
+        // 5. Катастрофы: эпидемии и неурожай (до Economy, чтобы учлись в этом же году)
+        DisasterSystem.Process(world);
+
+        // 6. Еда: производство/потребление, голод при дефиците
         EconomySystem.Process(world);
 
-        // 6. Миграция из голодающих поселений
+        // 7. Миграция из голодающих поселений
         MigrationSystem.Process(world);
 
-        // 7. Государства: обновление контроля территорий, престолонаследие, новые королевства
+        // 8. Государства: обновление контроля территорий, престолонаследие, новые королевства
         KingdomSystem.Process(world);
 
-        // 8. Рождение детей
+        // 9. Войны за спорные поселения между государствами
+        WarSystem.Process(world);
+
+        // 10. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -41,7 +47,7 @@ public static class YearProcessor
             world
         );
 
-        // 9. Добавляем детей
+        // 11. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }
