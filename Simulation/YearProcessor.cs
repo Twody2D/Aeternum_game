@@ -5,6 +5,7 @@ using Aeternum.WorldGen.Core;
 namespace Aeternum.WorldGen.Simulation;
 
 
+// Обработка одного года симуляции: фиксированный порядок систем за тик
 public static class YearProcessor
 {
     public static void Process(World world)

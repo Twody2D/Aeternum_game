@@ -4,6 +4,7 @@ using Aeternum.WorldGen.Core;
 namespace Aeternum.WorldGen.Systems;
 
 
+// Старение всех живых персонажей на один год: возраст, этап жизни, профессия
 public static class AgeSystem
 {
     public static void Process(World world)
@@ -19,10 +20,10 @@ public static class AgeSystem
             character.Age++;
 
 
-            LifeSystem.UpdateLifeStage(character);
+            LifeSystem.UpdateLifeStage(character); // Пересчитываем этап жизни по новому возрасту
 
 
-            LifeSystem.AssignProfession(character);
+            LifeSystem.AssignProfession(character); // Школа в 7 лет, профессия в 16
         }
     }
 }

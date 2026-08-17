@@ -5,6 +5,7 @@ using Aeternum.WorldGen.Events;
 namespace Aeternum.WorldGen.Systems;
 
 
+// Заключение браков раз в год: подбор пар среди холостых взрослых
 public static class MarriageSystem
 {
     private static readonly Random _random = new();
@@ -12,6 +13,7 @@ public static class MarriageSystem
 
     public static void Process(World world)
     {
+        // Холостые мужчины и женщины подходящего возраста, порядок перемешан случайно
         var availableMen = world.Characters
             .Where(c =>
                 c.Alive &&

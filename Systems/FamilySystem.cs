@@ -5,10 +5,12 @@ using Aeternum.WorldGen.Core;
 namespace Aeternum.WorldGen.Systems;
 
 
+// Создание семей и добавление в них детей: правила фамилии и наследования династии
 public static class FamilySystem
 {
     private static int _nextFamilyId = 1;
 
+    // Женит father и mother: жена берёт фамилию мужа, семья наследует или основывает династию
     public static Family CreateFamily(
     Character mother,
     Character father,
@@ -64,6 +66,7 @@ public static class FamilySystem
 
         return family;
     }
+    // Привязывает ребёнка к семье рождения и сразу — к её династии
     public static void AddChildToFamily(
         Family family,
         Character child)

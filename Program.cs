@@ -12,7 +12,8 @@ Console.WriteLine("=================================");
 var world = new World();
 world.AliveCount = ProjectSettings.StartingPopulation; // Инициализируем счетчик живых персонажей
 
-for (int i = 0; i < ProjectSettings.StartingPopulation; i++)    // Создаем указанное количество случайных персонажей
+// Создаём стартовое население случайными взрослыми персонажами
+for (int i = 0; i < ProjectSettings.StartingPopulation; i++)
 {
     world.Characters.Add(
         CharacterGenerator.Create() // Добавляем нового персонажа в список Characters
@@ -23,7 +24,10 @@ PrintLines(StatisticsSystem.BuildInitialPopulationReport(world));
 
 var engine = new SimulationEngine();
 
-engine.Run(world, ProjectSettings.SimulationYears, w =>   // Консоль сама решает, как показать прогресс года
+// Запускаем симуляцию; колбэк вызывается после каждого года и печатает
+// заголовок года и все произошедшие в нём события — это чисто консольная
+// логика, само ядро (World/YearProcessor) о консоли ничего не знает
+engine.Run(world, ProjectSettings.SimulationYears, w =>
 {
     Console.WriteLine($"===== Год {w.CurrentYear} =====");
 
@@ -35,6 +39,7 @@ engine.Run(world, ProjectSettings.SimulationYears, w =>   // Консоль са
 
 PrintLines(StatisticsSystem.BuildFinalReport(world));
 
+// Печатает список строк отчёта в консоль
 void PrintLines(IEnumerable<string> lines)
 {
     foreach (var line in lines)

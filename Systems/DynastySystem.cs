@@ -4,9 +4,11 @@ using Aeternum.WorldGen.Events;
 
 namespace Aeternum.WorldGen.Systems;
 
+// Создание династий и добавление в них новых членов
 public static class DynastySystem
 {
 
+    // Основывает новую династию на имени founder (вызывается, когда у мужчины нет своей династии)
     public static Dynasty CreateDynasty(
         Character founder,
         World world)
@@ -34,7 +36,7 @@ public static class DynastySystem
     }
 
 
-
+    // Добавляет персонажа в уже существующую династию (по браку или по рождению)
     public static void AddMember(
         Dynasty dynasty,
         Character character)

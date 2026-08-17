@@ -3,6 +3,8 @@ using Aeternum.WorldGen.Core;
 using Aeternum.WorldGen.Events;
 
 namespace Aeternum.WorldGen.Systems;
+
+// Смерть от старости — единственная реализованная причина смерти в игре на данный момент
 public static class DeathSystem
 {
     private static readonly Random _random = new();
@@ -31,6 +33,7 @@ public static class DeathSystem
             }
         }
     }
+     // Помечает персонажа мёртвым и логирует событие смерти
      private static void Kill(Character character, World world)
     {
         character.Alive = false;

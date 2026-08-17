@@ -1,9 +1,11 @@
 namespace Aeternum.WorldGen.Systems;
 
+// Список взрослых профессий и выбор случайной из них
 public static class ProfessionSystem
 {
     private static readonly Random Random = new();
 
+    // Случайная профессия из ProfessionsList
     public static string GetRandom()
     {
         return ProfessionsList[

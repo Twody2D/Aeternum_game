@@ -1,5 +1,6 @@
 namespace Aeternum.WorldGen.Models;
 
+// Семья, образованная браком: отец + мать + их общие дети
 public class Family
 {
     // Уникальный номер семьи
@@ -10,5 +11,5 @@ public class Family
 
     public List<Character> Children { get; set; } = new();
 
-    public Dynasty? Dynasty { get; set; }
+    public Dynasty? Dynasty { get; set; } // Династия, к которой принадлежит семья
 }

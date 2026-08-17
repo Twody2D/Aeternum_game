@@ -4,10 +4,11 @@ using Aeternum.WorldGen.Systems;
 namespace Aeternum.WorldGen.Generators;
 
 
+// Фабрика персонажей: собирает случайного жителя из хардкод-пулов имён/фамилий
 public static class CharacterGenerator
 {
     private static readonly Random Random = new(); // Генератор случайных чисел
-    private static int _nextId = 1;
+    private static int _nextId = 1; // Сквозной счётчик для Character.Id
 
     private static readonly string[] MaleNames =
     {
@@ -42,6 +43,7 @@ public static class CharacterGenerator
         "Пастухов"
     };
     
+    // Общая часть создания персонажа: пол, имя, фамилия, уникальный Id
     private static Character CreateBaseCharacter()
     {
         var gender = GetRandomGender();
@@ -55,8 +57,10 @@ public static class CharacterGenerator
             Alive = true
         };
     }
+
+    // Создаёт "взрослого с историей" — используется при генерации стартового населения
     public static Character Create()   // Метод для создания нового персонажа
-    {              
+    {
 
         var character = CreateBaseCharacter();
 
@@ -64,8 +68,10 @@ public static class CharacterGenerator
         character.Profession = ProfessionSystem.GetRandom();
 
         return character;
-   
+
     }
+
+    // Создаёт младенца (возраст 0) для BirthSystem — родителей/фамилию проставляет вызывающий код
     public static Character CreateNewborn()
     {
         var character = CreateBaseCharacter();

@@ -2,6 +2,7 @@ using Aeternum.WorldGen.Simulation;
 
 namespace Aeternum.WorldGen.Core;
 
+// Точка входа в движок симуляции: крутит мир на заданное число лет
 public class SimulationEngine
 {
     // Метод для запуска симуляции на определённое количество лет.

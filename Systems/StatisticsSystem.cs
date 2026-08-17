@@ -3,8 +3,11 @@ using Aeternum.WorldGen.Core;
 namespace Aeternum.WorldGen.Systems;
 
 
+// Строит текстовые отчёты по миру. Ничего не печатает сама — только возвращает
+// готовые строки, вывод (консоль/UI) решает вызывающий код
 public static class StatisticsSystem
 {
+    // Список стартовых жителей с возрастом и профессией
     public static List<string> BuildInitialPopulationReport(World world)
     {
         var lines = new List<string>
@@ -24,6 +27,7 @@ public static class StatisticsSystem
         return lines;
     }
 
+    // Итоговая статистика по завершении симуляции: демография и возрастные группы
     public static List<string> BuildFinalReport(World world)
     {
         var lines = new List<string>

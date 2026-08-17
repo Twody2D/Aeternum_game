@@ -2,6 +2,7 @@ using Aeternum.WorldGen.Models;
 
 namespace Aeternum.WorldGen.Systems;
 
+// Жизненный этап и школа/профессия персонажа — производные от возраста
 public static class LifeSystem
 {
     public static void UpdateLifeStage(Character character) // Метод для обновления этапа жизни персонажа на основе его возраста

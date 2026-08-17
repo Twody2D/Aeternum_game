@@ -1,4 +1,6 @@
 namespace Aeternum.WorldGen.Settings;
+
+// Константы запуска приложения (в отличие от WorldSettings — не относятся к самому миру)
 public static class ProjectSettings
 {
     // Количество жителей, с которых начинается симуляция

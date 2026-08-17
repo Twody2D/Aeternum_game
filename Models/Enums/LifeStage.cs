@@ -1,5 +1,6 @@
 namespace Aeternum.WorldGen.Models;
 
+// Этап жизни персонажа, обновляется в LifeSystem.UpdateLifeStage при каждом старении
 public enum LifeStage
 {
     Infant,      // Младенец 0-2

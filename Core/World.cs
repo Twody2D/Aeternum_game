@@ -3,6 +3,7 @@ using Aeternum.WorldGen.Events;
 
 namespace Aeternum.WorldGen.Core;
 
+// Единое хранилище состояния мира — передаётся во все системы симуляции
 public class World
 {
     public int CurrentYear { get; set; } //Текущий год

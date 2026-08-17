@@ -4,6 +4,7 @@ using Aeternum.WorldGen.Generators;
 using Aeternum.WorldGen.Events;
 namespace Aeternum.WorldGen.Systems;
 
+// Рождение детей: раз в год каждая семья с фертильной матерью проходит бросок на рождение
 public static class BirthSystem
 {
     private static readonly Random _random = new();

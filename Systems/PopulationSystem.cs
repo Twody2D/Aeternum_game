@@ -5,6 +5,7 @@ using Aeternum.WorldGen.Settings;
 namespace Aeternum.WorldGen.Systems;
 
 
+// Запросы по населению мира: выборки персонажей и текущий коэффициент рождаемости
 public static class PopulationSystem
 {
     // Все живые жители
