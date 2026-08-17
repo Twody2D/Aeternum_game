@@ -40,12 +40,17 @@ public static class DynastySystem
     }
 
 
-    // Добавляет персонажа в уже существующую династию (по браку или по рождению)
+    // Добавляет персонажа в уже существующую династию (по браку или по рождению).
+    // Идемпотентно: при повторном браке в ту же династию (вдова/вдовец женится
+    // на ком-то из клана покойного супруга) не дублирует запись
     public static void AddMember(
         Dynasty dynasty,
         Character character)
     {
-        dynasty.Members.Add(character);
+        if (!dynasty.Members.Contains(character))
+        {
+            dynasty.Members.Add(character);
+        }
     }
 
     // Восстанавливает счётчик Id после загрузки сохранения — новые династии

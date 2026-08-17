@@ -49,7 +49,7 @@ public static class StatisticsSystem
         {
             var population = world.Characters.Count(c => c.Alive && c.Settlement == settlement);
             lines.Add(
-                $"{settlement.Name} ({settlement.Culture?.Name}): {population} жит., запас еды {settlement.FoodStock:F1}");
+                $"{settlement.Name} ({settlement.Culture?.Name}): {population} жит., запас еды {settlement.FoodStock:0.#}");
         }
 
         lines.Add("");

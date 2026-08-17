@@ -8,7 +8,7 @@ namespace Aeternum.WorldGen.Systems;
 public static class NotablePeopleSystem
 {
     private const int OldAgeThreshold = 80; // Возраст, начиная с которого считаем персонажа долгожителем
-    private const int FoundedDynastyMinMembers = 15; // Сколько потомков нужно династии, чтобы считаться значимой
+    private const int FoundedDynastyMinMembers = 15; // Сколько представителей нужно династии, чтобы считаться значимой
 
     public static List<string> BuildReport(World world)
     {
@@ -51,7 +51,8 @@ public static class NotablePeopleSystem
         var foundedDynasty = world.Dynasties.FirstOrDefault(d => d.Founder == character);
         if (foundedDynasty != null && foundedDynasty.Members.Count >= FoundedDynastyMinMembers)
         {
-            reasons.Add($"основал(а) {foundedDynasty.Name} ({foundedDynasty.Members.Count} потомков)");
+            // "Представителей", не "потомков" — в Dynasty.Members входят и вошедшие в род браком, не только кровные потомки
+            reasons.Add($"основал(а) {foundedDynasty.Name} ({foundedDynasty.Members.Count} представителей рода)");
         }
 
         return reasons;
