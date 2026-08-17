@@ -40,4 +40,12 @@ public class WorldSettings
     public double AccidentRate { get; set; } = 0.01; // Базовый шанс несчастного случая в год для любого персонажа
 
     public double HazardousProfessionMultiplier { get; set; } = 3.0; // Во сколько раз растёт риск несчастного случая у опасных профессий
+
+
+
+    // Экономика (еда)
+
+    public double FoodConsumptionPerCapita { get; set; } = 1.0; // Сколько еды в год потребляет один живой персонаж
+
+    public double StarvationSeverity { get; set; } = 0.15; // Множитель шанса смерти от голода при сильном дефиците еды
 }

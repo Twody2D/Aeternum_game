@@ -61,8 +61,9 @@ public static class DeathSystem
         return chance;
     }
 
-    // Помечает персонажа мёртвым, логирует событие смерти и освобождает овдовевшего супруга для нового брака
-    private static void Kill(Character character, World world, DeathReason reason)
+    // Помечает персонажа мёртвым, логирует событие смерти и освобождает овдовевшего супруга для нового брака.
+    // Публичный, т.к. переиспользуется EconomySystem при смерти от голода
+    public static void Kill(Character character, World world, DeathReason reason)
     {
         character.Alive = false;
         character.DeathReason = reason;
@@ -103,6 +104,7 @@ public static class DeathSystem
             DeathReason.OldAge => "старость",
             DeathReason.Disease => "болезнь",
             DeathReason.Accident => "несчастный случай",
+            DeathReason.Starvation => "голод",
             _ => "неизвестная причина"
         };
     }

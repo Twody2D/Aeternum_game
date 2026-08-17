@@ -21,4 +21,6 @@ public class World
     public List<WorldEvent> Events { get; set; } = new(); //Список событий в мире
 
     public WorldSettings Settings { get; set; } = new(); //Настройки мира
+
+    public double FoodStock { get; set; } //Накопленный запас еды. Уходит в минус — начинается голод (см. EconomySystem)
 }

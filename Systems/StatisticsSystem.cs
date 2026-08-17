@@ -39,6 +39,7 @@ public static class StatisticsSystem
             $"Живых персонажей: {world.Characters.Count(c => c.Alive)}",
             $"Всего рождений: {world.TotalBirths}",
             $"Всего смертей: {world.TotalDeaths}",
+            $"Запас еды: {world.FoodStock:F1}",
             "",
             "Распределение по возрасту:"
         };
