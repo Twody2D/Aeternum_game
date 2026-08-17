@@ -19,7 +19,7 @@ public static class StatisticsSystem
         foreach (var character in world.Characters)
         {
             lines.Add(
-                $"{character.Name} {character.LastName}, {character.Age} лет, {character.Profession}");
+                $"{SurnameSystem.GetDisplayFullName(character)}, {character.Age} лет, {character.Profession}");
         }
 
         lines.Add("");

@@ -74,7 +74,7 @@ public static class MarriageSystem
                     Type = EventType.Marriage,
 
                     Description =
-                    $"{man.Name} {man.LastName} и {woman.Name} {woman.LastName} создали семью"
+                    $"{SurnameSystem.GetDisplayFullName(man)} и {SurnameSystem.GetDisplayFullName(woman)} создали семью"
                 }
             );
         }

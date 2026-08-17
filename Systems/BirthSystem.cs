@@ -50,12 +50,14 @@ public static class BirthSystem
             world.TotalBirths++;
             world.AliveCount++;
 
+            var bornVerb = newborn.Gender == Gender.Female ? "Родилась" : "Родился";
+
             world.Events.Add(new WorldEvent
             {
                 Year = world.CurrentYear,
                 Type = EventType.Birth,
-                Description = $"Родился {newborn.Name} {newborn.LastName}. " +
-                $"Родители: {mother.Name} {mother.LastName} и {father.Name} {father.LastName}"
+                Description = $"{bornVerb} {SurnameSystem.GetDisplayFullName(newborn)}. " +
+                $"Родители: {SurnameSystem.GetDisplayFullName(mother)} и {SurnameSystem.GetDisplayFullName(father)}"
             });
         }
     }

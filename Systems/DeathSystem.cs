@@ -77,11 +77,13 @@ public static class DeathSystem
             spouse.CurrentFamily = null; // Вдова/вдовец снова доступны для MarriageSystem
         }
 
+        var diedVerb = character.Gender == Gender.Female ? "умерла" : "умер";
+
         world.Events.Add(new WorldEvent
         {
             Year = world.CurrentYear,
             Type = EventType.Death,
-            Description = $"{character.Name} {character.LastName} умер в возрасте {character.Age} ({DescribeReason(reason)})"
+            Description = $"{SurnameSystem.GetDisplayFullName(character)} {diedVerb} в возрасте {character.Age} ({DescribeReason(reason)})"
         });
     }
 
