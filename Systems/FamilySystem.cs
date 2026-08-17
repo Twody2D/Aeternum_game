@@ -84,4 +84,10 @@ public static class FamilySystem
             );
         }
     }
+
+    // Восстанавливает счётчик Id после загрузки сохранения
+    public static void SetNextFamilyId(int value)
+    {
+        _nextFamilyId = value;
+    }
 }

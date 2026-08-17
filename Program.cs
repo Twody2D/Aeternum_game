@@ -1,5 +1,6 @@
 using Aeternum.WorldGen.Core;
 using Aeternum.WorldGen.Generators;
+using Aeternum.WorldGen.Save;
 using Aeternum.WorldGen.Settings;
 using Aeternum.WorldGen.Systems;
 
@@ -38,6 +39,16 @@ engine.Run(world, ProjectSettings.SimulationYears, w =>
 });
 
 PrintLines(StatisticsSystem.BuildFinalReport(world));
+
+const string savePath = "world_save.json";
+
+SaveSystem.Save(world, savePath);
+Console.WriteLine($"Мир сохранён в {savePath}");
+
+var loadedWorld = SaveSystem.Load(savePath);
+Console.WriteLine(
+    $"Проверка загрузки: год {loadedWorld.CurrentYear}, живых {loadedWorld.Characters.Count(c => c.Alive)}, " +
+    $"династий {loadedWorld.Dynasties.Count}, семей {loadedWorld.Families.Count}");
 
 // Печатает список строк отчёта в консоль
 void PrintLines(IEnumerable<string> lines)

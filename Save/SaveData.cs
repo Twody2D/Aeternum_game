@@ -1,0 +1,62 @@
+using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Events;
+
+namespace Aeternum.WorldGen.Save;
+
+// Плоское представление World для сериализации: вместо прямых ссылок на объекты
+// (которые образуют циклы — Character.Mother/Family, Family.Father/Children и т.д.)
+// персонажи/семьи/династии ссылаются друг на друга по Id. SaveSystem превращает
+// это обратно в живой объектный граф при загрузке
+public class SaveData
+{
+    public int CurrentYear { get; set; }
+    public int TotalBirths { get; set; }
+    public int TotalDeaths { get; set; }
+    public int AliveCount { get; set; }
+    public double FoodStock { get; set; }
+
+    public WorldSettings Settings { get; set; } = new();
+
+    public List<CharacterData> Characters { get; set; } = new();
+    public List<FamilyData> Families { get; set; } = new();
+    public List<DynastyData> Dynasties { get; set; } = new();
+
+    // У WorldEvent нет ссылок на объекты — сохраняется как есть, без DTO-обёртки
+    public List<WorldEvent> Events { get; set; } = new();
+}
+
+public class CharacterData
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public string LastName { get; set; } = "";
+    public int Age { get; set; }
+    public string? Profession { get; set; }
+    public Gender Gender { get; set; }
+    public bool Alive { get; set; }
+    public DeathReason DeathReason { get; set; }
+    public LifeStage LifeStage { get; set; }
+
+    public int? MotherId { get; set; }
+    public int? FatherId { get; set; }
+    public int? BirthFamilyId { get; set; }
+    public int? CurrentFamilyId { get; set; }
+    public int? DynastyId { get; set; }
+}
+
+public class FamilyData
+{
+    public int Id { get; set; }
+    public int FatherId { get; set; }
+    public int MotherId { get; set; }
+    public List<int> ChildrenIds { get; set; } = new();
+    public int? DynastyId { get; set; }
+}
+
+public class DynastyData
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public List<int> MemberIds { get; set; } = new();
+    public List<int> FamilyIds { get; set; } = new();
+}

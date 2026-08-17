@@ -7,6 +7,7 @@ namespace Aeternum.WorldGen.Systems;
 // Создание династий и добавление в них новых членов
 public static class DynastySystem
 {
+    private static int _nextDynastyId = 1;
 
     // Основывает новую династию на имени founder (вызывается, когда у мужчины нет своей династии)
     public static Dynasty CreateDynasty(
@@ -16,6 +17,7 @@ public static class DynastySystem
 
         var dynasty = new Dynasty
         {
+            Id = _nextDynastyId++,
             Name = $"Дом {founder.LastName}"
         };
 
@@ -42,5 +44,12 @@ public static class DynastySystem
         Character character)
     {
         dynasty.Members.Add(character);
+    }
+
+    // Восстанавливает счётчик Id после загрузки сохранения — новые династии
+    // продолжат нумерацию, а не начнут её заново с 1
+    public static void SetNextDynastyId(int value)
+    {
+        _nextDynastyId = value;
     }
 }

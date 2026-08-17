@@ -158,4 +158,10 @@ public static class CharacterGenerator
     {
         return LastNames[Random.Next(LastNames.Length)];
     }
+
+    // Восстанавливает счётчик Id после загрузки сохранения
+    public static void SetNextId(int value)
+    {
+        _nextId = value;
+    }
 }

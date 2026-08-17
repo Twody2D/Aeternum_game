@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# Сохранения симуляции
+world_save.json
+*.save.json
+
 # User-specific files
 *.rsuser
 *.suo
