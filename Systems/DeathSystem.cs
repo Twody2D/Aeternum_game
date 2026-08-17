@@ -15,14 +15,20 @@ public static class DeathSystem
                 continue;                            // Переходим к следующему персонажу, если текущий мертв
             }
 
-                if (character.Age > 60)                      // Если возраст персонажа больше 80 лет
+            if (character.Age >= world.Settings.MaximumAge) // Предельный возраст — смерть гарантирована
+            {
+                Kill(character, world);
+                continue;
+            }
+
+            if (character.LifeStage == LifeStage.Elder)  // Возраст 60+ — растущий с возрастом шанс смерти
+            {
+                int deathChance = character.Age - 60; // Шанс смерти увеличивается с возрастом
+                if (_random.Next(100) < deathChance)  // Генерируем случайное число и сравниваем с шансом смерти
                 {
-                    int deathChance = character.Age - 60; // Шанс смерти увеличивается с возрастом
-                    if (_random.Next(100) < deathChance)  // Генерируем случайное число и сравниваем с шансом смерти
-                        {
-                        Kill(character, world); // Если персонаж умирает, вызываем метод Kill
-                        }
+                    Kill(character, world); // Если персонаж умирает, вызываем метод Kill
                 }
+            }
         }
     }
      private static void Kill(Character character, World world)
@@ -32,7 +38,7 @@ public static class DeathSystem
 
         world.TotalDeaths++;
         world.AliveCount--;
-        
+
         world.Events.Add(new WorldEvent
         {
             Year = world.CurrentYear,
