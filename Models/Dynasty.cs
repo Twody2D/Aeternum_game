@@ -11,4 +11,8 @@ public class Dynasty
     public List<Character> Members { get; set; } = new(); // Все персонажи династии (по крови и по браку)
 
     public List<Family> Families { get; set; } = new(); // Все семьи, относящиеся к этой династии
+
+    public Character Founder { get; set; } = null!; // Кто основал династию
+
+    public int FoundedYear { get; set; } // Год основания
 }

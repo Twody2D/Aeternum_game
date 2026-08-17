@@ -66,6 +66,8 @@ public static class SaveSystem
                 Alive = c.Alive,
                 DeathReason = c.DeathReason,
                 LifeStage = c.LifeStage,
+                BirthYear = c.BirthYear,
+                DeathYear = c.DeathYear,
                 MotherId = c.Mother?.Id,
                 FatherId = c.Father?.Id,
                 BirthFamilyId = c.BirthFamily?.Id,
@@ -89,7 +91,9 @@ public static class SaveSystem
                 Id = d.Id,
                 Name = d.Name,
                 MemberIds = d.Members.Select(c => c.Id).ToList(),
-                FamilyIds = d.Families.Select(f => f.Id).ToList()
+                FamilyIds = d.Families.Select(f => f.Id).ToList(),
+                FounderId = d.Founder.Id,
+                FoundedYear = d.FoundedYear
             }).ToList(),
 
             Settlements = world.Settlements.Select(s => new SettlementData
@@ -116,7 +120,7 @@ public static class SaveSystem
         // между собой — иначе персонаж может ссылаться на семью, ещё не созданную
         var dynastiesById = data.Dynasties.ToDictionary(
             d => d.Id,
-            d => new Dynasty { Id = d.Id, Name = d.Name });
+            d => new Dynasty { Id = d.Id, Name = d.Name, FoundedYear = d.FoundedYear });
 
         var culturesById = data.Cultures.ToDictionary(
             c => c.Id,
@@ -142,7 +146,9 @@ public static class SaveSystem
                 Gender = c.Gender,
                 Alive = c.Alive,
                 DeathReason = c.DeathReason,
-                LifeStage = c.LifeStage
+                LifeStage = c.LifeStage,
+                BirthYear = c.BirthYear,
+                DeathYear = c.DeathYear
             });
 
         foreach (var c in data.Characters)
@@ -173,6 +179,7 @@ public static class SaveSystem
 
             dynasty.Members = d.MemberIds.Select(id => charactersById[id]).ToList();
             dynasty.Families = d.FamilyIds.Select(id => familiesById[id]).ToList();
+            dynasty.Founder = charactersById[d.FounderId];
         }
 
         foreach (var s in data.Settlements)

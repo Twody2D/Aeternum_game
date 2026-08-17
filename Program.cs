@@ -29,6 +29,7 @@ for (int i = 0; i < ProjectSettings.StartingPopulation; i++)
     var character = CharacterGenerator.Create(settlement.Culture);
 
     character.Settlement = settlement;
+    character.BirthYear = world.CurrentYear - character.Age; // Родился до начала отсчёта мира
     settlement.Members.Add(character);
 
     world.Characters.Add(character);

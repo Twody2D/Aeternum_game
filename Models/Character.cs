@@ -25,6 +25,9 @@ public class Character
 
     public DeathReason DeathReason { get; set; } = DeathReason.None; //Причина смерти
 
+    public int BirthYear { get; set; } //Год рождения (отрицательный — если родился до начала отсчёта мира)
+    public int? DeathYear { get; set; } //Год смерти, null — если ещё жив
+
     public LifeStage LifeStage { get; set; } //Этап жизни (младенец/ребёнок/ученик/взрослый/старик)
 
 }

@@ -18,7 +18,9 @@ public static class DynastySystem
         var dynasty = new Dynasty
         {
             Id = _nextDynastyId++,
-            Name = $"Дом {founder.LastName}"
+            Name = $"Дом {founder.LastName}",
+            Founder = founder,
+            FoundedYear = world.CurrentYear
         };
 
 

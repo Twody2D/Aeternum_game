@@ -37,6 +37,8 @@ public class CharacterData
     public bool Alive { get; set; }
     public DeathReason DeathReason { get; set; }
     public LifeStage LifeStage { get; set; }
+    public int BirthYear { get; set; }
+    public int? DeathYear { get; set; }
 
     public int? MotherId { get; set; }
     public int? FatherId { get; set; }
@@ -62,6 +64,8 @@ public class DynastyData
     public string Name { get; set; } = "";
     public List<int> MemberIds { get; set; } = new();
     public List<int> FamilyIds { get; set; } = new();
+    public int FounderId { get; set; }
+    public int FoundedYear { get; set; }
 }
 
 public class SettlementData

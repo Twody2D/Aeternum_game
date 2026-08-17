@@ -43,6 +43,7 @@ public static class BirthSystem
             newborn.Father = father; // Устанавливаем ссылку на отца новорожден
             newborn.LastName = father.LastName;
             newborn.Settlement = father.Settlement; // Ребёнок живёт там же, где родители
+            newborn.BirthYear = world.CurrentYear;
 
             father.Settlement?.Members.Add(newborn);
 

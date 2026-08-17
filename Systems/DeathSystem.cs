@@ -67,6 +67,7 @@ public static class DeathSystem
     {
         character.Alive = false;
         character.DeathReason = reason;
+        character.DeathYear = world.CurrentYear;
 
         world.TotalDeaths++;
         world.AliveCount--;
