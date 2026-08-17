@@ -11,6 +11,7 @@ public class World
     public List<Character> Characters { get; set; } = []; //Список жителей
     public List<Family> Families { get; set; } = new(); //Список семей
     public List<Dynasty> Dynasties { get; set; } = []; //Список династий
+    public List<Settlement> Settlements { get; set; } = new(); //Список поселений
 
     public int TotalBirths { get; set; } //Всего рождений в мире
 
@@ -21,6 +22,4 @@ public class World
     public List<WorldEvent> Events { get; set; } = new(); //Список событий в мире
 
     public WorldSettings Settings { get; set; } = new(); //Настройки мира
-
-    public double FoodStock { get; set; } //Накопленный запас еды. Уходит в минус — начинается голод (см. EconomySystem)
 }

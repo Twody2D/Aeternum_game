@@ -19,7 +19,8 @@ public static class StatisticsSystem
         foreach (var character in world.Characters)
         {
             lines.Add(
-                $"{SurnameSystem.GetDisplayFullName(character)}, {character.Age} лет, {character.Profession}");
+                $"{SurnameSystem.GetDisplayFullName(character)}, {character.Age} лет, " +
+                $"{character.Profession}, {character.Settlement?.Name}");
         }
 
         lines.Add("");
@@ -39,10 +40,19 @@ public static class StatisticsSystem
             $"Живых персонажей: {world.Characters.Count(c => c.Alive)}",
             $"Всего рождений: {world.TotalBirths}",
             $"Всего смертей: {world.TotalDeaths}",
-            $"Запас еды: {world.FoodStock:F1}",
-            "",
-            "Распределение по возрасту:"
+            ""
         };
+
+        lines.Add("Поселения:");
+
+        foreach (var settlement in world.Settlements)
+        {
+            var population = world.Characters.Count(c => c.Alive && c.Settlement == settlement);
+            lines.Add($"{settlement.Name}: {population} жит., запас еды {settlement.FoodStock:F1}");
+        }
+
+        lines.Add("");
+        lines.Add("Распределение по возрасту:");
 
         var ageGroups = world.Characters
             .Where(c => c.Alive)

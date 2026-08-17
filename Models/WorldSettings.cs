@@ -48,4 +48,12 @@ public class WorldSettings
     public double FoodConsumptionPerCapita { get; set; } = 1.0; // Сколько еды в год потребляет один живой персонаж
 
     public double StarvationSeverity { get; set; } = 0.15; // Множитель шанса смерти от голода при сильном дефиците еды
+
+
+
+    // Развод
+
+    public int ChildlessDivorceThresholdYears { get; set; } = 10; // Через сколько лет бездетного брака появляется риск развода
+
+    public double DivorceChance { get; set; } = 0.03; // Шанс развода в год для брака, превысившего порог бездетности
 }

@@ -52,7 +52,6 @@ public static class SaveSystem
             TotalBirths = world.TotalBirths,
             TotalDeaths = world.TotalDeaths,
             AliveCount = world.AliveCount,
-            FoodStock = world.FoodStock,
             Settings = world.Settings,
             Events = world.Events,
 
@@ -71,7 +70,8 @@ public static class SaveSystem
                 FatherId = c.Father?.Id,
                 BirthFamilyId = c.BirthFamily?.Id,
                 CurrentFamilyId = c.CurrentFamily?.Id,
-                DynastyId = c.Dynasty?.Id
+                DynastyId = c.Dynasty?.Id,
+                SettlementId = c.Settlement?.Id
             }).ToList(),
 
             Families = world.Families.Select(f => new FamilyData
@@ -80,7 +80,8 @@ public static class SaveSystem
                 FatherId = f.Father.Id,
                 MotherId = f.Mother.Id,
                 ChildrenIds = f.Children.Select(c => c.Id).ToList(),
-                DynastyId = f.Dynasty?.Id
+                DynastyId = f.Dynasty?.Id,
+                FormedYear = f.FormedYear
             }).ToList(),
 
             Dynasties = world.Dynasties.Select(d => new DynastyData
@@ -89,6 +90,14 @@ public static class SaveSystem
                 Name = d.Name,
                 MemberIds = d.Members.Select(c => c.Id).ToList(),
                 FamilyIds = d.Families.Select(f => f.Id).ToList()
+            }).ToList(),
+
+            Settlements = world.Settlements.Select(s => new SettlementData
+            {
+                Id = s.Id,
+                Name = s.Name,
+                FoodStock = s.FoodStock,
+                MemberIds = s.Members.Select(c => c.Id).ToList()
             }).ToList()
         };
     }
@@ -101,9 +110,13 @@ public static class SaveSystem
             d => d.Id,
             d => new Dynasty { Id = d.Id, Name = d.Name });
 
+        var settlementsById = data.Settlements.ToDictionary(
+            s => s.Id,
+            s => new Settlement { Id = s.Id, Name = s.Name, FoodStock = s.FoodStock });
+
         var familiesById = data.Families.ToDictionary(
             f => f.Id,
-            f => new Family { Id = f.Id });
+            f => new Family { Id = f.Id, FormedYear = f.FormedYear });
 
         var charactersById = data.Characters.ToDictionary(
             c => c.Id,
@@ -129,6 +142,7 @@ public static class SaveSystem
             character.BirthFamily = c.BirthFamilyId.HasValue ? familiesById[c.BirthFamilyId.Value] : null;
             character.CurrentFamily = c.CurrentFamilyId.HasValue ? familiesById[c.CurrentFamilyId.Value] : null;
             character.Dynasty = c.DynastyId.HasValue ? dynastiesById[c.DynastyId.Value] : null;
+            character.Settlement = c.SettlementId.HasValue ? settlementsById[c.SettlementId.Value] : null;
         }
 
         foreach (var f in data.Families)
@@ -149,25 +163,31 @@ public static class SaveSystem
             dynasty.Families = d.FamilyIds.Select(id => familiesById[id]).ToList();
         }
 
+        foreach (var s in data.Settlements)
+        {
+            settlementsById[s.Id].Members = s.MemberIds.Select(id => charactersById[id]).ToList();
+        }
+
         var world = new World
         {
             CurrentYear = data.CurrentYear,
             TotalBirths = data.TotalBirths,
             TotalDeaths = data.TotalDeaths,
             AliveCount = data.AliveCount,
-            FoodStock = data.FoodStock,
             Settings = data.Settings,
             Events = data.Events,
             Characters = data.Characters.Select(c => charactersById[c.Id]).ToList(),
             Families = data.Families.Select(f => familiesById[f.Id]).ToList(),
-            Dynasties = data.Dynasties.Select(d => dynastiesById[d.Id]).ToList()
+            Dynasties = data.Dynasties.Select(d => dynastiesById[d.Id]).ToList(),
+            Settlements = data.Settlements.Select(s => settlementsById[s.Id]).ToList()
         };
 
         // Продолжаем нумерацию Id с того места, где остановилось сохранение,
-        // иначе новые персонажи/семьи/династии начнут конфликтовать со старыми
+        // иначе новые персонажи/семьи/династии/поселения начнут конфликтовать со старыми
         CharacterGenerator.SetNextId(NextId(data.Characters.Select(c => c.Id)));
         FamilySystem.SetNextFamilyId(NextId(data.Families.Select(f => f.Id)));
         DynastySystem.SetNextDynastyId(NextId(data.Dynasties.Select(d => d.Id)));
+        SettlementGenerator.SetNextId(NextId(data.Settlements.Select(s => s.Id)));
 
         return world;
     }

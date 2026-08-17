@@ -18,13 +18,16 @@ public static class YearProcessor
         // 2. Браки
         MarriageSystem.Process(world);
 
-        // 3. Проверка смертей
+        // 3. Разводы
+        DivorceSystem.Process(world);
+
+        // 4. Проверка смертей
         DeathSystem.Process(world);
 
-        // 4. Еда: производство/потребление, голод при дефиците
+        // 5. Еда: производство/потребление, голод при дефиците
         EconomySystem.Process(world);
 
-        // 5. Рождение детей
+        // 6. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -32,7 +35,7 @@ public static class YearProcessor
             world
         );
 
-        // 6. Добавляем детей
+        // 7. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }

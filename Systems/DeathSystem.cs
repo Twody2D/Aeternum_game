@@ -78,12 +78,18 @@ public static class DeathSystem
         }
 
         var diedVerb = character.Gender == Gender.Female ? "умерла" : "умер";
+        var name = SurnameSystem.GetDisplayFullName(character);
+        var reasonText = DescribeReason(reason);
+
+        var description = _random.Next(2) == 0
+            ? $"{name} {diedVerb} в возрасте {character.Age} ({reasonText})"
+            : $"{name}: {character.Age} лет, причина смерти — {reasonText}";
 
         world.Events.Add(new WorldEvent
         {
             Year = world.CurrentYear,
             Type = EventType.Death,
-            Description = $"{SurnameSystem.GetDisplayFullName(character)} {diedVerb} в возрасте {character.Age} ({DescribeReason(reason)})"
+            Description = description
         });
     }
 

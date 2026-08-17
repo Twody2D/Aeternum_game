@@ -42,6 +42,9 @@ public static class BirthSystem
             newborn.Mother = mother; // Устанавливаем ссылку на мать новорожденного
             newborn.Father = father; // Устанавливаем ссылку на отца новорожден
             newborn.LastName = father.LastName;
+            newborn.Settlement = father.Settlement; // Ребёнок живёт там же, где родители
+
+            father.Settlement?.Members.Add(newborn);
 
             FamilySystem.AddChildToFamily(family, newborn);
 
@@ -50,15 +53,26 @@ public static class BirthSystem
             world.TotalBirths++;
             world.AliveCount++;
 
-            var bornVerb = newborn.Gender == Gender.Female ? "Родилась" : "Родился";
+            var bornVerbLower = newborn.Gender == Gender.Female ? "родилась" : "родился";
+            var childName = SurnameSystem.GetDisplayFullName(newborn);
+            var motherName = SurnameSystem.GetDisplayFullName(mother);
+            var fatherName = SurnameSystem.GetDisplayFullName(father);
+
+            var description = _random.Next(2) == 0
+                ? $"{Capitalize(bornVerbLower)} {childName}. Родители: {motherName} и {fatherName}"
+                : $"В семье {motherName} и {fatherName} {bornVerbLower} {childName}";
 
             world.Events.Add(new WorldEvent
             {
                 Year = world.CurrentYear,
                 Type = EventType.Birth,
-                Description = $"{bornVerb} {SurnameSystem.GetDisplayFullName(newborn)}. " +
-                $"Родители: {SurnameSystem.GetDisplayFullName(mother)} и {SurnameSystem.GetDisplayFullName(father)}"
+                Description = description
             });
         }
+    }
+
+    private static string Capitalize(string text)
+    {
+        return char.ToUpper(text[0]) + text[1..];
     }
 }

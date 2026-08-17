@@ -12,13 +12,19 @@ Console.WriteLine("=================================");
 
 var world = new World();
 world.AliveCount = ProjectSettings.StartingPopulation; // Инициализируем счетчик живых персонажей
+world.Settlements = SettlementGenerator.Create(ProjectSettings.SettlementCount);
 
-// Создаём стартовое население случайными взрослыми персонажами
+// Создаём стартовое население случайными взрослыми персонажами,
+// равномерно распределяя их между поселениями
 for (int i = 0; i < ProjectSettings.StartingPopulation; i++)
 {
-    world.Characters.Add(
-        CharacterGenerator.Create() // Добавляем нового персонажа в список Characters
-    );
+    var character = CharacterGenerator.Create();
+    var settlement = world.Settlements[i % world.Settlements.Count];
+
+    character.Settlement = settlement;
+    settlement.Members.Add(character);
+
+    world.Characters.Add(character);
 }
 
 PrintLines(StatisticsSystem.BuildInitialPopulationReport(world));

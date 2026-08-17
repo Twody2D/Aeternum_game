@@ -12,4 +12,6 @@ public class Family
     public List<Character> Children { get; set; } = new();
 
     public Dynasty? Dynasty { get; set; } // Династия, к которой принадлежит семья
+
+    public int FormedYear { get; set; } // Год заключения брака — используется DivorceSystem
 }

@@ -5,15 +5,25 @@ using Aeternum.WorldGen.Events;
 namespace Aeternum.WorldGen.Systems;
 
 
-// Заключение браков раз в год: подбор пар среди холостых взрослых
+// Заключение браков раз в год. Пары подбираются в первую очередь внутри одного
+// поселения; те, кому не нашлось пары дома, реже, но могут найти её в другом
+// поселении — невеста переезжает туда, где живёт муж (см. RelocateBride)
 public static class MarriageSystem
 {
     private static readonly Random _random = new();
 
+    private const int SameSettlementChancePercent = 50;
+    private const int CrossSettlementChancePercent = 25; // Реже — переезд в другое поселение не так прост
+
+    private static readonly string[] DescriptionTemplates =
+    {
+        "{0} и {1} создали семью",
+        "{0} и {1} сыграли свадьбу"
+    };
+
 
     public static void Process(World world)
     {
-        // Холостые мужчины и женщины подходящего возраста, порядок перемешан случайно
         var availableMen = world.Characters
             .Where(c =>
                 c.Alive &&
@@ -21,9 +31,7 @@ public static class MarriageSystem
                 c.Age >= world.Settings.AdultAge &&
                 c.Age <= 60 &&
                 c.CurrentFamily == null)
-            .OrderBy(x => _random.Next())
             .ToList();
-
 
         var availableWomen = world.Characters
             .Where(c =>
@@ -32,15 +40,35 @@ public static class MarriageSystem
                 c.Age >= world.Settings.AdultAge &&
                 c.Age <= 45 &&
                 c.CurrentFamily == null)
-            .OrderBy(x => _random.Next())
             .ToList();
 
+        // Первый проход: пары внутри одного поселения
+        foreach (var settlementMen in availableMen.GroupBy(c => c.Settlement))
+        {
+            var women = availableWomen
+                .Where(w => w.Settlement == settlementMen.Key && w.CurrentFamily == null)
+                .OrderBy(x => _random.Next())
+                .ToList();
 
+            var men = settlementMen.OrderBy(x => _random.Next()).ToList();
+
+            MarryWithinGroup(men, women, world, SameSettlementChancePercent);
+        }
+
+        // Второй проход: кто не нашёл пару дома, пробует за пределами своего поселения
+        var leftoverMen = availableMen.Where(c => c.CurrentFamily == null).OrderBy(x => _random.Next()).ToList();
+        var leftoverWomen = availableWomen.Where(c => c.CurrentFamily == null).OrderBy(x => _random.Next()).ToList();
+
+        MarryWithinGroup(leftoverMen, leftoverWomen, world, CrossSettlementChancePercent);
+    }
+
+    private static void MarryWithinGroup(List<Character> men, List<Character> women, World world, int marriageChancePercent)
+    {
         var takenWomen = new HashSet<Character>();
 
-        foreach (var man in availableMen)
+        foreach (var man in men)
         {
-            var woman = availableWomen.FirstOrDefault(w =>
+            var woman = women.FirstOrDefault(w =>
                 !takenWomen.Contains(w) &&
                 !AreRelated(man, w));
 
@@ -53,11 +81,12 @@ public static class MarriageSystem
             // чтобы один и тот же человек не участвовал в нескольких парах за год
             takenWomen.Add(woman);
 
-            // вероятность брака
-            if (_random.Next(100) >= 50)
+            if (_random.Next(100) >= marriageChancePercent)
             {
                 continue;
             }
+
+            RelocateBride(woman, man.Settlement);
 
             FamilySystem.CreateFamily(
                 woman,
@@ -65,6 +94,7 @@ public static class MarriageSystem
                 world
             );
 
+            var template = DescriptionTemplates[_random.Next(DescriptionTemplates.Length)];
 
             world.Events.Add(
                 new WorldEvent
@@ -73,11 +103,26 @@ public static class MarriageSystem
 
                     Type = EventType.Marriage,
 
-                    Description =
-                    $"{SurnameSystem.GetDisplayFullName(man)} и {SurnameSystem.GetDisplayFullName(woman)} создали семью"
+                    Description = string.Format(
+                        template,
+                        SurnameSystem.GetDisplayFullName(man),
+                        SurnameSystem.GetDisplayFullName(woman))
                 }
             );
         }
+    }
+
+    // Невеста переезжает в поселение мужа (если оно другое). Прежнее поселение
+    // не забывает её — Settlement.Members хранит всех, кто там когда-либо жил
+    private static void RelocateBride(Character bride, Settlement? husbandSettlement)
+    {
+        if (husbandSettlement == null || bride.Settlement == husbandSettlement)
+        {
+            return;
+        }
+
+        bride.Settlement = husbandSettlement;
+        husbandSettlement.Members.Add(bride);
     }
 
     // Запрет браков между близкими родственниками: родитель/ребёнок или общий родитель (братья/сёстры)

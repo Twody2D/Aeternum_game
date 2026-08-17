@@ -20,7 +20,8 @@ public static class FamilySystem
     {
         Id = _nextFamilyId++,
         Father = father,
-        Mother = mother
+        Mother = mother,
+        FormedYear = world.CurrentYear
     };
 
 

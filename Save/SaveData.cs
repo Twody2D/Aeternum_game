@@ -13,13 +13,13 @@ public class SaveData
     public int TotalBirths { get; set; }
     public int TotalDeaths { get; set; }
     public int AliveCount { get; set; }
-    public double FoodStock { get; set; }
 
     public WorldSettings Settings { get; set; } = new();
 
     public List<CharacterData> Characters { get; set; } = new();
     public List<FamilyData> Families { get; set; } = new();
     public List<DynastyData> Dynasties { get; set; } = new();
+    public List<SettlementData> Settlements { get; set; } = new();
 
     // У WorldEvent нет ссылок на объекты — сохраняется как есть, без DTO-обёртки
     public List<WorldEvent> Events { get; set; } = new();
@@ -42,6 +42,7 @@ public class CharacterData
     public int? BirthFamilyId { get; set; }
     public int? CurrentFamilyId { get; set; }
     public int? DynastyId { get; set; }
+    public int? SettlementId { get; set; }
 }
 
 public class FamilyData
@@ -51,6 +52,7 @@ public class FamilyData
     public int MotherId { get; set; }
     public List<int> ChildrenIds { get; set; } = new();
     public int? DynastyId { get; set; }
+    public int FormedYear { get; set; }
 }
 
 public class DynastyData
@@ -59,4 +61,12 @@ public class DynastyData
     public string Name { get; set; } = "";
     public List<int> MemberIds { get; set; } = new();
     public List<int> FamilyIds { get; set; } = new();
+}
+
+public class SettlementData
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public double FoodStock { get; set; }
+    public List<int> MemberIds { get; set; } = new();
 }
