@@ -3,6 +3,8 @@ namespace Aeternum.WorldGen.Models;
 
 public class Character
 {
+    public int Id { get; set; } //Уникальный номер персонажа
+
     public string Name { get; set; } = ""; //Имя
 
     public string LastName { get; set; } = "";

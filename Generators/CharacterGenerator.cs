@@ -7,6 +7,7 @@ namespace Aeternum.WorldGen.Generators;
 public static class CharacterGenerator
 {
     private static readonly Random Random = new(); // Генератор случайных чисел
+    private static int _nextId = 1;
 
     private static readonly string[] MaleNames =
     {
@@ -47,6 +48,7 @@ public static class CharacterGenerator
 
         return new Character
         {
+            Id = _nextId++,
             Name = GenerateName(gender),
             LastName = GenerateLastName(),
             Gender = gender,
