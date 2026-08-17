@@ -21,6 +21,7 @@ public class SaveData
     public List<DynastyData> Dynasties { get; set; } = new();
     public List<SettlementData> Settlements { get; set; } = new();
     public List<CultureData> Cultures { get; set; } = new();
+    public List<KingdomData> Kingdoms { get; set; } = new();
 
     // У WorldEvent нет ссылок на объекты — сохраняется как есть, без DTO-обёртки
     public List<WorldEvent> Events { get; set; } = new();
@@ -82,4 +83,14 @@ public class CultureData
     public int Id { get; set; }
     public string Name { get; set; } = "";
     public ProfessionCategory PreferredCategory { get; set; }
+}
+
+public class KingdomData
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public int DynastyId { get; set; }
+    public int RulerId { get; set; }
+    public int FoundedYear { get; set; }
+    public List<int> SettlementIds { get; set; } = new();
 }

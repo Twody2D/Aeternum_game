@@ -66,7 +66,7 @@ Console.WriteLine($"Мир сохранён в {savePath}");
 var loadedWorld = SaveSystem.Load(savePath);
 Console.WriteLine(
     $"Проверка загрузки: год {loadedWorld.CurrentYear}, живых {loadedWorld.Characters.Count(c => c.Alive)}, " +
-    $"династий {loadedWorld.Dynasties.Count}, семей {loadedWorld.Families.Count}");
+    $"династий {loadedWorld.Dynasties.Count}, семей {loadedWorld.Families.Count}, королевств {loadedWorld.Kingdoms.Count}");
 
 // Печатает список строк отчёта в консоль
 void PrintLines(IEnumerable<string> lines)

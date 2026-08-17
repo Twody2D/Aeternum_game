@@ -110,6 +110,16 @@ public static class SaveSystem
                 Id = c.Id,
                 Name = c.Name,
                 PreferredCategory = c.PreferredCategory
+            }).ToList(),
+
+            Kingdoms = world.Kingdoms.Select(k => new KingdomData
+            {
+                Id = k.Id,
+                Name = k.Name,
+                DynastyId = k.Dynasty.Id,
+                RulerId = k.Ruler.Id,
+                FoundedYear = k.FoundedYear,
+                SettlementIds = k.Settlements.Select(s => s.Id).ToList()
             }).ToList()
         };
     }
@@ -190,6 +200,20 @@ public static class SaveSystem
             settlement.Culture = s.CultureId.HasValue ? culturesById[s.CultureId.Value] : null;
         }
 
+        // Dynasty/Character/Settlement уже полностью связаны на этом этапе,
+        // поэтому Kingdom (ничем не референсится в обратную сторону) собирается в один проход
+        var kingdomsById = data.Kingdoms.ToDictionary(
+            k => k.Id,
+            k => new Kingdom
+            {
+                Id = k.Id,
+                Name = k.Name,
+                FoundedYear = k.FoundedYear,
+                Dynasty = dynastiesById[k.DynastyId],
+                Ruler = charactersById[k.RulerId],
+                Settlements = k.SettlementIds.Select(id => settlementsById[id]).ToList()
+            });
+
         var world = new World
         {
             CurrentYear = data.CurrentYear,
@@ -202,16 +226,18 @@ public static class SaveSystem
             Families = data.Families.Select(f => familiesById[f.Id]).ToList(),
             Dynasties = data.Dynasties.Select(d => dynastiesById[d.Id]).ToList(),
             Settlements = data.Settlements.Select(s => settlementsById[s.Id]).ToList(),
-            Cultures = data.Cultures.Select(c => culturesById[c.Id]).ToList()
+            Cultures = data.Cultures.Select(c => culturesById[c.Id]).ToList(),
+            Kingdoms = data.Kingdoms.Select(k => kingdomsById[k.Id]).ToList()
         };
 
         // Продолжаем нумерацию Id с того места, где остановилось сохранение,
-        // иначе новые персонажи/семьи/династии/поселения/культуры начнут конфликтовать со старыми
+        // иначе новые персонажи/семьи/династии/поселения/культуры/королевства начнут конфликтовать со старыми
         CharacterGenerator.SetNextId(NextId(data.Characters.Select(c => c.Id)));
         FamilySystem.SetNextFamilyId(NextId(data.Families.Select(f => f.Id)));
         DynastySystem.SetNextDynastyId(NextId(data.Dynasties.Select(d => d.Id)));
         SettlementGenerator.SetNextId(NextId(data.Settlements.Select(s => s.Id)));
         CultureGenerator.SetNextId(NextId(data.Cultures.Select(c => c.Id)));
+        KingdomSystem.SetNextId(NextId(data.Kingdoms.Select(k => k.Id)));
 
         return world;
     }
