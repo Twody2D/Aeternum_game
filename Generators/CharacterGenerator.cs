@@ -112,14 +112,15 @@ public static class CharacterGenerator
         };
     }
 
-    // Создаёт "взрослого с историей" — используется при генерации стартового населения
-    public static Character Create()   // Метод для создания нового персонажа
+    // Создаёт "взрослого с историей" — используется при генерации стартового населения.
+    // culture смещает выбор профессии в сторону предпочитаемой этим народом категории
+    public static Character Create(Culture? culture = null)
     {
 
         var character = CreateBaseCharacter();
 
         character.Age = Random.Next(16, 60);
-        character.Profession = ProfessionSystem.GetRandom();
+        character.Profession = ProfessionSystem.GetRandom(culture);
 
         return character;
 

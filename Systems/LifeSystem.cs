@@ -37,7 +37,8 @@ public static class LifeSystem
         }
         else if (character.Age == 16 && character.Profession == ProfessionSystem.school)
         {
-            character.Profession = ProfessionSystem.GetRandom(); // Назначаем случайную профессию для персонажей в возрасте от 16
+            // Культура поселения смещает выбор в сторону её предпочитаемой категории
+            character.Profession = ProfessionSystem.GetRandom(character.Settlement?.Culture);
         }
     }
 }

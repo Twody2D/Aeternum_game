@@ -12,14 +12,21 @@ Console.WriteLine("=================================");
 
 var world = new World();
 world.AliveCount = ProjectSettings.StartingPopulation; // Инициализируем счетчик живых персонажей
+world.Cultures = CultureGenerator.Create(ProjectSettings.SettlementCount);
 world.Settlements = SettlementGenerator.Create(ProjectSettings.SettlementCount);
+
+// У каждого поселения — своя культура
+for (int i = 0; i < world.Settlements.Count; i++)
+{
+    world.Settlements[i].Culture = world.Cultures[i % world.Cultures.Count];
+}
 
 // Создаём стартовое население случайными взрослыми персонажами,
 // равномерно распределяя их между поселениями
 for (int i = 0; i < ProjectSettings.StartingPopulation; i++)
 {
-    var character = CharacterGenerator.Create();
     var settlement = world.Settlements[i % world.Settlements.Count];
+    var character = CharacterGenerator.Create(settlement.Culture);
 
     character.Settlement = settlement;
     settlement.Members.Add(character);

@@ -20,6 +20,7 @@ public class SaveData
     public List<FamilyData> Families { get; set; } = new();
     public List<DynastyData> Dynasties { get; set; } = new();
     public List<SettlementData> Settlements { get; set; } = new();
+    public List<CultureData> Cultures { get; set; } = new();
 
     // У WorldEvent нет ссылок на объекты — сохраняется как есть, без DTO-обёртки
     public List<WorldEvent> Events { get; set; } = new();
@@ -69,4 +70,12 @@ public class SettlementData
     public string Name { get; set; } = "";
     public double FoodStock { get; set; }
     public List<int> MemberIds { get; set; } = new();
+    public int? CultureId { get; set; }
+}
+
+public class CultureData
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public ProfessionCategory PreferredCategory { get; set; }
 }

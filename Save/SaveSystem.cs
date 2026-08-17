@@ -97,7 +97,15 @@ public static class SaveSystem
                 Id = s.Id,
                 Name = s.Name,
                 FoodStock = s.FoodStock,
-                MemberIds = s.Members.Select(c => c.Id).ToList()
+                MemberIds = s.Members.Select(c => c.Id).ToList(),
+                CultureId = s.Culture?.Id
+            }).ToList(),
+
+            Cultures = world.Cultures.Select(c => new CultureData
+            {
+                Id = c.Id,
+                Name = c.Name,
+                PreferredCategory = c.PreferredCategory
             }).ToList()
         };
     }
@@ -109,6 +117,10 @@ public static class SaveSystem
         var dynastiesById = data.Dynasties.ToDictionary(
             d => d.Id,
             d => new Dynasty { Id = d.Id, Name = d.Name });
+
+        var culturesById = data.Cultures.ToDictionary(
+            c => c.Id,
+            c => new Culture { Id = c.Id, Name = c.Name, PreferredCategory = c.PreferredCategory });
 
         var settlementsById = data.Settlements.ToDictionary(
             s => s.Id,
@@ -165,7 +177,10 @@ public static class SaveSystem
 
         foreach (var s in data.Settlements)
         {
-            settlementsById[s.Id].Members = s.MemberIds.Select(id => charactersById[id]).ToList();
+            var settlement = settlementsById[s.Id];
+
+            settlement.Members = s.MemberIds.Select(id => charactersById[id]).ToList();
+            settlement.Culture = s.CultureId.HasValue ? culturesById[s.CultureId.Value] : null;
         }
 
         var world = new World
@@ -179,15 +194,17 @@ public static class SaveSystem
             Characters = data.Characters.Select(c => charactersById[c.Id]).ToList(),
             Families = data.Families.Select(f => familiesById[f.Id]).ToList(),
             Dynasties = data.Dynasties.Select(d => dynastiesById[d.Id]).ToList(),
-            Settlements = data.Settlements.Select(s => settlementsById[s.Id]).ToList()
+            Settlements = data.Settlements.Select(s => settlementsById[s.Id]).ToList(),
+            Cultures = data.Cultures.Select(c => culturesById[c.Id]).ToList()
         };
 
         // Продолжаем нумерацию Id с того места, где остановилось сохранение,
-        // иначе новые персонажи/семьи/династии/поселения начнут конфликтовать со старыми
+        // иначе новые персонажи/семьи/династии/поселения/культуры начнут конфликтовать со старыми
         CharacterGenerator.SetNextId(NextId(data.Characters.Select(c => c.Id)));
         FamilySystem.SetNextFamilyId(NextId(data.Families.Select(f => f.Id)));
         DynastySystem.SetNextDynastyId(NextId(data.Dynasties.Select(d => d.Id)));
         SettlementGenerator.SetNextId(NextId(data.Settlements.Select(s => s.Id)));
+        CultureGenerator.SetNextId(NextId(data.Cultures.Select(c => c.Id)));
 
         return world;
     }

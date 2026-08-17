@@ -27,7 +27,10 @@ public static class YearProcessor
         // 5. Еда: производство/потребление, голод при дефиците
         EconomySystem.Process(world);
 
-        // 6. Рождение детей
+        // 6. Миграция из голодающих поселений
+        MigrationSystem.Process(world);
+
+        // 7. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -35,7 +38,7 @@ public static class YearProcessor
             world
         );
 
-        // 7. Добавляем детей
+        // 8. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }

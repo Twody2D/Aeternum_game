@@ -48,7 +48,8 @@ public static class StatisticsSystem
         foreach (var settlement in world.Settlements)
         {
             var population = world.Characters.Count(c => c.Alive && c.Settlement == settlement);
-            lines.Add($"{settlement.Name}: {population} жит., запас еды {settlement.FoodStock:F1}");
+            lines.Add(
+                $"{settlement.Name} ({settlement.Culture?.Name}): {population} жит., запас еды {settlement.FoodStock:F1}");
         }
 
         lines.Add("");

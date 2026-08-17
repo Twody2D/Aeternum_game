@@ -56,4 +56,10 @@ public class WorldSettings
     public int ChildlessDivorceThresholdYears { get; set; } = 10; // Через сколько лет бездетного брака появляется риск развода
 
     public double DivorceChance { get; set; } = 0.03; // Шанс развода в год для брака, превысившего порог бездетности
+
+
+
+    // Миграция
+
+    public double MigrationChance { get; set; } = 0.2; // Шанс в год для одинокого взрослого без детей уехать из голодающего поселения
 }

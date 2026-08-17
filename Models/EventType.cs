@@ -7,5 +7,6 @@ public enum EventType
     Death,             // Смерть персонажа
     Marriage,          // Заключение брака
     Divorce,           // Развод
-    CreationOfDynasty  // Основание новой династии
+    CreationOfDynasty, // Основание новой династии
+    Migration          // Переезд в другое поселение
 }

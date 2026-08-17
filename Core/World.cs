@@ -12,6 +12,7 @@ public class World
     public List<Family> Families { get; set; } = new(); //Список семей
     public List<Dynasty> Dynasties { get; set; } = []; //Список династий
     public List<Settlement> Settlements { get; set; } = new(); //Список поселений
+    public List<Culture> Cultures { get; set; } = new(); //Список культур
 
     public int TotalBirths { get; set; } //Всего рождений в мире
 

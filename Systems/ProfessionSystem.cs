@@ -107,9 +107,25 @@ public static class ProfessionSystem
 
     public static readonly string[] ProfessionsList = Categories.Keys.ToArray();
 
-    // Случайная профессия из ProfessionsList
-    public static string GetRandom()
+    // Профессии, сгруппированные по категории — для культурного смещения в GetRandom
+    private static readonly Dictionary<ProfessionCategory, string[]> ProfessionsByCategory = Categories
+        .GroupBy(kv => kv.Value)
+        .ToDictionary(g => g.Key, g => g.Select(kv => kv.Key).ToArray());
+
+    // Шанс, что профессия будет выбрана из предпочитаемой культурой категории, а не из всего списка
+    private const double CulturePreferenceChance = 0.5;
+
+    // Случайная профессия. Если задана культура — с повышенным шансом выбирает
+    // профессию из её предпочитаемой категории (см. Culture.PreferredCategory)
+    public static string GetRandom(Culture? culture = null)
     {
+        if (culture != null &&
+            Random.NextDouble() < CulturePreferenceChance &&
+            ProfessionsByCategory.TryGetValue(culture.PreferredCategory, out var preferred))
+        {
+            return preferred[Random.Next(preferred.Length)];
+        }
+
         return ProfessionsList[
             Random.Next(ProfessionsList.Length)
         ];
