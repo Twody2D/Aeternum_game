@@ -49,4 +49,19 @@ public static class ProfessionSystem
         "Каменщик",
         "Столяр",
     };
+
+    // Профессии с повышенным риском несчастного случая — используется DeathSystem
+    private static readonly HashSet<string> HazardousProfessions = new()
+    {
+        "Воин",
+        "Охотник",
+        "Солдат",
+        "Офицер",
+        "Моряк"
+    };
+
+    public static bool IsHazardous(string? profession)
+    {
+        return profession != null && HazardousProfessions.Contains(profession);
+    }
 }

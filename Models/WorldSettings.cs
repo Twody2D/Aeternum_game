@@ -34,4 +34,10 @@ public class WorldSettings
     // Смерть
 
     public int MaximumAge { get; set; } = 100; // Предельный возраст — по достижении смерть гарантирована
+
+    public double InfantMortalityRate { get; set; } = 0.05; // Шанс смерти младенца (0-2 года) от болезни за год
+
+    public double AccidentRate { get; set; } = 0.01; // Базовый шанс несчастного случая в год для любого персонажа
+
+    public double HazardousProfessionMultiplier { get; set; } = 3.0; // Во сколько раз растёт риск несчастного случая у опасных профессий
 }
