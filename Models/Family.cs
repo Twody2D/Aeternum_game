@@ -10,5 +10,5 @@ public class Family
 
     public List<Character> Children { get; set; } = new();
 
-    public Dynasty? dynasty { get; set; }
+    public Dynasty? Dynasty { get; set; }
 }
