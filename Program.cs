@@ -54,6 +54,7 @@ engine.Run(world, ProjectSettings.SimulationYears, w =>
 
 PrintLines(StatisticsSystem.BuildFinalReport(world));
 PrintLines(ChronicleSystem.BuildChronicle(world));
+PrintLines(NotablePeopleSystem.BuildReport(world));
 
 const string savePath = "world_save.json";
 
