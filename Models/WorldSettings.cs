@@ -80,4 +80,12 @@ public class WorldSettings
     public double WarChance { get; set; } = 0.1; // Шанс в год, что спор за поселение между государствами обернётся войной
 
     public double WarCasualtyRate { get; set; } = 0.1; // Доля погибших среди живых жителей спорного поселения за одну войну
+
+
+
+    // Династии
+
+    // Шанс, что ребёнок унаследует родной дом матери вместо дома отца — противовес
+    // строго патрилинейной концентрации (см. FamilySystem.AddChildToFamily)
+    public double MaternalDynastyChance { get; set; } = 0.1;
 }

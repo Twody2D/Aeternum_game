@@ -8,6 +8,8 @@ namespace Aeternum.WorldGen.Systems;
 // Создание семей и добавление в них детей: правила фамилии и наследования династии
 public static class FamilySystem
 {
+    private static readonly Random _random = new();
+
     private static int _nextFamilyId = 1;
 
     // Женит father и mother: жена берёт фамилию мужа, семья наследует или основывает династию
@@ -40,8 +42,8 @@ public static class FamilySystem
                 world
             );
 
-            mother.Dynasty = dynasty;
-
+            // Dynasty матери не трогаем — как и у отца, брак не переписывает
+            // её родной дом (см. AddChildToFamily, где это используется)
             family.Dynasty = dynasty;
 
             DynastySystem.AddMember(
@@ -70,17 +72,34 @@ public static class FamilySystem
     // Привязывает ребёнка к семье рождения и сразу — к её династии
     public static void AddChildToFamily(
         Family family,
-        Character child)
+        Character child,
+        World world)
     {
         family.Children.Add(child);
         child.BirthFamily = family;
 
-        if (family.Dynasty != null)
+        var dynasty = family.Dynasty;
+
+        // Материнская ветвь: с небольшим шансом ребёнок идёт по родному дому
+        // матери вместо дома отца, если он у неё есть и отличается от отцовского —
+        // противовес тому, что новый дом основывается практически только в первом
+        // поколении браков (см. CreateFamily), из-за чего 1-2 дома иначе съедают
+        // почти всё население за несколько поколений
+        var mother = family.Mother;
+
+        if (mother.Dynasty != null &&
+            mother.Dynasty != dynasty &&
+            _random.NextDouble() < world.Settings.MaternalDynastyChance)
         {
-            child.Dynasty = family.Dynasty;
+            dynasty = mother.Dynasty;
+        }
+
+        if (dynasty != null)
+        {
+            child.Dynasty = dynasty;
 
             DynastySystem.AddMember(
-                family.Dynasty,
+                dynasty,
                 child
             );
         }

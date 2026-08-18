@@ -47,7 +47,7 @@ public static class BirthSystem
 
             father.Settlement?.Members.Add(newborn);
 
-            FamilySystem.AddChildToFamily(family, newborn);
+            FamilySystem.AddChildToFamily(family, newborn, world);
 
             newborns.Add(newborn); // Добавляем новорожденного персонажа в список newborns
 
