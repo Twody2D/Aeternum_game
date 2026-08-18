@@ -3,10 +3,12 @@ using Aeternum.WorldGen.Core;
 
 namespace Aeternum.WorldGen.Systems;
 
-// Производство и потребление еды — по каждому поселению отдельно, они не делятся
-// запасами друг с другом. Взрослые работники кормят всё живое население поселения
-// по своей профессии (см. ProfessionSystem.GetFoodProduction). При устойчивом
-// дефиците часть жителей гибнет от голода (DeathReason.Starvation)
+// Производство и потребление еды, производство материалов — по каждому поселению
+// отдельно (сглаживание между поселениями одного государства — см. TradeSystem).
+// Взрослые работники кормят всё живое население поселения по своей профессии
+// (см. ProfessionSystem.GetFoodProduction/GetMaterialProduction). При устойчивом
+// дефиците еды часть жителей гибнет от голода (DeathReason.Starvation); материалы
+// пока только копятся — тратить их не на что
 public static class EconomySystem
 {
     private static readonly Random _random = new();
@@ -38,6 +40,11 @@ public static class EconomySystem
             {
                 settlement.FoodStock = 0;
             }
+
+            if (settlement.MaterialStock != 0)
+            {
+                settlement.MaterialStock = 0;
+            }
         }
     }
 
@@ -45,6 +52,11 @@ public static class EconomySystem
     {
         double production = residents.Sum(c =>
             ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c.LifeStage));
+
+        double materialProduction = residents.Sum(c =>
+            ProfessionSystem.GetMaterialProduction(c.Profession) * GetProductivity(c.LifeStage));
+
+        settlement.MaterialStock += materialProduction; // Пока только копится — потребления материалов ещё нет
 
         double consumption = residents.Count * world.Settings.FoodConsumptionPerCapita;
 

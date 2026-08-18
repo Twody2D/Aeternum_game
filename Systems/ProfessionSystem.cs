@@ -27,6 +27,18 @@ public static class ProfessionSystem
         [ProfessionCategory.Military] = 1.0,
     };
 
+    // Сколько условных материалов в год производит один взрослый работник данной категории —
+    // пока только ремесленники и разнорабочие, тратить материалы пока не на что (см. EconomySystem)
+    private static readonly Dictionary<ProfessionCategory, double> MaterialProductionByCategory = new()
+    {
+        [ProfessionCategory.Craft] = 3.0,
+        [ProfessionCategory.General] = 0.5,
+        [ProfessionCategory.FoodProducer] = 0.0,
+        [ProfessionCategory.Trade] = 0.0,
+        [ProfessionCategory.Knowledge] = 0.0,
+        [ProfessionCategory.Military] = 0.0,
+    };
+
     // Профессии с повышенным риском несчастного случая — используется DeathSystem
     private static readonly HashSet<string> HazardousProfessions = ContentData.Professions
         .Where(p => p.Hazardous)
@@ -73,6 +85,12 @@ public static class ProfessionSystem
     public static double GetFoodProduction(string? profession)
     {
         return FoodProductionByCategory[GetCategory(profession)];
+    }
+
+    // Годовое производство материалов одним взрослым работником этой профессии
+    public static double GetMaterialProduction(string? profession)
+    {
+        return MaterialProductionByCategory[GetCategory(profession)];
     }
 
     public static bool IsHazardous(string? profession)

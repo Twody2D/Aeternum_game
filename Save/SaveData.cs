@@ -75,6 +75,7 @@ public class SettlementData
     public int Id { get; set; }
     public string Name { get; set; } = "";
     public double FoodStock { get; set; }
+    public double MaterialStock { get; set; }
     public List<int> MemberIds { get; set; } = new();
     public int? CultureId { get; set; }
     public int? ReligionId { get; set; }
