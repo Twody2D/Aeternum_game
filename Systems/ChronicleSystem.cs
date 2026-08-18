@@ -14,7 +14,13 @@ public static class ChronicleSystem
         (EventType.Marriage, "свадеб"),
         (EventType.Divorce, "разводов"),
         (EventType.Migration, "переездов"),
-        (EventType.CreationOfDynasty, "основано династий")
+        (EventType.CreationOfDynasty, "основано династий"),
+        (EventType.Colonization, "основано поселений"),
+        (EventType.CreationOfKingdom, "образовано государств"),
+        (EventType.Succession, "смен правителя"),
+        (EventType.Disaster, "катастроф"),
+        (EventType.War, "войн"),
+        (EventType.FallOfKingdom, "государств пало")
     };
 
     public static List<string> BuildChronicle(World world, int periodLength = 10)
