@@ -2,11 +2,14 @@ Aeternum.WorldGen
 
 Процедурная симуляция мира: персонажи рождаются, взрослеют, работают,
 женятся, заводят детей и умирают; из семей складываются династии, из
-поселений — государства; на них влияют экономика (производство и
-потребление еды), миграция, катастрофы и войны между государствами.
-Никакого сценария — всё происходит из взаимодействия систем.
+поселений — государства. На историю мира влияют экономика (производство
+и потребление еды), миграция и колонизация, культура и религия,
+катастрофы, войны и союзы между государствами, заговоры против
+правителей. Никакого сценария — всё происходит из взаимодействия систем.
 
 Консольное приложение на .NET 10. Запуск: dotnet run
+(в папке два проекта — игра и тесты, поэтому dotnet build/run/test
+без аргументов используют решение Aeternum.slnx)
 
 ├── Core
 │   ├── World.cs                 — общее состояние мира, передаётся во все системы
@@ -22,9 +25,11 @@ Aeternum.WorldGen
 │   ├── Religion.cs
 │   ├── WorldSettings.cs
 │   ├── EventType.cs
+│   ├── Reports.cs                — DTO итоговых отчётов (данные, не текст — см. StatisticsSystem и соседей)
 │   └── Enums
 │       ├── Gender.cs
 │       ├── LifeStage.cs
+│       ├── AgeGroup.cs
 │       ├── ProfessionCategory.cs
 │       └── DeathReason.cs
 │
@@ -39,22 +44,29 @@ Aeternum.WorldGen
 │   ├── ProfessionSystem.cs       — пул профессий, категории, случайный выбор
 │   ├── EconomySystem.cs          — производство/потребление еды по поселениям, голод
 │   ├── MigrationSystem.cs        — переезд между поселениями вне брака
+│   ├── ColonizationSystem.cs     — переполненные поселения основывают новые
 │   ├── DisasterSystem.cs         — эпидемии и неурожаи
-│   ├── KingdomSystem.cs          — образование и наследование государств
+│   ├── KingdomSystem.cs          — образование, наследование и падение государств
+│   ├── AllianceSystem.cs         — союзы между государствами на почве общей веры
 │   ├── WarSystem.cs              — войны между государствами за спорные поселения
+│   ├── MurderSystem.cs           — заговоры против правителя
 │   ├── PopulationSystem.cs       — вспомогательные выборки по населению
 │   ├── SurnameSystem.cs          — согласование фамилий по роду
 │   ├── EventSystem.cs            — выборка событий по году
-│   ├── ChronicleSystem.cs        — сводная хроника по десятилетиям
-│   ├── NotablePeopleSystem.cs    — выдающиеся личности
-│   ├── DynastyEncyclopediaSystem.cs — карточки крупнейших династий и государств
-│   └── StatisticsSystem.cs       — итоговые текстовые отчёты
+│   ├── ChronicleSystem.cs        — сводная хроника по десятилетиям (данные)
+│   ├── NotablePeopleSystem.cs    — выдающиеся личности (данные)
+│   ├── DynastyEncyclopediaSystem.cs — крупнейшие династии и государства (данные)
+│   └── StatisticsSystem.cs       — итоговая статистика (данные)
 │
 ├── Generators
 │   ├── CharacterGenerator.cs
 │   ├── SettlementGenerator.cs
 │   ├── CultureGenerator.cs
 │   └── ReligionGenerator.cs
+│
+├── Data
+│   ├── ContentData.cs             — загрузчик контента из JSON рядом с exe
+│   ├── Names.json, Settlements.json, Professions.json, Cultures.json, Religions.json
 │
 ├── Events
 │   └── WorldEvent.cs
@@ -69,4 +81,9 @@ Aeternum.WorldGen
 │   ├── SaveData.cs                — плоские DTO для сериализации
 │   └── SaveSystem.cs              — сохранение/загрузка мира в JSON
 │
-└── Program.cs                     — точка входа: генерация мира, запуск симуляции, отчёты, save/load
+├── Program.cs                     — точка входа: генерация мира, запуск симуляции,
+│                                     вся консольная отрисовка отчётов, save/load
+│
+├── Aeternum.WorldGen.Tests        — xUnit-тесты на ключевые инварианты ядра
+│
+└── .github/workflows/ci.yml       — build+test на каждый push/PR в main
