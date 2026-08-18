@@ -41,7 +41,10 @@ public static class DeathSystem
                 }
             }
 
-            if (_random.NextDouble() < GetAccidentChance(character, world)) // Несчастный случай — риск есть в любом возрасте
+            // Несчастный случай — риск для тех, кто уже работает/выходит в мир;
+            // у младенцев и детей его покрывает отдельная InfantMortalityRate
+            if (character.LifeStage is LifeStage.Adult or LifeStage.Elder &&
+                _random.NextDouble() < GetAccidentChance(character, world))
             {
                 Kill(character, world, DeathReason.Accident);
             }
@@ -82,9 +85,7 @@ public static class DeathSystem
         var name = SurnameSystem.GetDisplayFullName(character);
         var reasonText = DescribeReason(reason);
 
-        var description = _random.Next(2) == 0
-            ? $"{name} {diedVerb} в возрасте {character.Age} ({reasonText})"
-            : $"{name}: {character.Age} лет, причина смерти — {reasonText}";
+        var description = $"{name} {diedVerb} в возрасте {character.Age} ({reasonText})";
 
         world.Events.Add(new WorldEvent
         {

@@ -21,8 +21,14 @@ public static class ChronicleSystem
             var startYear = period.Key * periodLength + 1;
             var endYear = startYear + periodLength - 1;
 
+            // GroupBy сохраняет порядок первого появления ключа в периоде, а не
+            // фиксированный порядок — без явной сортировки перечисление "N рождений,
+            // M смертей, ..." скакало бы от десятилетия к десятилетию. Порядок
+            // объявления в EventType и так логически осмысленный (демография →
+            // браки → миграция/колонизация → государства → катастрофы/войны)
             var tallies = period
                 .GroupBy(e => e.Type)
+                .OrderBy(g => (int)g.Key)
                 .Select(g => new EventTally(g.Key, g.Count()))
                 .ToList();
 

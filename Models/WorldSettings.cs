@@ -37,7 +37,7 @@ public class WorldSettings
 
     public double InfantMortalityRate { get; set; } = 0.05; // Шанс смерти младенца (0-2 года) от болезни за год
 
-    public double AccidentRate { get; set; } = 0.01; // Базовый шанс несчастного случая в год для любого персонажа
+    public double AccidentRate { get; set; } = 0.005; // Базовый шанс несчастного случая в год (для взрослых и стариков)
 
     public double HazardousProfessionMultiplier { get; set; } = 3.0; // Во сколько раз растёт риск несчастного случая у опасных профессий
 
