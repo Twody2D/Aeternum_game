@@ -118,8 +118,8 @@ public class WorldSettings
     // Кризис наследования
 
     // Шанс, что переход трона не к прямому потомку обернётся распрей (см. KingdomSystem.TriggerSuccessionCrisis)
-    public double SuccessionCrisisChance { get; set; } = 0.3;
+    public double SuccessionCrisisChance { get; set; } = 0.15;
 
     // Доля погибших среди остальных живых членов династии за одну распрю
-    public double CivilWarCasualtyRate { get; set; } = 0.1;
+    public double CivilWarCasualtyRate { get; set; } = 0.05;
 }
