@@ -19,11 +19,25 @@ public static class EconomySystem
     {
         var aliveBySettlement = world.Characters
             .Where(c => c.Alive && c.Settlement != null)
-            .GroupBy(c => c.Settlement!);
+            .GroupBy(c => c.Settlement!)
+            .ToDictionary(g => g.Key, g => g.ToList());
 
-        foreach (var group in aliveBySettlement)
+        foreach (var settlement in world.Settlements)
         {
-            ProcessSettlement(group.Key, group.ToList(), world);
+            if (aliveBySettlement.TryGetValue(settlement, out var residents))
+            {
+                ProcessSettlement(settlement, residents, world);
+                continue;
+            }
+
+            // Опустевшее поселение ничего не производит и не потребляет — не должно
+            // навсегда застревать с замороженным глубоко отрицательным запасом,
+            // который отпугивал бы MigrationSystem от единственного способа снова
+            // его заселить (выбор направления идёт по FoodStock)
+            if (settlement.FoodStock != 0)
+            {
+                settlement.FoodStock = 0;
+            }
         }
     }
 
