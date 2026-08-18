@@ -102,7 +102,8 @@ public static class SaveSystem
                 Name = s.Name,
                 FoodStock = s.FoodStock,
                 MemberIds = s.Members.Select(c => c.Id).ToList(),
-                CultureId = s.Culture?.Id
+                CultureId = s.Culture?.Id,
+                ReligionId = s.Religion?.Id
             }).ToList(),
 
             Cultures = world.Cultures.Select(c => new CultureData
@@ -110,6 +111,12 @@ public static class SaveSystem
                 Id = c.Id,
                 Name = c.Name,
                 PreferredCategory = c.PreferredCategory
+            }).ToList(),
+
+            Religions = world.Religions.Select(r => new ReligionData
+            {
+                Id = r.Id,
+                Name = r.Name
             }).ToList(),
 
             Kingdoms = world.Kingdoms.Select(k => new KingdomData
@@ -135,6 +142,10 @@ public static class SaveSystem
         var culturesById = data.Cultures.ToDictionary(
             c => c.Id,
             c => new Culture { Id = c.Id, Name = c.Name, PreferredCategory = c.PreferredCategory });
+
+        var religionsById = data.Religions.ToDictionary(
+            r => r.Id,
+            r => new Religion { Id = r.Id, Name = r.Name });
 
         var settlementsById = data.Settlements.ToDictionary(
             s => s.Id,
@@ -198,6 +209,7 @@ public static class SaveSystem
 
             settlement.Members = s.MemberIds.Select(id => charactersById[id]).ToList();
             settlement.Culture = s.CultureId.HasValue ? culturesById[s.CultureId.Value] : null;
+            settlement.Religion = s.ReligionId.HasValue ? religionsById[s.ReligionId.Value] : null;
         }
 
         // Dynasty/Character/Settlement уже полностью связаны на этом этапе,
@@ -227,6 +239,7 @@ public static class SaveSystem
             Dynasties = data.Dynasties.Select(d => dynastiesById[d.Id]).ToList(),
             Settlements = data.Settlements.Select(s => settlementsById[s.Id]).ToList(),
             Cultures = data.Cultures.Select(c => culturesById[c.Id]).ToList(),
+            Religions = data.Religions.Select(r => religionsById[r.Id]).ToList(),
             Kingdoms = data.Kingdoms.Select(k => kingdomsById[k.Id]).ToList()
         };
 
@@ -237,6 +250,7 @@ public static class SaveSystem
         DynastySystem.SetNextDynastyId(NextId(data.Dynasties.Select(d => d.Id)));
         SettlementGenerator.SetNextId(NextId(data.Settlements.Select(s => s.Id)));
         CultureGenerator.SetNextId(NextId(data.Cultures.Select(c => c.Id)));
+        ReligionGenerator.SetNextId(NextId(data.Religions.Select(r => r.Id)));
         KingdomSystem.SetNextId(NextId(data.Kingdoms.Select(k => k.Id)));
 
         return world;

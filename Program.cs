@@ -13,12 +13,15 @@ Console.WriteLine("=================================");
 var world = new World();
 world.AliveCount = ProjectSettings.StartingPopulation; // Инициализируем счетчик живых персонажей
 world.Cultures = CultureGenerator.Create(ProjectSettings.SettlementCount);
+world.Religions = ReligionGenerator.Create(ProjectSettings.SettlementCount);
 world.Settlements = SettlementGenerator.Create(ProjectSettings.SettlementCount);
 
-// У каждого поселения — своя культура
+// У каждого поселения — своя культура и религия. Религия назначается со сдвигом
+// относительно культуры, чтобы они не были жёстко связаны 1:1
 for (int i = 0; i < world.Settlements.Count; i++)
 {
     world.Settlements[i].Culture = world.Cultures[i % world.Cultures.Count];
+    world.Settlements[i].Religion = world.Religions[(i + 1) % world.Religions.Count];
 }
 
 // Создаём стартовое население случайными взрослыми персонажами,

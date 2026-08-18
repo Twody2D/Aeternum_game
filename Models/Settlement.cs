@@ -14,4 +14,6 @@ public class Settlement
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 
     public Culture? Culture { get; set; } // Культура поселения — влияет на распределение профессий жителей
+
+    public Religion? Religion { get; set; } // Религия поселения — влияет на шанс межпоселенческого брака
 }
