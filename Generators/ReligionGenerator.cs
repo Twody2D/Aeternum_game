@@ -1,20 +1,15 @@
+using Aeternum.WorldGen.Data;
 using Aeternum.WorldGen.Models;
 
 namespace Aeternum.WorldGen.Generators;
 
-// Фабрика религий. По образцу CultureGenerator — фиксированный пул шаблонов названий
+// Фабрика религий. По образцу CultureGenerator — пул шаблонов названий
+// из Data/Religions.json (см. ContentData)
 public static class ReligionGenerator
 {
     private static int _nextId = 1;
 
-    private static readonly string[] Templates =
-    {
-        "Культ огня",
-        "Культ предков",
-        "Культ земли",
-        "Единобожие",
-        "Культ солнца"
-    };
+    private static List<ReligionEntry> Templates => ContentData.Religions;
 
     public static List<Religion> Create(int count)
     {
@@ -25,7 +20,7 @@ public static class ReligionGenerator
             religions.Add(new Religion
             {
                 Id = _nextId++,
-                Name = Templates[i % Templates.Length]
+                Name = Templates[i % Templates.Count].Name
             });
         }
 

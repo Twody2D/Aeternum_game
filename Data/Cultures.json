@@ -1,0 +1,7 @@
+[
+  { "Name": "Земледельческий народ", "PreferredCategory": "FoodProducer" },
+  { "Name": "Ремесленный народ", "PreferredCategory": "Craft" },
+  { "Name": "Воинственный народ", "PreferredCategory": "Military" },
+  { "Name": "Торговый народ", "PreferredCategory": "Trade" },
+  { "Name": "Учёный народ", "PreferredCategory": "Knowledge" }
+]

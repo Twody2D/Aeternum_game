@@ -1,20 +1,15 @@
+using Aeternum.WorldGen.Data;
 using Aeternum.WorldGen.Models;
 
 namespace Aeternum.WorldGen.Generators;
 
-// Фабрика культур: у каждой — своё название и предпочитаемая категория профессий
+// Фабрика культур: у каждой — своё название и предпочитаемая категория профессий.
+// Шаблоны — из Data/Cultures.json (см. ContentData)
 public static class CultureGenerator
 {
     private static int _nextId = 1;
 
-    private static readonly (string Name, ProfessionCategory PreferredCategory)[] Templates =
-    {
-        ("Земледельческий народ", ProfessionCategory.FoodProducer),
-        ("Ремесленный народ", ProfessionCategory.Craft),
-        ("Воинственный народ", ProfessionCategory.Military),
-        ("Торговый народ", ProfessionCategory.Trade),
-        ("Учёный народ", ProfessionCategory.Knowledge)
-    };
+    private static List<CultureEntry> Templates => ContentData.Cultures;
 
     public static List<Culture> Create(int count)
     {
@@ -22,7 +17,7 @@ public static class CultureGenerator
 
         for (int i = 0; i < count; i++)
         {
-            var template = Templates[i % Templates.Length];
+            var template = Templates[i % Templates.Count];
 
             cultures.Add(new Culture
             {

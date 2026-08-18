@@ -1,27 +1,15 @@
+using Aeternum.WorldGen.Data;
 using Aeternum.WorldGen.Models;
 
 namespace Aeternum.WorldGen.Generators;
 
-// Фабрика поселений: создаёт стартовые деревни с уникальными именами
+// Фабрика поселений — как стартовых, так и основанных позже колонизацией
+// (см. ColonizationSystem). Имена — из Data/Settlements.json (см. ContentData)
 public static class SettlementGenerator
 {
     private static int _nextId = 1;
 
-    private static readonly string[] Names =
-    {
-        "Дубрава",
-        "Заречье",
-        "Ольховка",
-        "Северный Дол",
-        "Липовка",
-        "Берёзовка",
-        "Сосновка",
-        "Гореловка",
-        "Каменный Брод",
-        "Тихий Лог",
-        "Ясная Поляна",
-        "Червонное"
-    };
+    private static string[] Names => ContentData.SettlementNames;
 
     public static List<Settlement> Create(int count)
     {
@@ -29,10 +17,15 @@ public static class SettlementGenerator
 
         for (int i = 0; i < count; i++)
         {
+            // Имя берём по фактическому Id, а не по индексу цикла — иначе при
+            // повторных вызовах Create (колонизация зовёт его много раз за игру)
+            // каждый новый посёлок получал бы одно и то же первое имя
+            var id = _nextId++;
+
             settlements.Add(new Settlement
             {
-                Id = _nextId++,
-                Name = Names[i % Names.Length]
+                Id = id,
+                Name = Names[(id - 1) % Names.Length]
             });
         }
 

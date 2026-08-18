@@ -1,102 +1,21 @@
+using Aeternum.WorldGen.Data;
 using Aeternum.WorldGen.Models;
 using Aeternum.WorldGen.Systems;
 
 namespace Aeternum.WorldGen.Generators;
 
 
-// Фабрика персонажей: собирает случайного жителя из хардкод-пулов имён/фамилий
+// Фабрика персонажей: собирает случайного жителя из пулов имён/фамилий,
+// загруженных из Data/Names.json (см. ContentData)
 public static class CharacterGenerator
 {
     private static readonly Random Random = new(); // Генератор случайных чисел
     private static int _nextId = 1; // Сквозной счётчик для Character.Id
 
-    private static readonly string[] MaleNames =
-    {
-        "Артур",
-        "Вильгельм",
-        "Альфред",
-        "Эдмунд",
-        "Годрик",
-        "Роберт",
-        "Павел",
-        "Александр",
-        "Дмитрий",
-        "Игорь",
-        "Николай",
-        "Степан",
-        "Фёдор",
-        "Ярослав",
-        "Всеволод",
-        "Мстислав",
-        "Владимир",
-        "Богдан",
-        "Тимофей",
-        "Гаврила",
-        "Матвей",
-        "Севастьян",
-        "Ратибор",
-        "Ростислав",
-        "Ждан"
-    };
+    private static string[] MaleNames => ContentData.Names.MaleNames;
+    private static string[] FemaleNames => ContentData.Names.FemaleNames;
+    private static string[] LastNames => ContentData.Names.LastNames;
 
-    private static readonly string[] FemaleNames =
-    {
-        "Елена",
-        "Анна",
-        "Екатерина",
-        "Анастасия",
-        "Алёна",
-        "Любава",
-        "Мария",
-        "Ольга",
-        "Светлана",
-        "Дарья",
-        "Варвара",
-        "Аглая",
-        "Василиса",
-        "Злата",
-        "Милана",
-        "Забава",
-        "Радмила",
-        "Пелагея",
-        "Агафья",
-        "Марфа",
-        "Ксения",
-        "Ярослава",
-        "Веселина",
-        "Лада",
-        "Зоя"
-    };
-
-    private static readonly string[] LastNames =
-    {
-        "Захаров",
-        "Борисов",
-        "Кузнецов",
-        "Иванов",
-        "Кулачкин",
-        "Прохоров",
-        "Пастухов",
-        "Соколов",
-        "Волков",
-        "Медведев",
-        "Морозов",
-        "Орлов",
-        "Лебедев",
-        "Козлов",
-        "Новиков",
-        "Соловьёв",
-        "Егоров",
-        "Виноградов",
-        "Крылов",
-        "Голубев",
-        "Никитин",
-        "Комаров",
-        "Воронов",
-        "Гусев",
-        "Тихонов"
-    };
-    
     // Общая часть создания персонажа: пол, имя, фамилия, уникальный Id
     private static Character CreateBaseCharacter()
     {
