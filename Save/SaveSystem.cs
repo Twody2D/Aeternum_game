@@ -127,7 +127,8 @@ public static class SaveSystem
                 RulerId = k.Ruler.Id,
                 FoundedYear = k.FoundedYear,
                 FallenYear = k.FallenYear,
-                SettlementIds = k.Settlements.Select(s => s.Id).ToList()
+                SettlementIds = k.Settlements.Select(s => s.Id).ToList(),
+                AlliedKingdomIds = k.AlliedKingdoms.Select(ak => ak.Id).ToList()
             }).ToList()
         };
     }
@@ -213,8 +214,9 @@ public static class SaveSystem
             settlement.Religion = s.ReligionId.HasValue ? religionsById[s.ReligionId.Value] : null;
         }
 
-        // Dynasty/Character/Settlement уже полностью связаны на этом этапе,
-        // поэтому Kingdom (ничем не референсится в обратную сторону) собирается в один проход
+        // Dynasty/Character/Settlement уже полностью связаны на этом этапе, но
+        // Kingdom ссылается сам на себя через AlliedKingdoms — сначала заготовки,
+        // потом отдельный проход простановки союзов (по тому же принципу, что выше)
         var kingdomsById = data.Kingdoms.ToDictionary(
             k => k.Id,
             k => new Kingdom
@@ -227,6 +229,11 @@ public static class SaveSystem
                 Ruler = charactersById[k.RulerId],
                 Settlements = k.SettlementIds.Select(id => settlementsById[id]).ToList()
             });
+
+        foreach (var k in data.Kingdoms)
+        {
+            kingdomsById[k.Id].AlliedKingdoms = k.AlliedKingdomIds.Select(id => kingdomsById[id]).ToList();
+        }
 
         var world = new World
         {

@@ -39,13 +39,16 @@ public static class YearProcessor
         // 9. Государства: обновление контроля территорий, престолонаследие, новые королевства
         KingdomSystem.Process(world);
 
-        // 10. Войны за спорные поселения между государствами
+        // 10. Союзы между государствами
+        AllianceSystem.Process(world);
+
+        // 11. Войны за спорные поселения между государствами
         WarSystem.Process(world);
 
-        // 11. Заговоры против правителя
+        // 12. Заговоры против правителя
         MurderSystem.Process(world);
 
-        // 12. Рождение детей
+        // 13. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -53,7 +56,7 @@ public static class YearProcessor
             world
         );
 
-        // 13. Добавляем детей
+        // 14. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }

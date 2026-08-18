@@ -27,6 +27,11 @@ public static class WarSystem
                 continue;
             }
 
+            if (AreAllAllied(claimants))
+            {
+                continue; // Союзники не воюют друг с другом за спорное поселение
+            }
+
             if (_random.NextDouble() >= world.Settings.WarChance)
             {
                 continue;
@@ -34,6 +39,22 @@ public static class WarSystem
 
             DeclareWar(settlement, claimants, world);
         }
+    }
+
+    private static bool AreAllAllied(List<Kingdom> claimants)
+    {
+        for (var i = 0; i < claimants.Count; i++)
+        {
+            for (var j = i + 1; j < claimants.Count; j++)
+            {
+                if (!claimants[i].AlliedKingdoms.Contains(claimants[j]))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     private static void DeclareWar(Settlement settlement, List<Kingdom> claimants, World world)

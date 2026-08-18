@@ -54,7 +54,8 @@ var eventLabels = new Dictionary<EventType, string>
     [EventType.Disaster] = "катастроф",
     [EventType.War] = "войн",
     [EventType.FallOfKingdom] = "государств пало",
-    [EventType.Murder] = "заговоров против правителя"
+    [EventType.Murder] = "заговоров против правителя",
+    [EventType.Alliance] = "союзов"
 };
 
 var ageGroupLabels = new Dictionary<AgeGroup, string>
@@ -257,10 +258,14 @@ void PrintKingdoms(List<Kingdom> kingdoms)
 
         var rulerStatus = kingdom.Ruler.Alive ? "правит" : "правил(а) последним(ей)";
 
+        var alliesText = kingdom.AlliedKingdoms.Count > 0
+            ? $", союзники: {string.Join(", ", kingdom.AlliedKingdoms.Select(k => k.Name))}"
+            : "";
+
         Console.WriteLine(
             $"{kingdom.Name}: основано в {kingdom.FoundedYear} году, " +
             $"{SurnameSystem.GetDisplayFullName(kingdom.Ruler)} {rulerStatus}, " +
-            $"поселений под контролем: {kingdom.Settlements.Count}");
+            $"поселений под контролем: {kingdom.Settlements.Count}{alliesText}");
     }
 
     Console.WriteLine();

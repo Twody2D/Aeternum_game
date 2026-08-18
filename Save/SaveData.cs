@@ -102,4 +102,5 @@ public class KingdomData
     public int FoundedYear { get; set; }
     public int? FallenYear { get; set; }
     public List<int> SettlementIds { get; set; } = new();
+    public List<int> AlliedKingdomIds { get; set; } = new();
 }

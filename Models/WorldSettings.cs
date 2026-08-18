@@ -105,4 +105,11 @@ public class WorldSettings
 
     // Шанс в год, что правителя с живым взрослым соперником по династии убьют (см. MurderSystem)
     public double RegicideChance { get; set; } = 0.03;
+
+
+
+    // Союзы
+
+    // Шанс в год, что два ещё не союзных государства с единоверными правителями заключат союз (см. AllianceSystem)
+    public double AllianceChance { get; set; } = 0.05;
 }
