@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Aeternum.WorldGen.csproj" />
+  <Project Path="Aeternum.WorldGen.Tests/Aeternum.WorldGen.Tests.csproj" />
+</Solution>

@@ -11,4 +11,12 @@
     <None Include="Data\**\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- Тестовый проект лежит во вложенной папке — без этого дефолтный globbing SDK
+       затянул бы его .cs-файлы (и сгенерированные им obj/*) в саму игру -->
+  <ItemGroup>
+    <Compile Remove="Aeternum.WorldGen.Tests\**" />
+    <EmbeddedResource Remove="Aeternum.WorldGen.Tests\**" />
+    <None Remove="Aeternum.WorldGen.Tests\**" />
+  </ItemGroup>
+
 </Project>
