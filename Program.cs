@@ -263,10 +263,14 @@ void PrintKingdoms(List<Kingdom> kingdoms)
             ? $", союзники: {string.Join(", ", kingdom.AlliedKingdoms.Select(k => k.Name))}"
             : "";
 
+        var treasuryText = kingdom.FoodTreasury > 0 || kingdom.MaterialTreasury > 0
+            ? $", казна: {kingdom.FoodTreasury:0.#} еды, {kingdom.MaterialTreasury:0.#} материалов"
+            : "";
+
         Console.WriteLine(
             $"{kingdom.Name}: основано в {kingdom.FoundedYear} году, " +
             $"{SurnameSystem.GetDisplayFullName(kingdom.Ruler)} {rulerStatus}, " +
-            $"поселений под контролем: {kingdom.Settlements.Count}{alliesText}");
+            $"поселений под контролем: {kingdom.Settlements.Count}{alliesText}{treasuryText}");
     }
 
     Console.WriteLine();

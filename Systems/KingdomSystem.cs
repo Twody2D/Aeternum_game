@@ -80,7 +80,12 @@ public static class KingdomSystem
     // Не путать с MurderSystem: там — заговор против ещё живого правителя
     private static void TryTriggerSuccessionCrisis(Kingdom kingdom, Character newRuler, List<Character> aliveMembers, World world)
     {
-        if (_random.NextDouble() >= world.Settings.SuccessionCrisisChance)
+        // Богатая казна (см. TributeSystem) даёт правителю чем откупиться от
+        // претендентов — снижает шанс, но никогда не убирает риск полностью
+        var stability = kingdom.FoodTreasury / world.Settings.TreasuryStabilityDivisor;
+        var effectiveChance = world.Settings.SuccessionCrisisChance / (1 + stability);
+
+        if (_random.NextDouble() >= effectiveChance)
         {
             return;
         }

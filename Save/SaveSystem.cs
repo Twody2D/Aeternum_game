@@ -129,7 +129,9 @@ public static class SaveSystem
                 FoundedYear = k.FoundedYear,
                 FallenYear = k.FallenYear,
                 SettlementIds = k.Settlements.Select(s => s.Id).ToList(),
-                AlliedKingdomIds = k.AlliedKingdoms.Select(ak => ak.Id).ToList()
+                AlliedKingdomIds = k.AlliedKingdoms.Select(ak => ak.Id).ToList(),
+                FoodTreasury = k.FoodTreasury,
+                MaterialTreasury = k.MaterialTreasury
             }).ToList()
         };
     }
@@ -228,7 +230,9 @@ public static class SaveSystem
                 FallenYear = k.FallenYear,
                 Dynasty = dynastiesById[k.DynastyId],
                 Ruler = charactersById[k.RulerId],
-                Settlements = k.SettlementIds.Select(id => settlementsById[id]).ToList()
+                Settlements = k.SettlementIds.Select(id => settlementsById[id]).ToList(),
+                FoodTreasury = k.FoodTreasury,
+                MaterialTreasury = k.MaterialTreasury
             });
 
         foreach (var k in data.Kingdoms)

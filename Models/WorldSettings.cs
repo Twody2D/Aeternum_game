@@ -122,4 +122,24 @@ public class WorldSettings
 
     // Доля погибших среди остальных живых членов династии за одну распрю
     public double CivilWarCasualtyRate { get; set; } = 0.05;
+
+
+
+    // Торговля
+
+    // Доля излишка (еды или материалов), которую поселение может отдать за год
+    // соседям по государству с дефицитом (см. TradeSystem)
+    public double TradeTransferRate { get; set; } = 0.3;
+
+
+
+    // Дань
+
+    // Доля излишка (еды или материалов), которую государство забирает в казну за год (см. TributeSystem)
+    public double TributeRate { get; set; } = 0.1;
+
+    // Чем больше казна относительно этого числа, тем ниже эффективный шанс кризиса
+    // наследования (см. KingdomSystem.TryTriggerSuccessionCrisis) — богатое государство
+    // стабильнее, но полностью риск не убирает
+    public double TreasuryStabilityDivisor { get; set; } = 500;
 }

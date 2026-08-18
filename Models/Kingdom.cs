@@ -20,4 +20,8 @@ public class Kingdom
     public List<Settlement> Settlements { get; set; } = new(); // Контролируемые поселения на текущий год
 
     public List<Kingdom> AlliedKingdoms { get; set; } = new(); // Союзные государства (см. AllianceSystem) — симметрично, есть у обеих сторон
+
+    public double FoodTreasury { get; set; } // Казна еды — собирается данью с подконтрольных поселений (см. TributeSystem)
+
+    public double MaterialTreasury { get; set; } // Казна материалов — то же для материалов
 }

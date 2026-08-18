@@ -30,25 +30,31 @@ public static class YearProcessor
         // 6. Еда: производство/потребление, голод при дефиците
         EconomySystem.Process(world);
 
-        // 7. Миграция из голодающих поселений
+        // 7. Торговля излишками между поселениями одного государства
+        TradeSystem.Process(world);
+
+        // 8. Дань в казну государства
+        TributeSystem.Process(world);
+
+        // 9. Миграция из голодающих поселений
         MigrationSystem.Process(world);
 
-        // 8. Колонизация: переполненные поселения основывают новые
+        // 10. Колонизация: переполненные поселения основывают новые
         ColonizationSystem.Process(world);
 
-        // 9. Государства: обновление контроля территорий, престолонаследие, новые королевства
+        // 11. Государства: обновление контроля территорий, престолонаследие, новые королевства
         KingdomSystem.Process(world);
 
-        // 10. Союзы между государствами
+        // 12. Союзы между государствами
         AllianceSystem.Process(world);
 
-        // 11. Войны за спорные поселения между государствами
+        // 13. Войны за спорные поселения между государствами
         WarSystem.Process(world);
 
-        // 12. Заговоры против правителя
+        // 14. Заговоры против правителя
         MurderSystem.Process(world);
 
-        // 13. Рождение детей
+        // 15. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -56,7 +62,7 @@ public static class YearProcessor
             world
         );
 
-        // 14. Добавляем детей
+        // 16. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }
