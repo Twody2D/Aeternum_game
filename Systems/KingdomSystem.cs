@@ -9,6 +9,8 @@ namespace Aeternum.WorldGen.Systems;
 // жителей) сразу в нескольких поселениях. Никто не назначает королевство заранее
 public static class KingdomSystem
 {
+    private static readonly Random _random = new();
+
     private static int _nextId = 1;
 
     private const int MinDynastyMembersToFormKingdom = 20;
@@ -50,6 +52,7 @@ public static class KingdomSystem
                 continue; // Государство остаётся исторической записью, но больше не действует
             }
 
+            var previousRuler = kingdom.Ruler;
             var newRuler = GetSenior(aliveMembers);
             kingdom.Ruler = newRuler;
 
@@ -62,7 +65,46 @@ public static class KingdomSystem
                 Type = EventType.Succession,
                 Description = $"Новым правителем {kingdomGenitive} {becameVerb} {SurnameSystem.GetDisplayFullName(newRuler)}"
             });
+
+            var isDirectHeir = newRuler.Father == previousRuler || newRuler.Mother == previousRuler;
+
+            if (!isDirectHeir)
+            {
+                TryTriggerSuccessionCrisis(kingdom, newRuler, aliveMembers, world);
+            }
         }
+    }
+
+    // Трон ушёл не к прямому ребёнку покойного правителя, а в боковую ветвь —
+    // с некоторым шансом среди прочей родни вспыхивает распря за само наследство.
+    // Не путать с MurderSystem: там — заговор против ещё живого правителя
+    private static void TryTriggerSuccessionCrisis(Kingdom kingdom, Character newRuler, List<Character> aliveMembers, World world)
+    {
+        if (_random.NextDouble() >= world.Settings.SuccessionCrisisChance)
+        {
+            return;
+        }
+
+        var rivalPool = aliveMembers.Where(m => m != newRuler).ToList();
+        var casualtyCount = (int)(rivalPool.Count * world.Settings.CivilWarCasualtyRate);
+
+        var casualties = rivalPool
+            .OrderBy(_ => _random.Next())
+            .Take(casualtyCount)
+            .ToList();
+
+        foreach (var casualty in casualties)
+        {
+            DeathSystem.Kill(casualty, world, DeathReason.War);
+        }
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.CivilWar,
+            Description = $"{kingdom.Name}: кризис наследования — трон перешёл не к прямому потомку, а к дальней родне " +
+                          $"({SurnameSystem.GetDisplayFullName(newRuler)}). Среди наследников вспыхнула распря. Погибших: {casualties.Count}"
+        });
     }
 
     private static void DetectNewKingdoms(World world)

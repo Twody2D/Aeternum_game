@@ -112,4 +112,14 @@ public class WorldSettings
 
     // Шанс в год, что два ещё не союзных государства с единоверными правителями заключат союз (см. AllianceSystem)
     public double AllianceChance { get; set; } = 0.05;
+
+
+
+    // Кризис наследования
+
+    // Шанс, что переход трона не к прямому потомку обернётся распрей (см. KingdomSystem.TriggerSuccessionCrisis)
+    public double SuccessionCrisisChance { get; set; } = 0.3;
+
+    // Доля погибших среди остальных живых членов династии за одну распрю
+    public double CivilWarCasualtyRate { get; set; } = 0.1;
 }
