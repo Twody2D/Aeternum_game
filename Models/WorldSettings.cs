@@ -88,4 +88,14 @@ public class WorldSettings
     // Шанс, что ребёнок унаследует родной дом матери вместо дома отца — противовес
     // строго патрилинейной концентрации (см. FamilySystem.AddChildToFamily)
     public double MaternalDynastyChance { get; set; } = 0.1;
+
+
+
+    // Колонизация
+
+    // Живого населения в поселении, начиная с которого рассматриваем колонизацию
+    public int ColonizationPopulationThreshold { get; set; } = 25;
+
+    // Шанс в год, что переполненное поселение породит новое (см. ColonizationSystem)
+    public double ColonizationChance { get; set; } = 0.05;
 }

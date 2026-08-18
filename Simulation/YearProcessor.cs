@@ -33,13 +33,16 @@ public static class YearProcessor
         // 7. Миграция из голодающих поселений
         MigrationSystem.Process(world);
 
-        // 8. Государства: обновление контроля территорий, престолонаследие, новые королевства
+        // 8. Колонизация: переполненные поселения основывают новые
+        ColonizationSystem.Process(world);
+
+        // 9. Государства: обновление контроля территорий, престолонаследие, новые королевства
         KingdomSystem.Process(world);
 
-        // 9. Войны за спорные поселения между государствами
+        // 10. Войны за спорные поселения между государствами
         WarSystem.Process(world);
 
-        // 10. Рождение детей
+        // 11. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -47,7 +50,7 @@ public static class YearProcessor
             world
         );
 
-        // 11. Добавляем детей
+        // 12. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }
