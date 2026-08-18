@@ -1,10 +1,16 @@
 Aeternum.WorldGen
 
-│
+Процедурная симуляция мира: персонажи рождаются, взрослеют, работают,
+женятся, заводят детей и умирают; из семей складываются династии, из
+поселений — государства; на них влияют экономика (производство и
+потребление еды), миграция, катастрофы и войны между государствами.
+Никакого сценария — всё происходит из взаимодействия систем.
+
+Консольное приложение на .NET 10. Запуск: dotnet run
+
 ├── Core
-│   ├── World.cs
-│   ├── SimulationEngine.cs
-│   └── GameTime.cs
+│   ├── World.cs                 — общее состояние мира, передаётся во все системы
+│   └── SimulationEngine.cs      — Tick (один год) и Run (цикл на N лет)
 │
 ├── Models
 │   ├── Character.cs
@@ -12,44 +18,55 @@ Aeternum.WorldGen
 │   ├── Dynasty.cs
 │   ├── Kingdom.cs
 │   ├── Settlement.cs
+│   ├── Culture.cs
+│   ├── Religion.cs
+│   ├── WorldSettings.cs
+│   ├── EventType.cs
 │   └── Enums
 │       ├── Gender.cs
 │       ├── LifeStage.cs
-│       ├── Profession.cs
+│       ├── ProfessionCategory.cs
 │       └── DeathReason.cs
 │
 ├── Systems
-│   ├── BirthSystem.cs
-│   ├── DeathSystem.cs
-│   ├── LifeSystem.cs
-│   ├── FamilySystem.cs
-│   ├── DynastySystem.cs
-│   ├── ProfessionSystem.cs
-│   └── EventSystem.cs
+│   ├── AgeSystem.cs              — взросление, смена LifeStage
+│   ├── MarriageSystem.cs         — заключение браков (внутри поселения и между ними)
+│   ├── DivorceSystem.cs          — распад бездетных браков
+│   ├── DeathSystem.cs            — смерть (возраст, болезни, несчастные случаи и т.д.)
+│   ├── BirthSystem.cs            — рождение детей
+│   ├── FamilySystem.cs           — создание семей, фамилии, привязка к династии
+│   ├── DynastySystem.cs          — основание династий, добавление членов
+│   ├── ProfessionSystem.cs       — пул профессий, категории, случайный выбор
+│   ├── EconomySystem.cs          — производство/потребление еды по поселениям, голод
+│   ├── MigrationSystem.cs        — переезд между поселениями вне брака
+│   ├── DisasterSystem.cs         — эпидемии и неурожаи
+│   ├── KingdomSystem.cs          — образование и наследование государств
+│   ├── WarSystem.cs              — войны между государствами за спорные поселения
+│   ├── PopulationSystem.cs       — вспомогательные выборки по населению
+│   ├── SurnameSystem.cs          — согласование фамилий по роду
+│   ├── EventSystem.cs            — выборка событий по году
+│   ├── ChronicleSystem.cs        — сводная хроника по десятилетиям
+│   ├── NotablePeopleSystem.cs    — выдающиеся личности
+│   ├── DynastyEncyclopediaSystem.cs — карточки крупнейших династий и государств
+│   └── StatisticsSystem.cs       — итоговые текстовые отчёты
 │
 ├── Generators
 │   ├── CharacterGenerator.cs
-│   ├── NameGenerator.cs
-│   ├── WorldGenerator.cs
-│   └── MapGenerator.cs
+│   ├── SettlementGenerator.cs
+│   ├── CultureGenerator.cs
+│   └── ReligionGenerator.cs
 │
 ├── Events
-│   ├── WorldEvent.cs
-│   ├── BirthEvent.cs
-│   └── DeathEvent.cs
-│
-├── Data
-│   ├── Names.json
-│   ├── Professions.json
-│   ├── Cultures.json
-│   └── Religions.json
+│   └── WorldEvent.cs
 │
 ├── Simulation
-│   ├── YearProcessor.cs
-│   └── SimulationSettings.cs
+│   └── YearProcessor.cs          — порядок систем внутри одного года
+│
+├── Settings
+│   └── ProjectSettings.cs        — параметры запуска (население, число лет, поселений)
 │
 ├── Save
-│   ├── SaveManager.cs
-│   └── SaveData.cs
+│   ├── SaveData.cs                — плоские DTO для сериализации
+│   └── SaveSystem.cs              — сохранение/загрузка мира в JSON
 │
-└── Program.cs
+└── Program.cs                     — точка входа: генерация мира, запуск симуляции, отчёты, save/load
