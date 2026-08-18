@@ -10,51 +10,26 @@ public static class NotablePeopleSystem
     private const int OldAgeThreshold = 80; // Возраст, начиная с которого считаем персонажа долгожителем
     private const int FoundedDynastyMinMembers = 15; // Сколько представителей нужно династии, чтобы считаться значимой
 
-    public static List<string> BuildReport(World world)
+    public static List<NotablePerson> BuildReport(World world)
     {
-        var lines = new List<string>
-        {
-            "",
-            "===== Выдающиеся личности ====="
-        };
-
-        var notable = world.Characters
-            .Select(c => (Character: c, Reasons: GetReasons(c, world)))
-            .Where(n => n.Reasons.Count > 0)
+        return world.Characters
+            .Select(c => BuildEntry(c, world))
+            .Where(n => n.IsLongLived || n.FoundedSignificantDynasty != null)
             .OrderBy(n => n.Character.BirthYear)
             .ToList();
-
-        if (notable.Count == 0)
-        {
-            lines.Add("В этой истории не нашлось никого выдающегося.");
-        }
-
-        foreach (var (character, reasons) in notable)
-        {
-            lines.Add($"{SurnameSystem.GetDisplayFullName(character)} — {string.Join(", ", reasons)}");
-        }
-
-        lines.Add("");
-
-        return lines;
     }
 
-    private static List<string> GetReasons(Character character, World world)
+    private static NotablePerson BuildEntry(Character character, World world)
     {
-        var reasons = new List<string>();
-
-        if (character.Age >= OldAgeThreshold)
-        {
-            reasons.Add($"дожил(а) до {character.Age} лет");
-        }
+        var isLongLived = character.Age >= OldAgeThreshold;
 
         var foundedDynasty = world.Dynasties.FirstOrDefault(d => d.Founder == character);
-        if (foundedDynasty != null && foundedDynasty.Members.Count >= FoundedDynastyMinMembers)
-        {
-            // "Представителей", не "потомков" — в Dynasty.Members входят и вошедшие в род браком, не только кровные потомки
-            reasons.Add($"основал(а) {foundedDynasty.Name} ({foundedDynasty.Members.Count} представителей рода)");
-        }
 
-        return reasons;
+        // "Представителей", не "потомков" — в Dynasty.Members входят и вошедшие в род браком, не только кровные потомки
+        var significant = foundedDynasty != null && foundedDynasty.Members.Count >= FoundedDynastyMinMembers
+            ? foundedDynasty
+            : null;
+
+        return new NotablePerson(character, isLongLived, significant);
     }
 }

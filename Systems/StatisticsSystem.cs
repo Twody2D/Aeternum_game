@@ -1,81 +1,54 @@
 using Aeternum.WorldGen.Core;
+using Aeternum.WorldGen.Models;
 
 namespace Aeternum.WorldGen.Systems;
 
 
-// Строит текстовые отчёты по миру. Ничего не печатает сама — только возвращает
-// готовые строки, вывод (консоль/UI) решает вызывающий код
+// Строит итоговые данные по миру — никакого текста, только объекты и числа.
+// Как это показать (консоль, UI), решает вызывающий код
 public static class StatisticsSystem
 {
-    // Список стартовых жителей с возрастом и профессией
-    public static List<string> BuildInitialPopulationReport(World world)
+    // Стартовое население — сами персонажи, никакой обёртки не нужно
+    public static List<Character> BuildInitialPopulationReport(World world)
     {
-        var lines = new List<string>
-        {
-            "",
-            "===== Начальное население ====="
-        };
-
-        foreach (var character in world.Characters)
-        {
-            lines.Add(
-                $"{SurnameSystem.GetDisplayFullName(character)}, {character.Age} лет, " +
-                $"{character.Profession}, {character.Settlement?.Name}");
-        }
-
-        lines.Add("");
-
-        return lines;
+        return world.Characters;
     }
 
     // Итоговая статистика по завершении симуляции: демография и возрастные группы
-    public static List<string> BuildFinalReport(World world)
+    public static WorldStatistics BuildFinalReport(World world)
     {
-        var lines = new List<string>
-        {
-            "",
-            "===== Итоги симуляции =====",
-            $"Возраст мира: {world.CurrentYear} лет",
-            $"Всего жителей создано: {world.Characters.Count}",
-            $"Живых персонажей: {world.Characters.Count(c => c.Alive)}",
-            $"Всего рождений: {world.TotalBirths}",
-            $"Всего смертей: {world.TotalDeaths}",
-            ""
-        };
-
-        lines.Add("Поселения:");
-
-        foreach (var settlement in world.Settlements)
-        {
-            var population = world.Characters.Count(c => c.Alive && c.Settlement == settlement);
-            lines.Add(
-                $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}): " +
-                $"{population} жит., запас еды {settlement.FoodStock:0.#}");
-        }
-
-        lines.Add("");
-        lines.Add("Распределение по возрасту:");
+        var settlements = world.Settlements
+            .Select(s => new SettlementStat(s, world.Characters.Count(c => c.Alive && c.Settlement == s)))
+            .ToList();
 
         var ageGroups = world.Characters
             .Where(c => c.Alive)
-            .GroupBy(c =>
-            {
-                if(c.Age < world.Settings.AdultAge)
-                    return "Дети";
+            .GroupBy(c => GetAgeGroup(c, world.Settings))
+            .Select(g => new AgeGroupCount(g.Key, g.Count()))
+            .ToList();
 
-                if(c.Age < world.Settings.ElderAge)
-                    return "Взрослые";
+        return new WorldStatistics(
+            world.CurrentYear,
+            world.Characters.Count,
+            world.Characters.Count(c => c.Alive),
+            world.TotalBirths,
+            world.TotalDeaths,
+            settlements,
+            ageGroups);
+    }
 
-                return "Пожилые";
-            });
-
-        foreach(var group in ageGroups)
+    private static AgeGroup GetAgeGroup(Character character, WorldSettings settings)
+    {
+        if (character.Age < settings.AdultAge)
         {
-            lines.Add($"{group.Key}: {group.Count()}");
+            return AgeGroup.Child;
         }
 
-        lines.Add("");
+        if (character.Age < settings.ElderAge)
+        {
+            return AgeGroup.Adult;
+        }
 
-        return lines;
+        return AgeGroup.Elder;
     }
 }

@@ -4,61 +4,31 @@ using Aeternum.WorldGen.Models;
 namespace Aeternum.WorldGen.Systems;
 
 // Хроника мира: сжимает весь лог World.Events в сводку по периодам (по
-// умолчанию — десятилетиям), вместо построчного вывода каждого события
+// умолчанию — десятилетиям) — количество событий каждого типа за период,
+// без текста. Русские подписи типов строит вызывающий код
 public static class ChronicleSystem
 {
-    private static readonly (EventType Type, string Label)[] EventLabels =
+    public static List<ChroniclePeriod> BuildChronicle(World world, int periodLength = 10)
     {
-        (EventType.Birth, "рождений"),
-        (EventType.Death, "смертей"),
-        (EventType.Marriage, "свадеб"),
-        (EventType.Divorce, "разводов"),
-        (EventType.Migration, "переездов"),
-        (EventType.CreationOfDynasty, "основано династий"),
-        (EventType.Colonization, "основано поселений"),
-        (EventType.CreationOfKingdom, "образовано государств"),
-        (EventType.Succession, "смен правителя"),
-        (EventType.Disaster, "катастроф"),
-        (EventType.War, "войн"),
-        (EventType.FallOfKingdom, "государств пало")
-    };
-
-    public static List<string> BuildChronicle(World world, int periodLength = 10)
-    {
-        var lines = new List<string>
-        {
-            "",
-            "===== Хроника мира ====="
-        };
-
         var periods = world.Events
             .GroupBy(e => (e.Year - 1) / periodLength)
             .OrderBy(g => g.Key);
+
+        var result = new List<ChroniclePeriod>();
 
         foreach (var period in periods)
         {
             var startYear = period.Key * periodLength + 1;
             var endYear = startYear + periodLength - 1;
 
-            var counts = period
+            var tallies = period
                 .GroupBy(e => e.Type)
-                .ToDictionary(g => g.Key, g => g.Count());
-
-            var parts = EventLabels
-                .Where(el => counts.ContainsKey(el.Type))
-                .Select(el => $"{counts[el.Type]} {el.Label}")
+                .Select(g => new EventTally(g.Key, g.Count()))
                 .ToList();
 
-            if (parts.Count == 0)
-            {
-                continue; // Тихий период — ничего примечательного не случилось
-            }
-
-            lines.Add($"Годы {startYear}-{endYear}: {string.Join(", ", parts)}");
+            result.Add(new ChroniclePeriod(startYear, endYear, tallies));
         }
 
-        lines.Add("");
-
-        return lines;
+        return result;
     }
 }
