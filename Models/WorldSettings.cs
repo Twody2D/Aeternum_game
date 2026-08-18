@@ -98,4 +98,11 @@ public class WorldSettings
 
     // Шанс в год, что переполненное поселение породит новое (см. ColonizationSystem)
     public double ColonizationChance { get; set; } = 0.05;
+
+
+
+    // Заговоры
+
+    // Шанс в год, что правителя с живым взрослым соперником по династии убьют (см. MurderSystem)
+    public double RegicideChance { get; set; } = 0.03;
 }

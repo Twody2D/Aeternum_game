@@ -42,7 +42,10 @@ public static class YearProcessor
         // 10. Войны за спорные поселения между государствами
         WarSystem.Process(world);
 
-        // 11. Рождение детей
+        // 11. Заговоры против правителя
+        MurderSystem.Process(world);
+
+        // 12. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -50,7 +53,7 @@ public static class YearProcessor
             world
         );
 
-        // 12. Добавляем детей
+        // 13. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }

@@ -1,7 +1,6 @@
 namespace Aeternum.WorldGen.Models;
 
-// Причина смерти персонажа. Сейчас DeathSystem выставляет только OldAge —
-// остальные значения зарезервированы под будущие системы (болезни, войны и т.д.)
+// Причина смерти персонажа
 public enum DeathReason
 {
     None,
