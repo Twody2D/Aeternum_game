@@ -126,6 +126,7 @@ public static class SaveSystem
                 DynastyId = k.Dynasty.Id,
                 RulerId = k.Ruler.Id,
                 FoundedYear = k.FoundedYear,
+                FallenYear = k.FallenYear,
                 SettlementIds = k.Settlements.Select(s => s.Id).ToList()
             }).ToList()
         };
@@ -221,6 +222,7 @@ public static class SaveSystem
                 Id = k.Id,
                 Name = k.Name,
                 FoundedYear = k.FoundedYear,
+                FallenYear = k.FallenYear,
                 Dynasty = dynastiesById[k.DynastyId],
                 Ruler = charactersById[k.RulerId],
                 Settlements = k.SettlementIds.Select(id => settlementsById[id]).ToList()

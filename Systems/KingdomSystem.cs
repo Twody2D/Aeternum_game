@@ -35,7 +35,19 @@ public static class KingdomSystem
 
             if (aliveMembers.Count == 0)
             {
-                continue; // Династия угасла — трон пуст, но королевство остаётся исторической записью
+                if (kingdom.FallenYear == null)
+                {
+                    kingdom.FallenYear = world.CurrentYear;
+
+                    world.Events.Add(new WorldEvent
+                    {
+                        Year = world.CurrentYear,
+                        Type = EventType.FallOfKingdom,
+                        Description = $"{kingdom.Name} пало: династия {kingdom.Dynasty.Name} угасла, наследников не осталось"
+                    });
+                }
+
+                continue; // Государство остаётся исторической записью, но больше не действует
             }
 
             var newRuler = GetSenior(aliveMembers);
@@ -108,8 +120,11 @@ public static class KingdomSystem
 
     private static List<Settlement> GetControlledSettlements(Dynasty dynasty, World world)
     {
+        // Dynasty.Members — источник истины о принадлежности (включает вошедших в дом
+        // браком), а не Character.Dynasty: это поле у невесты при браке не меняется
+        // и остаётся её родным домом (см. FamilySystem.CreateFamily)
         return world.Settlements
-            .Where(s => s.Members.Count(m => m.Alive && m.Dynasty == dynasty) >= MinResidentsForControl)
+            .Where(s => s.Members.Count(m => m.Alive && dynasty.Members.Contains(m)) >= MinResidentsForControl)
             .ToList();
     }
 

@@ -100,5 +100,6 @@ public class KingdomData
     public int DynastyId { get; set; }
     public int RulerId { get; set; }
     public int FoundedYear { get; set; }
+    public int? FallenYear { get; set; }
     public List<int> SettlementIds { get; set; } = new();
 }

@@ -79,6 +79,15 @@ public static class DynastyEncyclopediaSystem
 
         foreach (var kingdom in world.Kingdoms.OrderByDescending(k => k.Settlements.Count))
         {
+            if (kingdom.FallenYear.HasValue)
+            {
+                lines.Add(
+                    $"{kingdom.Name}: основано в {kingdom.FoundedYear} году, пало в {kingdom.FallenYear} году " +
+                    $"(династия угасла), последний правитель — {SurnameSystem.GetDisplayFullName(kingdom.Ruler)}");
+
+                continue;
+            }
+
             var rulerStatus = kingdom.Ruler.Alive ? "правит" : "правил(а) последним(ей)";
 
             lines.Add(

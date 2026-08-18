@@ -15,5 +15,7 @@ public class Kingdom
 
     public int FoundedYear { get; set; }
 
+    public int? FallenYear { get; set; } // Год, когда правящая династия полностью угасла; null — государство существует
+
     public List<Settlement> Settlements { get; set; } = new(); // Контролируемые поселения на текущий год
 }
