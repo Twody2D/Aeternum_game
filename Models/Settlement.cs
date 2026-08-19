@@ -35,4 +35,6 @@ public class Settlement
     public Culture? Culture { get; set; } // Культура поселения — влияет на распределение профессий жителей
 
     public Religion? Religion { get; set; } // Религия поселения — влияет на шанс межпоселенческого брака
+
+    public int LegendCount { get; set; } // Число легендарных долгожителей, доживших здесь свой век — см. DeathSystem, MigrationSystem
 }

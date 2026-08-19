@@ -94,6 +94,7 @@ public class SettlementData
     public List<int> MemberIds { get; set; } = new();
     public int? CultureId { get; set; }
     public int? ReligionId { get; set; }
+    public int LegendCount { get; set; }
 }
 
 public class CultureData

@@ -101,9 +101,18 @@ public static class DeathSystem
 
         // Дожил до преклонных лет независимо от причины смерти в итоге —
         // несчастный случай в 85 всё равно означает долгую жизнь
-        if (character.Age >= NotablePeopleSystem.OldAgeThreshold && character.Dynasty != null)
+        if (character.Age >= NotablePeopleSystem.OldAgeThreshold)
         {
-            character.Dynasty.Reputation += ReputationPerLegend;
+            if (character.Dynasty != null)
+            {
+                character.Dynasty.Reputation += ReputationPerLegend;
+            }
+
+            // Легенда остаётся в месте, где сложилась, даже если умерший не входил ни в один дом
+            if (character.Settlement != null)
+            {
+                character.Settlement.LegendCount++;
+            }
         }
 
         var spouse = GetSpouse(character);

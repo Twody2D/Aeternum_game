@@ -17,6 +17,7 @@ public static class MigrationSystem
 
     private const double DistancePenalty = 0.5; // Штраф к привлекательности поселения за единицу расстояния
     private const double EnemyPresentMultiplier = 2.0; // Сосед-враг в своём поселении — повод уехать не хуже голода
+    private const double LegendBonusPerLegend = 3.0; // Слава легендарного места способна перевесить средний урожай по соседству
 
     public static void Process(World world)
     {
@@ -64,7 +65,7 @@ public static class MigrationSystem
 
             var destination = world.Settlements
                 .Where(s => s != origin && !s.Members.Any(m => m.Alive && character.Enemies.Contains(m)))
-                .OrderByDescending(s => s.FoodStock - DistancePenalty * Distance(origin, s))
+                .OrderByDescending(s => Attractiveness(origin, s))
                 .FirstOrDefault();
 
             if (destination == null)
@@ -72,13 +73,23 @@ public static class MigrationSystem
                 continue; // Некуда бежать — везде враги
             }
 
-            if (!fleeingEnemy && destination.FoodStock <= origin.FoodStock)
+            // Слава легендарного места (см. Settlement.LegendCount) способна перетянуть
+            // даже при не лучшем урожае — сравниваем не сырой запас еды, а всю
+            // привлекательность целиком (расстояние до себя самого равно нулю)
+            if (!fleeingEnemy && Attractiveness(origin, destination) <= Attractiveness(origin, origin))
             {
                 continue; // Нигде не лучше и враг не гонит — остаёмся
             }
 
             Relocate(character, origin, destination, world);
         }
+    }
+
+    // Привлекательность поселения-цели: запас еды за вычетом расстояния и с добавкой
+    // за легендарную славу (см. Settlement.LegendCount)
+    private static double Attractiveness(Settlement origin, Settlement destination)
+    {
+        return destination.FoodStock - DistancePenalty * Distance(origin, destination) + LegendBonusPerLegend * destination.LegendCount;
     }
 
     private static double Distance(Settlement a, Settlement b)
