@@ -86,6 +86,8 @@ public static class DeathSystem
         return chance;
     }
 
+    private const double ReputationPerLegend = 1.0; // Сколько репутации приносит династии один долгожитель
+
     // Помечает персонажа мёртвым, логирует событие смерти и освобождает овдовевшего супруга для нового брака.
     // Публичный, т.к. переиспользуется EconomySystem при смерти от голода
     public static void Kill(Character character, World world, DeathReason reason)
@@ -96,6 +98,13 @@ public static class DeathSystem
 
         world.TotalDeaths++;
         world.AliveCount--;
+
+        // Дожил до преклонных лет независимо от причины смерти в итоге —
+        // несчастный случай в 85 всё равно означает долгую жизнь
+        if (character.Age >= NotablePeopleSystem.OldAgeThreshold && character.Dynasty != null)
+        {
+            character.Dynasty.Reputation += ReputationPerLegend;
+        }
 
         var spouse = GetSpouse(character);
         if (spouse is { Alive: true })

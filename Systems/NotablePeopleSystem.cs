@@ -7,7 +7,9 @@ namespace Aeternum.WorldGen.Systems;
 // решает", кто заметен, но решает явными сравнениями с порогом, а не чёрным ящиком
 public static class NotablePeopleSystem
 {
-    private const int OldAgeThreshold = 80; // Возраст, начиная с которого считаем персонажа долгожителем
+    // Возраст, начиная с которого считаем персонажа долгожителем — public,
+    // т.к. используется и DeathSystem для начисления репутации династии
+    public const int OldAgeThreshold = 80;
     private const int FoundedDynastyMinMembers = 15; // Сколько представителей нужно династии, чтобы считаться значимой
 
     public static List<NotablePerson> BuildReport(World world)

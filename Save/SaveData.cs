@@ -71,6 +71,7 @@ public class DynastyData
     public List<int> FamilyIds { get; set; } = new();
     public int FounderId { get; set; }
     public int FoundedYear { get; set; }
+    public double Reputation { get; set; }
 }
 
 public class SettlementData

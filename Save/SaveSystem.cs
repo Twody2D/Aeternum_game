@@ -95,7 +95,8 @@ public static class SaveSystem
                 MemberIds = d.Members.Select(c => c.Id).ToList(),
                 FamilyIds = d.Families.Select(f => f.Id).ToList(),
                 FounderId = d.Founder.Id,
-                FoundedYear = d.FoundedYear
+                FoundedYear = d.FoundedYear,
+                Reputation = d.Reputation
             }).ToList(),
 
             Settlements = world.Settlements.Select(s => new SettlementData
@@ -154,7 +155,7 @@ public static class SaveSystem
         // между собой — иначе персонаж может ссылаться на семью, ещё не созданную
         var dynastiesById = data.Dynasties.ToDictionary(
             d => d.Id,
-            d => new Dynasty { Id = d.Id, Name = d.Name, FoundedYear = d.FoundedYear });
+            d => new Dynasty { Id = d.Id, Name = d.Name, FoundedYear = d.FoundedYear, Reputation = d.Reputation });
 
         var culturesById = data.Cultures.ToDictionary(
             c => c.Id,

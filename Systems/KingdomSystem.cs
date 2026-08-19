@@ -16,6 +16,8 @@ public static class KingdomSystem
     private const int MinDynastyMembersToFormKingdom = 20;
     private const int MinControlledSettlements = 2;
 
+    private const double ReputationWeight = 0.2; // Вес репутации династии (см. Dynasty.Reputation) в стабильности казны
+
     public static void Process(World world)
     {
         UpdateExistingKingdoms(world);
@@ -81,8 +83,10 @@ public static class KingdomSystem
     private static void TryTriggerSuccessionCrisis(Kingdom kingdom, Character newRuler, List<Character> aliveMembers, World world)
     {
         // Богатая казна (см. TributeSystem) даёт правителю чем откупиться от
-        // претендентов — снижает шанс, но никогда не убирает риск полностью
-        var stability = (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor;
+        // претендентов — снижает шанс, но никогда не убирает риск полностью.
+        // Легендарная история рода (см. DeathSystem) добавляет легитимности сверху
+        var stability = (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor
+                         + kingdom.Dynasty.Reputation * ReputationWeight;
         var effectiveChance = world.Settings.SuccessionCrisisChance / (1 + stability);
 
         if (_random.NextDouble() >= effectiveChance)

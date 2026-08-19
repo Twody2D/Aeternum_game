@@ -15,4 +15,6 @@ public class Dynasty
     public Character Founder { get; set; } = null!; // Кто основал династию
 
     public int FoundedYear { get; set; } // Год основания
+
+    public double Reputation { get; set; } // Накапливается с каждым долгожителем рода, никогда не убывает, см. DeathSystem/NotablePeopleSystem
 }
