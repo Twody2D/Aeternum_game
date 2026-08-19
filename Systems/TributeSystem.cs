@@ -22,6 +22,11 @@ public static class TributeSystem
 
             foreach (var settlement in kingdom.Settlements)
             {
+                if (RebellionSystem.IsRebelling(settlement, world))
+                {
+                    continue; // Восставшие короне не платят
+                }
+
                 if (settlement.FoodStock > 0)
                 {
                     var foodTribute = settlement.FoodStock * world.Settings.TributeRate;

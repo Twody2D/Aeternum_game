@@ -193,9 +193,12 @@ public static class KingdomSystem
     {
         // Dynasty.Members — источник истины о принадлежности (включает вошедших в дом
         // браком), а не Character.Dynasty: это поле у невесты при браке не меняется
-        // и остаётся её родным домом (см. FamilySystem.CreateFamily)
+        // и остаётся её родным домом (см. FamilySystem.CreateFamily).
+        // Восставшее поселение присутствие родни короне не возвращает — пока длится
+        // неповиновение, оно не считается подконтрольным (см. RebellionSystem)
         return world.Settlements
-            .Where(s => s.Members.Count(m => m.Alive && dynasty.Members.Contains(m)) >= MinResidentsForControl)
+            .Where(s => !RebellionSystem.IsRebelling(s, world) &&
+                        s.Members.Count(m => m.Alive && dynasty.Members.Contains(m)) >= MinResidentsForControl)
             .ToList();
     }
 

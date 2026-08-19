@@ -72,10 +72,13 @@ public static class YearProcessor
         // 20. Войны за спорные поселения между государствами
         WarSystem.Process(world);
 
-        // 21. Заговоры против правителя
+        // 21. Восстания: поселения отказывают короне в повиновении
+        RebellionSystem.Process(world);
+
+        // 22. Заговоры против правителя
         MurderSystem.Process(world);
 
-        // 22. Рождение детей
+        // 23. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -83,7 +86,7 @@ public static class YearProcessor
             world
         );
 
-        // 23. Добавляем детей
+        // 24. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }
