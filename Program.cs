@@ -12,6 +12,11 @@ Console.WriteLine("=================================");
 Console.WriteLine("      Aeternum WorldGen");
 Console.WriteLine("=================================");
 
+if (!ProjectSettings.Apply(args, Console.Out))
+{
+    return; // Запрошена справка либо аргументы неверны — мир не создаём
+}
+
 // Зерно задаётся до первого обращения к случайности — иначе часть мира успела бы
 // родиться на старом генераторе (см. Rng)
 Rng.Initialize(ProjectSettings.Seed);
@@ -109,6 +114,11 @@ var engine = new SimulationEngine();
 // логика, само ядро (World/YearProcessor) о консоли ничего не знает
 engine.Run(world, ProjectSettings.SimulationYears, w =>
 {
+    if (ProjectSettings.Quiet)
+    {
+        return; // Длинный прогон смотрим по итогам, а не по каждому году
+    }
+
     Console.WriteLine($"===== Год {w.CurrentYear} =====");
 
     foreach (var yearEvent in EventSystem.GetYearEvents(w))
