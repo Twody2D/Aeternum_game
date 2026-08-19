@@ -73,11 +73,16 @@ public static class ProfessionSystem
     // Шанс, что профессия будет выбрана из предпочитаемой культурой категории, а не из всего списка
     private const double CulturePreferenceChance = 0.5;
 
+    // Шанс, что персонаж унаследует профессию родителя своего пола вместо случайного выбора —
+    // семейное ремесло/дело передаётся из поколения в поколение, но не всегда (см. LifeSystem)
+    private const double InheritanceChance = 0.4;
+
     // Случайная профессия. Если задано поселение и в нём не хватает одной из
     // обязательных профессий (см. EssentialProfessions) — гарантированно выбирает
-    // именно её. Иначе, если задана культура — с повышенным шансом выбирает
+    // именно её. Иначе, если задана профессия родителя — с некоторым шансом
+    // наследует её. Иначе, если задана культура — с повышенным шансом выбирает
     // профессию из её предпочитаемой категории (см. Culture.PreferredCategory)
-    public static string GetRandom(Culture? culture = null, Settlement? settlement = null)
+    public static string GetRandom(Culture? culture = null, Settlement? settlement = null, string? inheritedProfession = null)
     {
         if (settlement != null)
         {
@@ -87,6 +92,13 @@ public static class ProfessionSystem
             {
                 return missing[Random.Next(missing.Count)];
             }
+        }
+
+        if (inheritedProfession != null &&
+            Categories.ContainsKey(inheritedProfession) &&
+            Random.NextDouble() < InheritanceChance)
+        {
+            return inheritedProfession;
         }
 
         if (culture != null &&

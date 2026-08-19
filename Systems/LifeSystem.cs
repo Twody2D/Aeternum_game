@@ -37,9 +37,15 @@ public static class LifeSystem
         }
         else if (character.Age == 16 && character.Profession == ProfessionSystem.school)
         {
-            // Культура поселения смещает выбор в сторону её предпочитаемой категории;
-            // недостающая обязательная профессия в поселении имеет приоритет над этим
-            character.Profession = ProfessionSystem.GetRandom(character.Settlement?.Culture, character.Settlement);
+            // Семейное дело чаще передаётся по родителю того же пола (сын перенимает
+            // ремесло отца, дочь — матери), при отсутствии — от другого родителя
+            var sameSexParent = character.Gender == Gender.Male ? character.Father : character.Mother;
+            var otherParent = character.Gender == Gender.Male ? character.Mother : character.Father;
+            var inheritedProfession = sameSexParent?.Profession ?? otherParent?.Profession;
+
+            // Недостающая обязательная профессия в поселении важнее наследования,
+            // а культура поселения смещает выбор, когда ни то ни другое не сработало
+            character.Profession = ProfessionSystem.GetRandom(character.Settlement?.Culture, character.Settlement, inheritedProfession);
         }
     }
 }
