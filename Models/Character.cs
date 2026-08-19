@@ -19,6 +19,7 @@ public class Character
     public Dynasty? Dynasty { get; set; } //Ссылка на династию персонажа
     public Character? Mother { get; set; } //Ссылка на мать персонажа
     public Character? Father { get; set; } //Ссылка на отца персонажа
+    public Character? Guardian { get; set; } // Опекун — назначается, если оба родителя мертвы (см. OrphanSystem)
     public Settlement? Settlement { get; set; } //Поселение, где живёт персонаж (дети наследуют от родителей)
 
     public bool Alive { get; set; } = true; //Жив ли

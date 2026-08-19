@@ -44,6 +44,7 @@ public class CharacterData
 
     public int? MotherId { get; set; }
     public int? FatherId { get; set; }
+    public int? GuardianId { get; set; }
     public int? BirthFamilyId { get; set; }
     public int? CurrentFamilyId { get; set; }
     public int? DynastyId { get; set; }

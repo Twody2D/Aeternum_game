@@ -9,6 +9,7 @@ public enum DeathReason
     Accident, //Несчастный случай
     War, //Война
     Starvation, //Голод
-    Murder //Убийство
+    Murder, //Убийство
+    Neglect //Безнадзорность (сирота без опекуна)
 
 }

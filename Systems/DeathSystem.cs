@@ -137,6 +137,7 @@ public static class DeathSystem
             DeathReason.Starvation => "голод",
             DeathReason.War => "война",
             DeathReason.Murder => "убийство",
+            DeathReason.Neglect => "безнадзорность",
             _ => "неизвестная причина"
         };
     }

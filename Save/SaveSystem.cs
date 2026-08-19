@@ -70,6 +70,7 @@ public static class SaveSystem
                 DeathYear = c.DeathYear,
                 MotherId = c.Mother?.Id,
                 FatherId = c.Father?.Id,
+                GuardianId = c.Guardian?.Id,
                 BirthFamilyId = c.BirthFamily?.Id,
                 CurrentFamilyId = c.CurrentFamily?.Id,
                 DynastyId = c.Dynasty?.Id,
@@ -185,6 +186,7 @@ public static class SaveSystem
 
             character.Mother = c.MotherId.HasValue ? charactersById[c.MotherId.Value] : null;
             character.Father = c.FatherId.HasValue ? charactersById[c.FatherId.Value] : null;
+            character.Guardian = c.GuardianId.HasValue ? charactersById[c.GuardianId.Value] : null;
             character.BirthFamily = c.BirthFamilyId.HasValue ? familiesById[c.BirthFamilyId.Value] : null;
             character.CurrentFamily = c.CurrentFamilyId.HasValue ? familiesById[c.CurrentFamilyId.Value] : null;
             character.Dynasty = c.DynastyId.HasValue ? dynastiesById[c.DynastyId.Value] : null;
