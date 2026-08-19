@@ -22,6 +22,9 @@ public static class WarSystem
     private const double DefenseBonusPerDefender = 0.05; // Гарнизон (профессии Military) снижает потери
     private const double MaxDefenseBonus = 0.3;
 
+    private const double HolyWarChanceMultiplier = 1.5; // Спор на почве веры легче перерастает в открытую войну
+    private const double HolyWarCasualtyMultiplier = 1.3; // ...и идёт кровопролитнее
+
     public static void Process(World world)
     {
         foreach (var settlement in world.Settlements)
@@ -36,18 +39,32 @@ public static class WarSystem
                 continue;
             }
 
+            var isHolyWar = IsReligiousDispute(claimants);
+            var effectiveWarChance = isHolyWar ? world.Settings.WarChance * HolyWarChanceMultiplier : world.Settings.WarChance;
+
             // Осада ещё не началась — как и раньше, решает WarChance. Уже идущая
             // осада не бросает эту монету заново — раз начавшись, не может
             // случайно "передумать" и продолжается, пока не разрешится исходом
-            if (settlement.SiegeYears == 0 && _random.NextDouble() >= world.Settings.WarChance)
+            if (settlement.SiegeYears == 0 && _random.NextDouble() >= effectiveWarChance)
             {
                 continue;
             }
 
             settlement.SiegeYears++;
 
-            DeclareWar(settlement, claimants, world);
+            DeclareWar(settlement, claimants, world, isHolyWar);
         }
+    }
+
+    // Спор религиозный, если у претендентов есть хотя бы два разных вероисповедания
+    // правящего дома — тот же приём, что AllianceSystem использует для союзов
+    private static bool IsReligiousDispute(List<Kingdom> claimants)
+    {
+        return claimants
+            .Select(k => k.Ruler.Settlement?.Religion)
+            .Where(r => r != null)
+            .Distinct()
+            .Count() > 1;
     }
 
     private static bool AreAllAllied(List<Kingdom> claimants)
@@ -66,7 +83,7 @@ public static class WarSystem
         return true;
     }
 
-    private static void DeclareWar(Settlement settlement, List<Kingdom> claimants, World world)
+    private static void DeclareWar(Settlement settlement, List<Kingdom> claimants, World world, bool isHolyWar)
     {
         var residents = settlement.Members.Where(m => m.Alive).ToList();
 
@@ -76,6 +93,12 @@ public static class WarSystem
         var defenseFactor = 1 - Math.Min(MaxDefenseBonus, defenders * DefenseBonusPerDefender);
 
         var effectiveCasualtyRate = world.Settings.WarCasualtyRate * escalation * defenseFactor * WallSystem.GetWallFactor(settlement);
+
+        if (isHolyWar)
+        {
+            effectiveCasualtyRate *= HolyWarCasualtyMultiplier;
+        }
+
         var casualtyCount = (int)(residents.Count * effectiveCasualtyRate);
 
         var casualties = residents
@@ -91,12 +114,13 @@ public static class WarSystem
         // Именительный падеж безопасен для любого числа претендентов —
         // "между X и Y" потребовало бы творительного, которого мы не умеем
         var claimantNames = string.Join(", ", claimants.Select(k => k.Name));
+        var holyWarNote = isHolyWar ? " Война на почве веры." : "";
 
         world.Events.Add(new WorldEvent
         {
             Year = world.CurrentYear,
             Type = EventType.War,
-            Description = $"{settlement.Name}: {settlement.SiegeYears}-й год осады. Претенденты: {claimantNames}. Погибших: {casualties.Count}"
+            Description = $"{settlement.Name}: {settlement.SiegeYears}-й год осады. Претенденты: {claimantNames}. Погибших: {casualties.Count}.{holyWarNote}"
         });
     }
 }

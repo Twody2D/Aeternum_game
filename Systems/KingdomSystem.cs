@@ -17,6 +17,7 @@ public static class KingdomSystem
     private const int MinControlledSettlements = 2;
 
     private const double ReputationWeight = 0.2; // Вес репутации династии (см. Dynasty.Reputation) в стабильности казны
+    private const double ReligiousDiversityPenalty = 0.15; // Штраф к стабильности за каждое инаковерующее поселение в составе государства
 
     public static void Process(World world)
     {
@@ -84,9 +85,12 @@ public static class KingdomSystem
     {
         // Богатая казна (см. TributeSystem) даёт правителю чем откупиться от
         // претендентов — снижает шанс, но никогда не убирает риск полностью.
-        // Легендарная история рода (см. DeathSystem) добавляет легитимности сверху
-        var stability = (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor
-                         + kingdom.Dynasty.Reputation * ReputationWeight;
+        // Легендарная история рода (см. DeathSystem) добавляет легитимности сверху,
+        // а инаковерующие поселения в составе государства (см. Settlement.Religion) её подрывают
+        var dissentingSettlements = kingdom.Settlements.Count(s => s.Religion != null && s.Religion != kingdom.Ruler.Settlement?.Religion);
+        var stability = Math.Max(0, (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor
+                                     + kingdom.Dynasty.Reputation * ReputationWeight
+                                     - dissentingSettlements * ReligiousDiversityPenalty);
         var effectiveChance = world.Settings.SuccessionCrisisChance / (1 + stability);
 
         if (_random.NextDouble() >= effectiveChance)
