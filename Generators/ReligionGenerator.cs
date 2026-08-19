@@ -27,6 +27,29 @@ public static class ReligionGenerator
         return religions;
     }
 
+    private const string SchismMarker = " (толк:";
+
+    // Новая вера, отколовшаяся от материнской в конкретном поселении (см. SchismSystem).
+    // Имя показывает происхождение, а не заменяет его: раскол — это ветвь, а не
+    // чужая вера с нуля. Название поселения не склоняем — та же договорённость,
+    // что и у остальных имён собственных в мире.
+    //
+    // Считаем от корня, а не от прямого родителя: толк тоже может расколоться, и
+    // приписывание нового суффикса к прежнему давало бы "Культ огня (толк: X)
+    // (толк: X)". Год отделяет повторные расколы одного и того же поселения друг
+    // от друга — иначе они получили бы совпадающие имена
+    public static Religion CreateSchism(Religion parent, Settlement birthplace, int year)
+    {
+        var markerIndex = parent.Name.IndexOf(SchismMarker, StringComparison.Ordinal);
+        var rootName = markerIndex < 0 ? parent.Name : parent.Name[..markerIndex];
+
+        return new Religion
+        {
+            Id = _nextId++,
+            Name = $"{rootName} (толк: {birthplace.Name}, {year})"
+        };
+    }
+
     // Восстанавливает счётчик Id после загрузки сохранения
     public static void SetNextId(int value)
     {
