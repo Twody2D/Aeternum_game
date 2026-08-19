@@ -15,6 +15,8 @@ public class Settlement
 
     public int Houses { get; set; } // Число домов — растут вместе с населением, см. HousingSystem
 
+    public int Hospitals { get; set; } // Число больниц — снижают детскую смертность и тяжесть эпидемий, см. HospitalSystem
+
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 
     public Culture? Culture { get; set; } // Культура поселения — влияет на распределение профессий жителей

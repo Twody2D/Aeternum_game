@@ -41,7 +41,8 @@ public static class DisasterSystem
 
     private static void TriggerEpidemic(Settlement settlement, List<Character> residents, World world)
     {
-        var casualtyCount = (int)(residents.Count * world.Settings.EpidemicMortalityRate);
+        var effectiveMortalityRate = world.Settings.EpidemicMortalityRate * HospitalSystem.GetHospitalFactor(settlement);
+        var casualtyCount = (int)(residents.Count * effectiveMortalityRate);
 
         var casualties = residents
             .OrderBy(_ => _random.Next())

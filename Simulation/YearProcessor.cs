@@ -42,25 +42,28 @@ public static class YearProcessor
         // 10. Строительство домов из накопленных материалов
         HousingSystem.Process(world);
 
-        // 11. Миграция из голодающих поселений
+        // 11. Строительство больниц из накопленных материалов
+        HospitalSystem.Process(world);
+
+        // 12. Миграция из голодающих поселений
         MigrationSystem.Process(world);
 
-        // 12. Колонизация: переполненные поселения основывают новые
+        // 13. Колонизация: переполненные поселения основывают новые
         ColonizationSystem.Process(world);
 
-        // 13. Государства: обновление контроля территорий, престолонаследие, новые королевства
+        // 14. Государства: обновление контроля территорий, престолонаследие, новые королевства
         KingdomSystem.Process(world);
 
-        // 14. Союзы между государствами
+        // 15. Союзы между государствами
         AllianceSystem.Process(world);
 
-        // 15. Войны за спорные поселения между государствами
+        // 16. Войны за спорные поселения между государствами
         WarSystem.Process(world);
 
-        // 16. Заговоры против правителя
+        // 17. Заговоры против правителя
         MurderSystem.Process(world);
 
-        // 17. Рождение детей
+        // 18. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -68,7 +71,7 @@ public static class YearProcessor
             world
         );
 
-        // 18. Добавляем детей
+        // 19. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }

@@ -80,6 +80,7 @@ public class SettlementData
     public double FoodStock { get; set; }
     public Dictionary<MaterialType, double> MaterialStocks { get; set; } = new();
     public int Houses { get; set; }
+    public int Hospitals { get; set; }
     public List<int> MemberIds { get; set; } = new();
     public int? CultureId { get; set; }
     public int? ReligionId { get; set; }
