@@ -8,6 +8,7 @@
 
 # Сохранения симуляции
 world_save.json
+world_snapshot.json
 *.save.json
 
 # User-specific files

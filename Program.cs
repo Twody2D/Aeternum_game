@@ -1,4 +1,5 @@
 using Aeternum.WorldGen.Core;
+using Aeternum.WorldGen.Export;
 using Aeternum.WorldGen.Generators;
 using Aeternum.WorldGen.Models;
 using Aeternum.WorldGen.Save;
@@ -123,6 +124,12 @@ var loadedWorld = SaveSystem.Load(savePath);
 Console.WriteLine(
     $"Проверка загрузки: год {loadedWorld.CurrentYear}, живых {loadedWorld.Characters.Count(c => c.Alive)}, " +
     $"династий {loadedWorld.Dynasties.Count}, семей {loadedWorld.Families.Count}, королевств {loadedWorld.Kingdoms.Count}");
+
+// Снимок для клиента-отрисовщика — отдельно от сохранения, см. WorldSnapshot
+const string snapshotPath = "world_snapshot.json";
+
+SnapshotExporter.Export(world, snapshotPath);
+Console.WriteLine($"Снимок для отрисовки: {snapshotPath}");
 
 // Список стартовых жителей с возрастом и профессией
 void PrintInitialPopulation(List<Character> characters)
