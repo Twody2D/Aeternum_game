@@ -1,0 +1,82 @@
+using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Core;
+using Aeternum.WorldGen.Events;
+
+namespace Aeternum.WorldGen.Systems;
+
+// Развитие знаний. Учёные, лекари и книжники (ProfessionCategory.Knowledge) до
+// сих пор были профессиями почти без последствий: школы повышали шанс их
+// появления, но само их присутствие ничего в мире не меняло. Здесь их труд
+// наконец накапливается — не в отдельном "древе технологий", а одним числом
+// (World.Knowledge), которое растёт, пока в мире есть кому думать.
+//
+// Знание общее на весь мир, а не на поселение: книга, ремесленный приём или
+// способ лечения расходятся с людьми и товаром, и держать их запертыми в
+// границах одной деревни было бы страннее, чем считать общим достоянием.
+//
+// Накопленное знание переходит в эпохи — именованные пороги, каждый со своим
+// множителем к производству и медицине. Знание не убывает: даже если мыслящих
+// не осталось, добытое прежде не забывается
+public static class TechnologySystem
+{
+    private const double KnowledgePerScholar = 1.0; // Вклад одного живого носителя знания за год
+    private const double SchoolContribution = 0.5; // Школа помогает копить знание и сама по себе
+
+    // Пороги эпох и их отдача. Первая — то состояние, в котором мир жил до сих пор,
+    // поэтому её множитель равен единице: без неё прежний баланс сместился бы на ровном месте.
+    //
+    // Пороги подобраны по замерам, а не назначены на глаз: за век мир накапливает
+    // от ~220 до ~800 знания в зависимости от того, как сложилась его история.
+    // Поэтому век ремёсел берут почти все, век наук — только преуспевшие, а век
+    // просвещения остаётся тем, до чего надо ещё дожить
+    private static readonly (double Threshold, string Name, double Bonus)[] Eras =
+    {
+        (0, "Тёмные века", 1.0),
+        (250, "Век ремёсел", 1.1),
+        (600, "Век наук", 1.2),
+        (1200, "Век просвещения", 1.35)
+    };
+
+    public static void Process(World world)
+    {
+        var scholars = world.Characters.Count(c =>
+            c.Alive &&
+            c.LifeStage is LifeStage.Adult or LifeStage.Elder &&
+            ProfessionSystem.GetCategory(c.Profession) == ProfessionCategory.Knowledge);
+
+        var schools = world.Settlements.Sum(s => s.Schools);
+
+        var previousEra = GetEraName(world.Knowledge);
+
+        world.Knowledge += scholars * KnowledgePerScholar + schools * SchoolContribution;
+
+        var currentEra = GetEraName(world.Knowledge);
+
+        if (currentEra != previousEra)
+        {
+            world.Events.Add(new WorldEvent
+            {
+                Year = world.CurrentYear,
+                Type = EventType.Era,
+                Description = $"Мир вступил в новую эпоху: {currentEra}"
+            });
+        }
+    }
+
+    public static string GetEraName(double knowledge)
+    {
+        return GetEra(knowledge).Name;
+    }
+
+    // Множитель к производству и лечению, добытый накопленным знанием
+    // (см. EconomySystem, HospitalSystem)
+    public static double GetProductionMultiplier(World world)
+    {
+        return GetEra(world.Knowledge).Bonus;
+    }
+
+    private static (double Threshold, string Name, double Bonus) GetEra(double knowledge)
+    {
+        return Eras.Last(e => knowledge >= e.Threshold);
+    }
+}

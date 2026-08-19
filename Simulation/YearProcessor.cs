@@ -78,10 +78,13 @@ public static class YearProcessor
         // 22. Расколы веры в общинах, отрезанных от единоверцев
         SchismSystem.Process(world);
 
-        // 23. Заговоры против правителя
+        // 23. Накопление знаний и смена эпох
+        TechnologySystem.Process(world);
+
+        // 24. Заговоры против правителя
         MurderSystem.Process(world);
 
-        // 24. Рождение детей
+        // 25. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -89,7 +92,7 @@ public static class YearProcessor
             world
         );
 
-        // 25. Добавляем детей
+        // 26. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }

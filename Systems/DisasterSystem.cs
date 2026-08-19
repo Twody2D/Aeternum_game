@@ -93,7 +93,7 @@ public static class DisasterSystem
         double severityFactor = 1.0,
         Settlement? broughtFrom = null)
     {
-        var effectiveMortalityRate = world.Settings.EpidemicMortalityRate * HospitalSystem.GetHospitalFactor(settlement) * severityFactor;
+        var effectiveMortalityRate = world.Settings.EpidemicMortalityRate * HospitalSystem.GetHospitalFactor(settlement, world) * severityFactor;
         var casualtyCount = (int)(residents.Count * effectiveMortalityRate);
 
         var casualties = residents

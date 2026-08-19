@@ -56,9 +56,12 @@ public static class EconomySystem
     private static void ProcessSettlement(Settlement settlement, List<Character> residents, World world)
     {
         // Землю пашут одинаково усердно везде, но родит она по-разному —
-        // плодородие зависит от того, где поселение стоит (см. ClimateSystem)
+        // плодородие зависит от того, где поселение стоит (см. ClimateSystem),
+        // а накопленное миром знание одинаково помогает всем (см. TechnologySystem)
         double production = residents.Sum(c =>
-            ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c)) * ClimateSystem.GetFertility(settlement);
+            ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c))
+            * ClimateSystem.GetFertility(settlement)
+            * TechnologySystem.GetProductionMultiplier(world);
 
         settlement.Gold += residents.Sum(c =>
             ProfessionSystem.GetGoldProduction(c.Profession) * GetProductivity(c));

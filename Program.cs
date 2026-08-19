@@ -62,7 +62,8 @@ var eventLabels = new Dictionary<EventType, string>
     [EventType.Peace] = "перемирий",
     [EventType.Vassalization] = "признаний вассалитета",
     [EventType.Rebellion] = "восстаний",
-    [EventType.Schism] = "расколов веры"
+    [EventType.Schism] = "расколов веры",
+    [EventType.Era] = "смен эпохи"
 };
 
 var ageGroupLabels = new Dictionary<AgeGroup, string>
@@ -107,7 +108,7 @@ engine.Run(world, ProjectSettings.SimulationYears, w =>
     }
 });
 
-PrintFinalReport(StatisticsSystem.BuildFinalReport(world));
+PrintFinalReport(StatisticsSystem.BuildFinalReport(world), world.Knowledge);
 PrintChronicle(ChronicleSystem.BuildChronicle(world));
 PrintNotablePeople(NotablePeopleSystem.BuildReport(world));
 PrintDynasties(DynastyEncyclopediaSystem.BuildReport(world));
@@ -144,11 +145,12 @@ void PrintInitialPopulation(List<Character> characters)
 }
 
 // Итоговая статистика по завершении симуляции: демография и возрастные группы
-void PrintFinalReport(WorldStatistics stats)
+void PrintFinalReport(WorldStatistics stats, double knowledge)
 {
     Console.WriteLine();
     Console.WriteLine("===== Итоги симуляции =====");
     Console.WriteLine($"Возраст мира: {stats.CurrentYear} лет");
+    Console.WriteLine($"Эпоха: {TechnologySystem.GetEraName(knowledge)} (знание {knowledge:0})");
     Console.WriteLine($"Всего жителей создано: {stats.TotalCharactersCreated}");
     Console.WriteLine($"Живых персонажей: {stats.AliveCount}");
     Console.WriteLine($"Всего рождений: {stats.TotalBirths}");

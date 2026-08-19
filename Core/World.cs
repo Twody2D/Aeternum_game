@@ -23,6 +23,8 @@ public class World
 
     public int AliveCount { get; set; } //Количество живых персонажей
 
+    public double Knowledge { get; set; } //Накопленное знание мира — растёт трудом учёных и школ, не убывает, см. TechnologySystem
+
     public List<WorldEvent> Events { get; set; } = new(); //Список событий в мире
 
     public WorldSettings Settings { get; set; } = new(); //Настройки мира

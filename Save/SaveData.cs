@@ -13,6 +13,7 @@ public class SaveData
     public int TotalBirths { get; set; }
     public int TotalDeaths { get; set; }
     public int AliveCount { get; set; }
+    public double Knowledge { get; set; }
 
     public WorldSettings Settings { get; set; } = new();
 

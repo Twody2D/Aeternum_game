@@ -50,15 +50,18 @@ public static class HospitalSystem
         }
     }
 
-    // Понижающий множитель для смертности от болезни/эпидемии (1.0 — больниц нет, ниже — чем больше больниц)
-    public static double GetHospitalFactor(Settlement? settlement)
+    // Понижающий множитель для смертности от болезни/эпидемии (1.0 — больниц нет,
+    // ниже — чем больше больниц). Накопленное миром знание (см. TechnologySystem)
+    // усиливает отдачу тех же стен: лечат не только там, где есть где лечить,
+    // но и тем, что к этому времени научились лечить
+    public static double GetHospitalFactor(Settlement? settlement, World world)
     {
         if (settlement == null)
         {
             return 1.0;
         }
 
-        var bonus = Math.Min(MaxHospitalBonus, settlement.Hospitals * BonusPerHospital);
+        var bonus = Math.Min(MaxHospitalBonus, settlement.Hospitals * BonusPerHospital * TechnologySystem.GetProductionMultiplier(world));
 
         return 1 - bonus;
     }

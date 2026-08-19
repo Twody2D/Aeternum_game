@@ -25,7 +25,7 @@ public static class DeathSystem
             }
 
             if (character.LifeStage == LifeStage.Infant &&
-                _random.NextDouble() < world.Settings.InfantMortalityRate * HospitalSystem.GetHospitalFactor(character.Settlement)) // Детская смертность
+                _random.NextDouble() < world.Settings.InfantMortalityRate * HospitalSystem.GetHospitalFactor(character.Settlement, world)) // Детская смертность
             {
                 Kill(character, world, DeathReason.Disease);
                 continue;
