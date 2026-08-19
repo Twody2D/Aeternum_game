@@ -14,6 +14,9 @@ public static class MurderSystem
 {
     private static readonly Random _random = new();
 
+    private const int BraveWeight = 2; // Смелые соперники вдвое чаще решаются на заговор
+    private const int DefaultWeight = 1;
+
     public static void Process(World world)
     {
         foreach (var kingdom in world.Kingdoms)
@@ -37,7 +40,7 @@ public static class MurderSystem
                 continue;
             }
 
-            var rival = rivals[_random.Next(rivals.Count)];
+            var rival = PickWeightedRival(rivals);
             var ruler = kingdom.Ruler;
 
             DeathSystem.Kill(ruler, world, DeathReason.Murder);
@@ -52,5 +55,15 @@ public static class MurderSystem
                               $"Подозревают {SurnameSystem.GetDisplayFullName(rival)}"
             });
         }
+    }
+
+    // Взвешенный выбор соперника: смелые (см. Trait.Brave) вдвое чаще решаются на заговор
+    private static Character PickWeightedRival(List<Character> rivals)
+    {
+        var expanded = rivals
+            .SelectMany(r => Enumerable.Repeat(r, r.Traits.Contains(Trait.Brave) ? BraveWeight : DefaultWeight))
+            .ToList();
+
+        return expanded[_random.Next(expanded.Count)];
     }
 }

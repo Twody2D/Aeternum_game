@@ -76,6 +76,14 @@ var materialLabels = new Dictionary<MaterialType, string>
     [MaterialType.General] = "разное"
 };
 
+var traitLabels = new Dictionary<Trait, string>
+{
+    [Trait.Hardworking] = "трудолюбивый(ая)",
+    [Trait.Frail] = "слабое здоровье",
+    [Trait.Brave] = "смелый(ая)",
+    [Trait.Prudent] = "осторожный(ая)"
+};
+
 PrintInitialPopulation(StatisticsSystem.BuildInitialPopulationReport(world));
 
 var engine = new SimulationEngine();
@@ -117,9 +125,13 @@ void PrintInitialPopulation(List<Character> characters)
 
     foreach (var character in characters)
     {
+        var traitsText = character.Traits.Count > 0
+            ? $" ({string.Join(", ", character.Traits.Select(t => traitLabels[t]))})"
+            : "";
+
         Console.WriteLine(
             $"{SurnameSystem.GetDisplayFullName(character)}, {character.Age} лет, " +
-            $"{character.Profession}, {character.Settlement?.Name}");
+            $"{character.Profession}, {character.Settlement?.Name}{traitsText}");
     }
 
     Console.WriteLine();

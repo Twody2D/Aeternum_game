@@ -48,6 +48,8 @@ public class CharacterData
     public int? CurrentFamilyId { get; set; }
     public int? DynastyId { get; set; }
     public int? SettlementId { get; set; }
+
+    public List<Trait> Traits { get; set; } = new();
 }
 
 public class FamilyData

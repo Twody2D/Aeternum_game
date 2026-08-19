@@ -12,6 +12,9 @@ public static class MigrationSystem
 {
     private static readonly Random _random = new();
 
+    private const double BraveMigrationMultiplier = 1.5;
+    private const double PrudentMigrationMultiplier = 0.5;
+
     public static void Process(World world)
     {
         if (world.Settlements.Count < 2)
@@ -29,7 +32,19 @@ public static class MigrationSystem
 
         foreach (var character in candidates.ToList())
         {
-            if (_random.NextDouble() >= world.Settings.MigrationChance)
+            var chance = world.Settings.MigrationChance;
+
+            if (character.Traits.Contains(Trait.Brave))
+            {
+                chance *= BraveMigrationMultiplier;
+            }
+
+            if (character.Traits.Contains(Trait.Prudent))
+            {
+                chance *= PrudentMigrationMultiplier;
+            }
+
+            if (_random.NextDouble() >= chance)
             {
                 continue;
             }

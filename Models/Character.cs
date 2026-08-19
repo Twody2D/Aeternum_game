@@ -30,4 +30,6 @@ public class Character
 
     public LifeStage LifeStage { get; set; } //Этап жизни (младенец/ребёнок/ученик/взрослый/старик)
 
+    public HashSet<Trait> Traits { get; set; } = new(); // Черты характера — фиксированы с рождения, см. CharacterGenerator.AssignTraits
+
 }

@@ -41,6 +41,7 @@ public static class CharacterGenerator
 
         character.Age = Random.Next(16, 60);
         character.Profession = ProfessionSystem.GetRandom(culture, settlement);
+        AssignTraits(character);
 
         return character;
 
@@ -53,8 +54,28 @@ public static class CharacterGenerator
 
         character.Age = 0;
         character.LifeStage = LifeStage.Infant;
+        AssignTraits(character);
 
         return character;
+    }
+
+    private const double TraitChance = 0.2; // Независимый шанс на каждую черту при рождении/создании
+
+    // Brave и Prudent — противоположности по риску, не могут достаться одному персонажу разом
+    private static void AssignTraits(Character character)
+    {
+        foreach (var trait in Enum.GetValues<Trait>())
+        {
+            if (Random.NextDouble() < TraitChance)
+            {
+                character.Traits.Add(trait);
+            }
+        }
+
+        if (character.Traits.Contains(Trait.Brave) && character.Traits.Contains(Trait.Prudent))
+        {
+            character.Traits.Remove(Random.Next(2) == 0 ? Trait.Brave : Trait.Prudent);
+        }
     }
     private static Gender GetRandomGender()
     {

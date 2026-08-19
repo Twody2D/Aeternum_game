@@ -73,7 +73,8 @@ public static class SaveSystem
                 BirthFamilyId = c.BirthFamily?.Id,
                 CurrentFamilyId = c.CurrentFamily?.Id,
                 DynastyId = c.Dynasty?.Id,
-                SettlementId = c.Settlement?.Id
+                SettlementId = c.Settlement?.Id,
+                Traits = c.Traits.ToList()
             }).ToList(),
 
             Families = world.Families.Select(f => new FamilyData
@@ -174,7 +175,8 @@ public static class SaveSystem
                 DeathReason = c.DeathReason,
                 LifeStage = c.LifeStage,
                 BirthYear = c.BirthYear,
-                DeathYear = c.DeathYear
+                DeathYear = c.DeathYear,
+                Traits = c.Traits.ToHashSet()
             });
 
         foreach (var c in data.Characters)

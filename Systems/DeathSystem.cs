@@ -51,7 +51,12 @@ public static class DeathSystem
         }
     }
 
+    private const double FrailAccidentMultiplier = 1.5;
+    private const double BraveAccidentMultiplier = 1.3;
+    private const double PrudentAccidentMultiplier = 0.7;
+
     // Базовый риск несчастного случая, умноженный для опасных профессий (воин, охотник, моряк и т.п.)
+    // и для некоторых черт характера (см. Trait)
     private static double GetAccidentChance(Character character, World world)
     {
         double chance = world.Settings.AccidentRate;
@@ -59,6 +64,21 @@ public static class DeathSystem
         if (ProfessionSystem.IsHazardous(character.Profession))
         {
             chance *= world.Settings.HazardousProfessionMultiplier;
+        }
+
+        if (character.Traits.Contains(Trait.Frail))
+        {
+            chance *= FrailAccidentMultiplier;
+        }
+
+        if (character.Traits.Contains(Trait.Brave))
+        {
+            chance *= BraveAccidentMultiplier;
+        }
+
+        if (character.Traits.Contains(Trait.Prudent))
+        {
+            chance *= PrudentAccidentMultiplier;
         }
 
         return chance;

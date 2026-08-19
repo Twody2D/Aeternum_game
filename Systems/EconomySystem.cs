@@ -51,12 +51,12 @@ public static class EconomySystem
     private static void ProcessSettlement(Settlement settlement, List<Character> residents, World world)
     {
         double production = residents.Sum(c =>
-            ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c.LifeStage));
+            ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c));
 
         foreach (var resident in residents)
         {
             var (type, amount) = ProfessionSystem.GetMaterialProduction(resident.Profession);
-            var materialAmount = amount * GetProductivity(resident.LifeStage);
+            var materialAmount = amount * GetProductivity(resident);
 
             if (materialAmount <= 0)
             {
@@ -92,16 +92,21 @@ public static class EconomySystem
         settlement.FoodStock = Math.Max(settlement.FoodStock, -consumption);
     }
 
+    private const double HardworkingMultiplier = 1.25;
+
     // Доля полноценной выработки в зависимости от возраста: работают в основном взрослые,
-    // старики и ученики помогают лишь частично, дети не производят ничего
-    private static double GetProductivity(LifeStage stage)
+    // старики и ученики помогают лишь частично, дети не производят ничего.
+    // Трудолюбивые (см. Trait) дают надбавку сверху
+    private static double GetProductivity(Character character)
     {
-        return stage switch
+        double baseProductivity = character.LifeStage switch
         {
             LifeStage.Adult => 1.0,
             LifeStage.Elder => 0.5,
             LifeStage.Student => 0.3,
             _ => 0.0
         };
+
+        return character.Traits.Contains(Trait.Hardworking) ? baseProductivity * HardworkingMultiplier : baseProductivity;
     }
 }
