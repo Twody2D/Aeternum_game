@@ -145,6 +145,7 @@ public static class SaveSystem
                 FallenYear = k.FallenYear,
                 SettlementIds = k.Settlements.Select(s => s.Id).ToList(),
                 AlliedKingdomIds = k.AlliedKingdoms.Select(ak => ak.Id).ToList(),
+                SuzerainId = k.Suzerain?.Id,
                 FoodTreasury = k.FoodTreasury,
                 MaterialTreasury = k.MaterialTreasury,
                 GoldTreasury = k.GoldTreasury
@@ -265,6 +266,7 @@ public static class SaveSystem
         foreach (var k in data.Kingdoms)
         {
             kingdomsById[k.Id].AlliedKingdoms = k.AlliedKingdomIds.Select(id => kingdomsById[id]).ToList();
+            kingdomsById[k.Id].Suzerain = k.SuzerainId.HasValue ? kingdomsById[k.SuzerainId.Value] : null;
         }
 
         var world = new World

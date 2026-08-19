@@ -45,6 +45,13 @@ public static class KingdomSystem
                 {
                     kingdom.FallenYear = world.CurrentYear;
 
+                    // Не оставляем вассалов привязанными к несуществующему сюзерену —
+                    // тот же принцип, что уже освобождает овдовевшего супруга в DeathSystem.Kill
+                    foreach (var vassal in world.Kingdoms.Where(k => k.Suzerain == kingdom))
+                    {
+                        vassal.Suzerain = null;
+                    }
+
                     world.Events.Add(new WorldEvent
                     {
                         Year = world.CurrentYear,

@@ -9,6 +9,8 @@ namespace Aeternum.WorldGen.Systems;
 // устойчивость самого государства (см. KingdomSystem.TryTriggerSuccessionCrisis)
 public static class TributeSystem
 {
+    private const double VassalTributeRate = 0.2; // Доля уже собранной в этом году казны, которую вассал платит сюзерену сверху обычной дани
+
     public static void Process(World world)
     {
         foreach (var kingdom in world.Kingdoms)
@@ -47,6 +49,40 @@ public static class TributeSystem
                     settlement.MaterialStocks[type] = stock - materialTribute;
                     kingdom.MaterialTreasury[type] = kingdom.MaterialTreasury.GetValueOrDefault(type) + materialTribute;
                 }
+            }
+        }
+
+        // Вассальная дань — поверх обычной, из уже собранной в этом году казны
+        // вассала (казна → казна вместо поселение → казна)
+        foreach (var vassal in world.Kingdoms)
+        {
+            if (vassal.FallenYear != null || vassal.Suzerain == null || vassal.Suzerain.FallenYear != null)
+            {
+                continue;
+            }
+
+            var suzerain = vassal.Suzerain;
+
+            var foodTribute = vassal.FoodTreasury * VassalTributeRate;
+            vassal.FoodTreasury -= foodTribute;
+            suzerain.FoodTreasury += foodTribute;
+
+            var goldTribute = vassal.GoldTreasury * VassalTributeRate;
+            vassal.GoldTreasury -= goldTribute;
+            suzerain.GoldTreasury += goldTribute;
+
+            foreach (var type in Enum.GetValues<MaterialType>())
+            {
+                var stock = vassal.MaterialTreasury.GetValueOrDefault(type);
+
+                if (stock <= 0)
+                {
+                    continue;
+                }
+
+                var materialTribute = stock * VassalTributeRate;
+                vassal.MaterialTreasury[type] = stock - materialTribute;
+                suzerain.MaterialTreasury[type] = suzerain.MaterialTreasury.GetValueOrDefault(type) + materialTribute;
             }
         }
     }

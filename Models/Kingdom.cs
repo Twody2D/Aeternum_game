@@ -21,6 +21,8 @@ public class Kingdom
 
     public List<Kingdom> AlliedKingdoms { get; set; } = new(); // Союзные государства (см. AllianceSystem) — симметрично, есть у обеих сторон
 
+    public Kingdom? Suzerain { get; set; } // Сюзерен — null, если государство независимо, см. WarSystem.DeclareVassalization
+
     public double FoodTreasury { get; set; } // Казна еды — собирается данью с подконтрольных поселений (см. TributeSystem)
 
     public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new(); // Казна материалов по типам — то же для материалов

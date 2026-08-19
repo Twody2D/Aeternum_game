@@ -29,6 +29,10 @@ public static class WarSystem
     private const double TruceChance = 0.2; // Шанс в год, что затянувшаяся осада сменится перемирием
     private const int TruceDuration = 10; // На сколько лет спор замирает, даже если формально не решён
 
+    private const int VassalizationThresholdYears = 3; // Осада, длящаяся столько лет, может закончиться вассалитетом слабой стороны
+    private const double VassalizationPowerRatio = 2.0; // Во сколько раз сильная сторона должна превосходить слабую по населению
+    private const double VassalizationChance = 0.15; // Шанс в год, что явно проигрышная позиция обернётся вассалитетом
+
     public static void Process(World world)
     {
         foreach (var settlement in world.Settlements)
@@ -42,7 +46,7 @@ public static class WarSystem
                 .Where(k => k.Settlements.Contains(settlement))
                 .ToList();
 
-            if (claimants.Count < 2 || AreAllAllied(claimants))
+            if (claimants.Count < 2 || IsPeaceful(claimants))
             {
                 settlement.SiegeYears = 0; // Спор разрешился или снят — осада прекращается
                 continue;
@@ -59,6 +63,14 @@ public static class WarSystem
                 continue;
             }
 
+            if (claimants.Count == 2 && settlement.SiegeYears >= VassalizationThresholdYears &&
+                TryGetLopsidedPair(claimants[0], claimants[1], out var stronger, out var weaker) &&
+                _random.NextDouble() < VassalizationChance)
+            {
+                DeclareVassalization(settlement, weaker, stronger, world);
+                continue;
+            }
+
             if (settlement.SiegeYears >= TruceThresholdYears && _random.NextDouble() < TruceChance)
             {
                 DeclareTruce(settlement, claimants, world);
@@ -69,6 +81,40 @@ public static class WarSystem
 
             DeclareWar(settlement, claimants, world, isHolyWar);
         }
+    }
+
+    // Явный перевес сил — сильная сторона хотя бы втрое многолюднее слабой
+    private static bool TryGetLopsidedPair(Kingdom a, Kingdom b, out Kingdom stronger, out Kingdom weaker)
+    {
+        var powerA = GetPower(a);
+        var powerB = GetPower(b);
+
+        stronger = powerA >= powerB ? a : b;
+        weaker = stronger == a ? b : a;
+
+        return GetPower(stronger) >= GetPower(weaker) * VassalizationPowerRatio;
+    }
+
+    // Сила государства — живое население всех подконтрольных поселений
+    private static int GetPower(Kingdom kingdom)
+    {
+        return kingdom.Settlements.SelectMany(s => s.Members).Count(m => m.Alive);
+    }
+
+    // Явно проигрышная позиция решается политически быстрее, чем истощает
+    // обе стороны поровну (см. DeclareTruce) — слабая сторона признаёт
+    // вассалитет сильной вместо продолжения бессмысленного сопротивления
+    private static void DeclareVassalization(Settlement settlement, Kingdom weaker, Kingdom stronger, World world)
+    {
+        weaker.Suzerain = stronger;
+        settlement.SiegeYears = 0;
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.Vassalization,
+            Description = $"{settlement.Name}: {weaker.Name} признало вассалитет {stronger.Name} вместо продолжения войны"
+        });
     }
 
     // Затянувшаяся осада изматывает обе стороны — перемирие не решает спор, но
@@ -99,13 +145,17 @@ public static class WarSystem
             .Count() > 1;
     }
 
-    private static bool AreAllAllied(List<Kingdom> claimants)
+    // Претенденты не воюют друг с другом, если все пары либо союзны, либо уже
+    // состоят в отношении сюзерен-вассал (см. DeclareVassalization) — второе
+    // заодно исключает зацикливание: раз отношение установлено, вассалитет
+    // для этой пары больше не рассматривается заново
+    private static bool IsPeaceful(List<Kingdom> claimants)
     {
         for (var i = 0; i < claimants.Count; i++)
         {
             for (var j = i + 1; j < claimants.Count; j++)
             {
-                if (!claimants[i].AlliedKingdoms.Contains(claimants[j]))
+                if (!AreAtPeace(claimants[i], claimants[j]))
                 {
                     return false;
                 }
@@ -113,6 +163,11 @@ public static class WarSystem
         }
 
         return true;
+    }
+
+    private static bool AreAtPeace(Kingdom a, Kingdom b)
+    {
+        return a.AlliedKingdoms.Contains(b) || a.Suzerain == b || b.Suzerain == a;
     }
 
     private static void DeclareWar(Settlement settlement, List<Kingdom> claimants, World world, bool isHolyWar)

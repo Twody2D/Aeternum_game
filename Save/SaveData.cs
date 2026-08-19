@@ -121,6 +121,7 @@ public class KingdomData
     public int? FallenYear { get; set; }
     public List<int> SettlementIds { get; set; } = new();
     public List<int> AlliedKingdomIds { get; set; } = new();
+    public int? SuzerainId { get; set; }
     public double FoodTreasury { get; set; }
     public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new();
     public double GoldTreasury { get; set; }
