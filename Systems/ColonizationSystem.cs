@@ -64,7 +64,7 @@ public static class ColonizationSystem
             origin.MaterialStocks[type] *= remainingRatio;
         }
 
-        var newSettlement = SettlementGenerator.Create(1)[0];
+        var newSettlement = SettlementGenerator.Create(1, origin)[0];
 
         newSettlement.Culture = origin.Culture;
         newSettlement.Religion = origin.Religion;

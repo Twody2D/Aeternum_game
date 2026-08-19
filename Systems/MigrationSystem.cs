@@ -15,6 +15,8 @@ public static class MigrationSystem
     private const double BraveMigrationMultiplier = 1.5;
     private const double PrudentMigrationMultiplier = 0.5;
 
+    private const double DistancePenalty = 0.5; // Штраф к привлекательности поселения за единицу расстояния
+
     public static void Process(World world)
     {
         if (world.Settlements.Count < 2)
@@ -55,7 +57,7 @@ public static class MigrationSystem
 
             var destination = world.Settlements
                 .Where(s => s != origin)
-                .OrderByDescending(s => s.FoodStock)
+                .OrderByDescending(s => s.FoodStock - DistancePenalty * Distance(origin, s))
                 .First();
 
             if (destination.FoodStock <= origin.FoodStock)
@@ -65,6 +67,11 @@ public static class MigrationSystem
 
             Relocate(character, origin, destination, world);
         }
+    }
+
+    private static double Distance(Settlement a, Settlement b)
+    {
+        return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
     }
 
     // Не даём одинокому родителю уехать, бросив детей — переезжают только бездетные

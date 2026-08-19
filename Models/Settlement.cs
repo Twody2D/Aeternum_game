@@ -25,6 +25,9 @@ public class Settlement
 
     public double Gold { get; set; } // Золото — производится профессиями категории Trade, см. ProfessionSystem.GetGoldProduction
 
+    public double X { get; set; } // Координаты на условной карте — см. SettlementGenerator
+    public double Y { get; set; }
+
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 
     public Culture? Culture { get; set; } // Культура поселения — влияет на распределение профессий жителей

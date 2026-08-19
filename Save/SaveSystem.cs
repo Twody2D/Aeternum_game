@@ -110,6 +110,8 @@ public static class SaveSystem
                 Schools = s.Schools,
                 Walls = s.Walls,
                 Gold = s.Gold,
+                X = s.X,
+                Y = s.Y,
                 MemberIds = s.Members.Select(c => c.Id).ToList(),
                 CultureId = s.Culture?.Id,
                 ReligionId = s.Religion?.Id
@@ -163,7 +165,7 @@ public static class SaveSystem
 
         var settlementsById = data.Settlements.ToDictionary(
             s => s.Id,
-            s => new Settlement { Id = s.Id, Name = s.Name, FoodStock = s.FoodStock, MaterialStocks = s.MaterialStocks, Houses = s.Houses, Hospitals = s.Hospitals, Workshops = s.Workshops, Schools = s.Schools, Walls = s.Walls, Gold = s.Gold });
+            s => new Settlement { Id = s.Id, Name = s.Name, FoodStock = s.FoodStock, MaterialStocks = s.MaterialStocks, Houses = s.Houses, Hospitals = s.Hospitals, Workshops = s.Workshops, Schools = s.Schools, Walls = s.Walls, Gold = s.Gold, X = s.X, Y = s.Y });
 
         var familiesById = data.Families.ToDictionary(
             f => f.Id,

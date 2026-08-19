@@ -85,6 +85,8 @@ public class SettlementData
     public int Schools { get; set; }
     public int Walls { get; set; }
     public double Gold { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
     public List<int> MemberIds { get; set; } = new();
     public int? CultureId { get; set; }
     public int? ReligionId { get; set; }

@@ -165,7 +165,7 @@ void PrintFinalReport(WorldStatistics stats)
             : "нет";
 
         Console.WriteLine(
-            $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}): " +
+            $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}) [{settlement.X:0}, {settlement.Y:0}]: " +
             $"{settlementStat.Population} жит., домов {settlement.Houses}, больниц {settlement.Hospitals}, " +
             $"школ {settlement.Schools}, укреплений {settlement.Walls}, " +
             $"запас еды {settlement.FoodStock:0.#}, золота {settlement.Gold:0.#}, материалы: {materialsText}, мастерские: {workshopsText}");
