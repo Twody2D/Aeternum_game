@@ -65,7 +65,8 @@ var eventLabels = new Dictionary<EventType, string>
     [EventType.Rebellion] = "восстаний",
     [EventType.Schism] = "расколов веры",
     [EventType.Era] = "смен эпохи",
-    [EventType.Suppression] = "подавленных мятежей"
+    [EventType.Suppression] = "подавленных мятежей",
+    [EventType.Independence] = "обретений независимости"
 };
 
 var ageGroupLabels = new Dictionary<AgeGroup, string>

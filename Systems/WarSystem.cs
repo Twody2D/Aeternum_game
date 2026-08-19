@@ -34,9 +34,12 @@ public static class WarSystem
     private const int VassalizationThresholdYears = 3; // Осада, длящаяся столько лет, может закончиться вассалитетом слабой стороны
     private const double VassalizationPowerRatio = 2.0; // Во сколько раз сильная сторона должна превосходить слабую по населению
     private const double VassalizationChance = 0.15; // Шанс в год, что явно проигрышная позиция обернётся вассалитетом
+    private const double IndependenceChance = 0.25; // Шанс в год, что переросший вассал сбросит зависимость
 
     public static void Process(World world)
     {
+        TryBreakFree(world);
+
         foreach (var settlement in world.Settlements)
         {
             if (world.CurrentYear < settlement.TruceUntilYear)
@@ -82,6 +85,53 @@ public static class WarSystem
             settlement.SiegeYears++;
 
             DeclareWar(settlement, claimants, world, isHolyWar);
+        }
+    }
+
+    // Вассалитет держится ровно на том, чем был куплен, — на перевесе сил.
+    // Раньше связь снималась только с полным угасанием дома сюзерена, и
+    // ослабевший господин держал вассала вечно, даже когда тот его перерос
+    private static void TryBreakFree(World world)
+    {
+        foreach (var vassal in world.Kingdoms)
+        {
+            var suzerain = vassal.Suzerain;
+
+            if (vassal.FallenYear != null || suzerain == null)
+            {
+                continue;
+            }
+
+            // Сюзерен пал — вассалитету не на чем держаться (страховка на случай,
+            // если государство пало не через KingdomSystem, который тоже освобождает вассалов)
+            if (suzerain.FallenYear != null)
+            {
+                vassal.Suzerain = null;
+                continue;
+            }
+
+            // Зависимость держится ровно до тех пор, пока держится перевес, за
+            // который она была куплена. Требовать от вассала обратного перевеса
+            // было бы переворотом вчетверо — недостижимо для того, кто вошёл в
+            // вассалитет именно потому, что был вдвое слабее
+            if (GetPower(suzerain) >= GetPower(vassal) * VassalizationPowerRatio)
+            {
+                continue;
+            }
+
+            if (_random.NextDouble() >= IndependenceChance)
+            {
+                continue;
+            }
+
+            vassal.Suzerain = null;
+
+            world.Events.Add(new WorldEvent
+            {
+                Year = world.CurrentYear,
+                Type = EventType.Independence,
+                Description = $"{vassal.Name} сбросило вассальную зависимость: {suzerain.Name} утратило прежний перевес"
+            });
         }
     }
 
