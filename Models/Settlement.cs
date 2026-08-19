@@ -29,6 +29,7 @@ public class Settlement
     public double Y { get; set; }
 
     public int SiegeYears { get; set; } // Сколько подряд лет поселение находится в осаде, см. WarSystem
+    public int TruceUntilYear { get; set; } // Год, до которого действует перемирие после затянувшейся осады (0 — перемирия нет), см. WarSystem
 
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 

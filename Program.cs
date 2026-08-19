@@ -57,7 +57,9 @@ var eventLabels = new Dictionary<EventType, string>
     [EventType.Murder] = "заговоров против правителя",
     [EventType.Alliance] = "союзов",
     [EventType.CivilWar] = "гражданских войн",
-    [EventType.Guardianship] = "взятий под опеку"
+    [EventType.Guardianship] = "взятий под опеку",
+    [EventType.AllianceBroken] = "разорванных союзов",
+    [EventType.Peace] = "перемирий"
 };
 
 var ageGroupLabels = new Dictionary<AgeGroup, string>

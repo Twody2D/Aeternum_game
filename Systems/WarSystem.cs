@@ -25,10 +25,19 @@ public static class WarSystem
     private const double HolyWarChanceMultiplier = 1.5; // Спор на почве веры легче перерастает в открытую войну
     private const double HolyWarCasualtyMultiplier = 1.3; // ...и идёт кровопролитнее
 
+    private const int TruceThresholdYears = 5; // Осада, длящаяся столько лет, может закончиться перемирием
+    private const double TruceChance = 0.2; // Шанс в год, что затянувшаяся осада сменится перемирием
+    private const int TruceDuration = 10; // На сколько лет спор замирает, даже если формально не решён
+
     public static void Process(World world)
     {
         foreach (var settlement in world.Settlements)
         {
+            if (world.CurrentYear < settlement.TruceUntilYear)
+            {
+                continue; // Стороны устали воевать — спор поставлен на паузу, даже если претензии сохраняются
+            }
+
             var claimants = world.Kingdoms
                 .Where(k => k.Settlements.Contains(settlement))
                 .ToList();
@@ -50,10 +59,33 @@ public static class WarSystem
                 continue;
             }
 
+            if (settlement.SiegeYears >= TruceThresholdYears && _random.NextDouble() < TruceChance)
+            {
+                DeclareTruce(settlement, claimants, world);
+                continue;
+            }
+
             settlement.SiegeYears++;
 
             DeclareWar(settlement, claimants, world, isHolyWar);
         }
+    }
+
+    // Затянувшаяся осада изматывает обе стороны — перемирие не решает спор, но
+    // останавливает бои на TruceDuration лет (см. Settlement.TruceUntilYear)
+    private static void DeclareTruce(Settlement settlement, List<Kingdom> claimants, World world)
+    {
+        settlement.SiegeYears = 0;
+        settlement.TruceUntilYear = world.CurrentYear + TruceDuration;
+
+        var claimantNames = string.Join(", ", claimants.Select(k => k.Name));
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.Peace,
+            Description = $"{settlement.Name}: затянувшаяся осада закончилась перемирием. Стороны: {claimantNames}"
+        });
     }
 
     // Спор религиозный, если у претендентов есть хотя бы два разных вероисповедания

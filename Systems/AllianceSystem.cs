@@ -14,6 +14,8 @@ public static class AllianceSystem
 {
     private static readonly Random _random = new();
 
+    private const double AllianceBreakChance = 0.1; // Шанс в год, что союз распадётся, пока правящие дома разошлись в вере
+
     public static void Process(World world)
     {
         var activeKingdoms = world.Kingdoms.Where(k => k.FallenYear == null).ToList();
@@ -22,20 +24,22 @@ public static class AllianceSystem
         {
             for (var j = i + 1; j < activeKingdoms.Count; j++)
             {
-                TryFormAlliance(activeKingdoms[i], activeKingdoms[j], world);
+                if (activeKingdoms[i].AlliedKingdoms.Contains(activeKingdoms[j]))
+                {
+                    TryBreakAlliance(activeKingdoms[i], activeKingdoms[j], world);
+                }
+                else
+                {
+                    TryFormAlliance(activeKingdoms[i], activeKingdoms[j], world);
+                }
             }
         }
     }
 
     private static void TryFormAlliance(Kingdom a, Kingdom b, World world)
     {
-        if (a.AlliedKingdoms.Contains(b))
-        {
-            return; // Уже союзники
-        }
-
-        var religionA = a.Ruler.Settlement?.Religion;
-        var religionB = b.Ruler.Settlement?.Religion;
+        var religionA = GetRulerReligion(a);
+        var religionB = GetRulerReligion(b);
 
         if (religionA == null || religionA != religionB)
         {
@@ -56,5 +60,39 @@ public static class AllianceSystem
             Type = EventType.Alliance,
             Description = $"{a.Name} и {b.Name} заключили союз на почве общей веры"
         });
+    }
+
+    // Союз держится на той же общей вере, что его создала (см. TryFormAlliance) —
+    // если после смены правителя (KingdomSystem.UpdateExistingKingdoms) вера разошлась,
+    // союз не рвётся мгновенно, но с каждым годом расхождения рискует распасться
+    private static void TryBreakAlliance(Kingdom a, Kingdom b, World world)
+    {
+        var religionA = GetRulerReligion(a);
+        var religionB = GetRulerReligion(b);
+
+        if (religionA != null && religionA == religionB)
+        {
+            return; // Вера всё ещё общая — союз держится
+        }
+
+        if (_random.NextDouble() >= AllianceBreakChance)
+        {
+            return;
+        }
+
+        a.AlliedKingdoms.Remove(b);
+        b.AlliedKingdoms.Remove(a);
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.AllianceBroken,
+            Description = $"{a.Name} и {b.Name} разорвали союз: правящие дома разошлись в вере"
+        });
+    }
+
+    private static Religion? GetRulerReligion(Kingdom kingdom)
+    {
+        return kingdom.Ruler.Settlement?.Religion;
     }
 }
