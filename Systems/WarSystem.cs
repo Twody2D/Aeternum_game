@@ -231,7 +231,7 @@ public static class WarSystem
         var defenders = residents.Where(m => ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Military).ToList();
         var defenseFactor = 1 - Math.Min(MaxDefenseBonus, defenders.Count * DefenseBonusPerDefender);
 
-        var effectiveCasualtyRate = world.Settings.WarCasualtyRate * escalation * defenseFactor * WallSystem.GetWallFactor(settlement);
+        var effectiveCasualtyRate = world.Settings.WarCasualtyRate * escalation * defenseFactor * WallSystem.GetWallFactor(settlement, world);
 
         if (isHolyWar)
         {

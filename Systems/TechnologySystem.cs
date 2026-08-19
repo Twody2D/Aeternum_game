@@ -75,6 +75,16 @@ public static class TechnologySystem
         return GetEra(world.Knowledge).Bonus;
     }
 
+    // Во сколько раз дешевле обходится постройка при нынешнем знании
+    // (см. HousingSystem и остальные строительные системы). Обратная сторона
+    // той же величины: чем лучше инструмент и приём, тем меньше материала уходит
+    // впустую. Множитель, а не вычитаемое, — иначе дешёвые постройки уходили бы
+    // в отрицательную стоимость раньше дорогих
+    public static double GetBuildCostMultiplier(World world)
+    {
+        return 1 / GetProductionMultiplier(world);
+    }
+
     private static (double Threshold, string Name, double Bonus) GetEra(double knowledge)
     {
         return Eras.Last(e => knowledge >= e.Threshold);

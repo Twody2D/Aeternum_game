@@ -49,13 +49,14 @@ public static class WorkshopSystem
                 }
 
                 var stock = settlement.MaterialStocks.GetValueOrDefault(type);
+                var cost = WorkshopCost * TechnologySystem.GetBuildCostMultiplier(world); // См. HousingSystem
 
-                if (stock < WorkshopCost)
+                if (stock < cost)
                 {
                     continue;
                 }
 
-                settlement.MaterialStocks[type] = stock - WorkshopCost;
+                settlement.MaterialStocks[type] = stock - cost;
                 settlement.Workshops[type] = current + 1;
             }
         }

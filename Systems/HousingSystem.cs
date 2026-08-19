@@ -40,13 +40,18 @@ public static class HousingSystem
             var wood = settlement.MaterialStocks.GetValueOrDefault(MaterialType.Wood);
             var stone = settlement.MaterialStocks.GetValueOrDefault(MaterialType.Stone);
 
-            if (wood < WoodCost || stone < StoneCost)
+            // Накопленное знание удешевляет саму стройку — см. TechnologySystem
+            var discount = TechnologySystem.GetBuildCostMultiplier(world);
+            var woodCost = WoodCost * discount;
+            var stoneCost = StoneCost * discount;
+
+            if (wood < woodCost || stone < stoneCost)
             {
                 continue;
             }
 
-            settlement.MaterialStocks[MaterialType.Wood] = wood - WoodCost;
-            settlement.MaterialStocks[MaterialType.Stone] = stone - StoneCost;
+            settlement.MaterialStocks[MaterialType.Wood] = wood - woodCost;
+            settlement.MaterialStocks[MaterialType.Stone] = stone - stoneCost;
             settlement.Houses++;
         }
     }

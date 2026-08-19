@@ -39,26 +39,33 @@ public static class WallSystem
             var stone = settlement.MaterialStocks.GetValueOrDefault(MaterialType.Stone);
             var metal = settlement.MaterialStocks.GetValueOrDefault(MaterialType.Metal);
 
-            if (stone < StoneCost || metal < MetalCost)
+            var discount = TechnologySystem.GetBuildCostMultiplier(world); // См. HousingSystem
+            var stoneCost = StoneCost * discount;
+            var metalCost = MetalCost * discount;
+
+            if (stone < stoneCost || metal < metalCost)
             {
                 continue;
             }
 
-            settlement.MaterialStocks[MaterialType.Stone] = stone - StoneCost;
-            settlement.MaterialStocks[MaterialType.Metal] = metal - MetalCost;
+            settlement.MaterialStocks[MaterialType.Stone] = stone - stoneCost;
+            settlement.MaterialStocks[MaterialType.Metal] = metal - metalCost;
             settlement.Walls++;
         }
     }
 
-    // Понижающий множитель для потерь при войне (1.0 — стен нет, ниже — чем больше стен)
-    public static double GetWallFactor(Settlement? settlement)
+    // Понижающий множитель для потерь при войне (1.0 — стен нет, ниже — чем больше
+    // стен). Накопленное знание усиливает отдачу той же кладки — стена это прежде
+    // всего инженерное сооружение, и с веками её умеют строить лучше. Тот же приём,
+    // что уже применён к больницам (HospitalSystem.GetHospitalFactor)
+    public static double GetWallFactor(Settlement? settlement, World world)
     {
         if (settlement == null)
         {
             return 1.0;
         }
 
-        var bonus = Math.Min(MaxWallBonus, settlement.Walls * BonusPerWall);
+        var bonus = Math.Min(MaxWallBonus, settlement.Walls * BonusPerWall * TechnologySystem.GetProductionMultiplier(world));
 
         return 1 - bonus;
     }

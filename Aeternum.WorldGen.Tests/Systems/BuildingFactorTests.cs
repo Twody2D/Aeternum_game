@@ -40,10 +40,34 @@ public class BuildingFactorTests
     public void GetWallFactor_IsCappedAndNeverReachesZero()
     {
         // Иначе достаточно укреплённое поселение не теряло бы вообще никого на войне
-        var absurd = WallSystem.GetWallFactor(new Settlement { Walls = 10_000 });
+        var world = new World();
+        var absurd = WallSystem.GetWallFactor(new Settlement { Walls = 10_000 }, world);
 
         Assert.True(absurd > 0, "множитель потерь не должен обнуляться");
-        Assert.Equal(WallSystem.GetWallFactor(new Settlement { Walls = 100 }), absurd, precision: 10);
+        Assert.Equal(WallSystem.GetWallFactor(new Settlement { Walls = 100 }, world), absurd, precision: 10);
+    }
+
+    [Fact]
+    public void GetWallFactor_AdvancedEra_DefendsBetterThanDarkAges()
+    {
+        // Стена — инженерное сооружение: с веками ту же кладку умеют ставить лучше
+        var settlement = new Settlement { Walls = 1 };
+
+        var darkAges = WallSystem.GetWallFactor(settlement, new World { Knowledge = 0 });
+        var enlightened = WallSystem.GetWallFactor(settlement, new World { Knowledge = 100_000 });
+
+        Assert.True(enlightened < darkAges);
+    }
+
+    [Fact]
+    public void GetBuildCostMultiplier_AdvancedEra_BuildsCheaper()
+    {
+        var darkAges = TechnologySystem.GetBuildCostMultiplier(new World { Knowledge = 0 });
+        var enlightened = TechnologySystem.GetBuildCostMultiplier(new World { Knowledge = 100_000 });
+
+        Assert.Equal(1.0, darkAges); // Первая эпоха ничего не меняет — прежний баланс на месте
+        Assert.True(enlightened < darkAges);
+        Assert.True(enlightened > 0, "стройка не может стать бесплатной");
     }
 
     [Fact]

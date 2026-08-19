@@ -38,13 +38,17 @@ public static class SchoolSystem
             var wood = settlement.MaterialStocks.GetValueOrDefault(MaterialType.Wood);
             var metal = settlement.MaterialStocks.GetValueOrDefault(MaterialType.Metal);
 
-            if (wood < WoodCost || metal < MetalCost)
+            var discount = TechnologySystem.GetBuildCostMultiplier(world); // См. HousingSystem
+            var woodCost = WoodCost * discount;
+            var metalCost = MetalCost * discount;
+
+            if (wood < woodCost || metal < metalCost)
             {
                 continue;
             }
 
-            settlement.MaterialStocks[MaterialType.Wood] = wood - WoodCost;
-            settlement.MaterialStocks[MaterialType.Metal] = metal - MetalCost;
+            settlement.MaterialStocks[MaterialType.Wood] = wood - woodCost;
+            settlement.MaterialStocks[MaterialType.Metal] = metal - metalCost;
             settlement.Schools++;
         }
     }

@@ -39,13 +39,17 @@ public static class HospitalSystem
             var textile = settlement.MaterialStocks.GetValueOrDefault(MaterialType.Textile);
             var clay = settlement.MaterialStocks.GetValueOrDefault(MaterialType.Clay);
 
-            if (textile < TextileCost || clay < ClayCost)
+            var discount = TechnologySystem.GetBuildCostMultiplier(world); // См. HousingSystem
+            var textileCost = TextileCost * discount;
+            var clayCost = ClayCost * discount;
+
+            if (textile < textileCost || clay < clayCost)
             {
                 continue;
             }
 
-            settlement.MaterialStocks[MaterialType.Textile] = textile - TextileCost;
-            settlement.MaterialStocks[MaterialType.Clay] = clay - ClayCost;
+            settlement.MaterialStocks[MaterialType.Textile] = textile - textileCost;
+            settlement.MaterialStocks[MaterialType.Clay] = clay - clayCost;
             settlement.Hospitals++;
         }
     }
