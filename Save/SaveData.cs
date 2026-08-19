@@ -95,6 +95,7 @@ public class SettlementData
     public int SiegeYears { get; set; }
     public int TruceUntilYear { get; set; }
     public int RebellingUntilYear { get; set; }
+    public int? RebellingAgainstKingdomId { get; set; }
     public List<int> MemberIds { get; set; } = new();
     public int? CultureId { get; set; }
     public int? ReligionId { get; set; }

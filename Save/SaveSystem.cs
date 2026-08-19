@@ -119,6 +119,7 @@ public static class SaveSystem
                 SiegeYears = s.SiegeYears,
                 TruceUntilYear = s.TruceUntilYear,
                 RebellingUntilYear = s.RebellingUntilYear,
+                RebellingAgainstKingdomId = s.RebellingAgainst?.Id,
                 MemberIds = s.Members.Select(c => c.Id).ToList(),
                 CultureId = s.Culture?.Id,
                 ReligionId = s.Religion?.Id,
@@ -272,6 +273,15 @@ public static class SaveSystem
         {
             kingdomsById[k.Id].AlliedKingdoms = k.AlliedKingdomIds.Select(id => kingdomsById[id]).ToList();
             kingdomsById[k.Id].Suzerain = k.SuzerainId.HasValue ? kingdomsById[k.SuzerainId.Value] : null;
+        }
+
+        // Мятежи связывают поселение с государством, поэтому проставляются только
+        // здесь: к моменту создания поселений королевств ещё не существует
+        foreach (var s in data.Settlements)
+        {
+            settlementsById[s.Id].RebellingAgainst = s.RebellingAgainstKingdomId.HasValue
+                ? kingdomsById[s.RebellingAgainstKingdomId.Value]
+                : null;
         }
 
         var world = new World
