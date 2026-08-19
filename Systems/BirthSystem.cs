@@ -7,8 +7,6 @@ namespace Aeternum.WorldGen.Systems;
 // Рождение детей: раз в год каждая семья с фертильной матерью проходит бросок на рождение
 public static class BirthSystem
 {
-    private static readonly Random _random = new();
-
     public static void ProcessBirths(List<Character> newborns, World world)
     {
         // Отцу достаточно быть живым, у матери дополнительно проверяем фертильный возраст
@@ -29,7 +27,7 @@ public static class BirthSystem
         // ожидаемое число рождений = families.Count * birthRate
         foreach (var family in families)
         {
-            if (_random.NextDouble() >= birthRate)
+            if (Rng.NextDouble() >= birthRate)
             {
                 continue;
             }
@@ -59,7 +57,7 @@ public static class BirthSystem
             var motherName = SurnameSystem.GetDisplayFullName(mother);
             var fatherName = SurnameSystem.GetDisplayFullName(father);
 
-            var description = _random.Next(2) == 0
+            var description = Rng.Next(2) == 0
                 ? $"{Capitalize(bornVerbLower)} {childName}. Родители: {motherName} и {fatherName}"
                 : $"В семье {motherName} и {fatherName} {bornVerbLower} {childName}";
 

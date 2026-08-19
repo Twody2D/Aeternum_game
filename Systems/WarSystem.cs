@@ -14,8 +14,6 @@ namespace Aeternum.WorldGen.Systems;
 // через обычный ежегодный пересчёт территориального контроля (KingdomSystem)
 public static class WarSystem
 {
-    private static readonly Random _random = new();
-
     private const double EscalationPerYear = 0.15; // Затяжная осада изматывает сильнее внезапного набега
     private const int MaxEscalationYears = 5; // Максимум +75% к потерям на 5+ году осады
 
@@ -63,20 +61,20 @@ public static class WarSystem
             // Осада ещё не началась — как и раньше, решает WarChance. Уже идущая
             // осада не бросает эту монету заново — раз начавшись, не может
             // случайно "передумать" и продолжается, пока не разрешится исходом
-            if (settlement.SiegeYears == 0 && _random.NextDouble() >= effectiveWarChance)
+            if (settlement.SiegeYears == 0 && Rng.NextDouble() >= effectiveWarChance)
             {
                 continue;
             }
 
             if (claimants.Count == 2 && settlement.SiegeYears >= VassalizationThresholdYears &&
                 TryGetLopsidedPair(claimants[0], claimants[1], out var stronger, out var weaker) &&
-                _random.NextDouble() < VassalizationChance)
+                Rng.NextDouble() < VassalizationChance)
             {
                 DeclareVassalization(settlement, weaker, stronger, world);
                 continue;
             }
 
-            if (settlement.SiegeYears >= TruceThresholdYears && _random.NextDouble() < TruceChance)
+            if (settlement.SiegeYears >= TruceThresholdYears && Rng.NextDouble() < TruceChance)
             {
                 DeclareTruce(settlement, claimants, world);
                 continue;
@@ -119,7 +117,7 @@ public static class WarSystem
                 continue;
             }
 
-            if (_random.NextDouble() >= IndependenceChance)
+            if (Rng.NextDouble() >= IndependenceChance)
             {
                 continue;
             }
@@ -241,7 +239,7 @@ public static class WarSystem
         var casualtyCount = (int)(residents.Count * effectiveCasualtyRate);
 
         var casualties = residents
-            .OrderBy(_ => _random.Next())
+            .OrderBy(_ => Rng.Next())
             .Take(casualtyCount)
             .ToList();
 
@@ -252,7 +250,7 @@ public static class WarSystem
 
         // Стены принимают удар на себя и не выдерживают его бесследно — осада
         // постепенно срывает ту самую защиту, что делает её дорогой для нападающих
-        if (settlement.Walls > 0 && _random.NextDouble() < SiegeWallDamageChance)
+        if (settlement.Walls > 0 && Rng.NextDouble() < SiegeWallDamageChance)
         {
             settlement.Walls--;
         }

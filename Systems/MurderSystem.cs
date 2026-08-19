@@ -12,8 +12,6 @@ namespace Aeternum.WorldGen.Systems;
 // не гарантировано
 public static class MurderSystem
 {
-    private static readonly Random _random = new();
-
     private const int BraveWeight = 2; // Смелые соперники вдвое чаще решаются на заговор
     private const int GrudgeWeight = 2; // Застарелая обида на правителя (см. Character.Enemies) толкает на заговор не хуже смелости
     private const int DefaultWeight = 1;
@@ -36,7 +34,7 @@ public static class MurderSystem
                 continue; // Соперничать некому — заговору не из чего родиться
             }
 
-            if (_random.NextDouble() >= world.Settings.RegicideChance)
+            if (Rng.NextDouble() >= world.Settings.RegicideChance)
             {
                 continue;
             }
@@ -91,7 +89,7 @@ public static class MurderSystem
             .SelectMany(r => Enumerable.Repeat(r, GetWeight(r, ruler)))
             .ToList();
 
-        return expanded[_random.Next(expanded.Count)];
+        return expanded[Rng.Next(expanded.Count)];
     }
 
     private static int GetWeight(Character rival, Character ruler)

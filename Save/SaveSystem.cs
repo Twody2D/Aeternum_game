@@ -53,6 +53,7 @@ public static class SaveSystem
             TotalDeaths = world.TotalDeaths,
             AliveCount = world.AliveCount,
             Knowledge = world.Knowledge,
+            Seed = world.Seed,
             Settings = world.Settings,
             Events = world.Events,
 
@@ -291,6 +292,7 @@ public static class SaveSystem
             TotalDeaths = data.TotalDeaths,
             AliveCount = data.AliveCount,
             Knowledge = data.Knowledge,
+            Seed = data.Seed,
             Settings = data.Settings,
             Events = data.Events,
             Characters = data.Characters.Select(c => charactersById[c.Id]).ToList(),

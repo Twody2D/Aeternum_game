@@ -1,6 +1,7 @@
 using Aeternum.WorldGen.Data;
 using Aeternum.WorldGen.Models;
 using Aeternum.WorldGen.Systems;
+using Aeternum.WorldGen.Core;
 
 namespace Aeternum.WorldGen.Generators;
 
@@ -8,8 +9,6 @@ namespace Aeternum.WorldGen.Generators;
 // (см. ColonizationSystem). Имена — из Data/Settlements.json (см. ContentData)
 public static class SettlementGenerator
 {
-    private static readonly Random _random = new();
-
     private static int _nextId = 1;
 
     private static string[] Names => ContentData.SettlementNames;
@@ -32,7 +31,7 @@ public static class SettlementGenerator
 
             var (x, y) = origin != null
                 ? PickColonySite(origin)
-                : (_random.NextDouble() * ClimateSystem.MapSize, _random.NextDouble() * ClimateSystem.MapSize);
+                : (Rng.NextDouble() * ClimateSystem.MapSize, Rng.NextDouble() * ClimateSystem.MapSize);
 
             settlements.Add(new Settlement
             {
@@ -68,7 +67,7 @@ public static class SettlementGenerator
 
     private static double RandomOffset()
     {
-        return (_random.NextDouble() * 2 - 1) * ColonyOffsetRange;
+        return (Rng.NextDouble() * 2 - 1) * ColonyOffsetRange;
     }
 
     private static double Clamp(double value)

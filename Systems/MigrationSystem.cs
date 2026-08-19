@@ -10,8 +10,6 @@ namespace Aeternum.WorldGen.Systems;
 // но это отдельный случай и здесь не обрабатывается
 public static class MigrationSystem
 {
-    private static readonly Random _random = new();
-
     private const double BraveMigrationMultiplier = 1.5;
     private const double PrudentMigrationMultiplier = 0.5;
 
@@ -56,7 +54,7 @@ public static class MigrationSystem
 
             chance *= HousingSystem.GetHousingFactor(character.Settlement);
 
-            if (_random.NextDouble() >= chance)
+            if (Rng.NextDouble() >= chance)
             {
                 continue;
             }

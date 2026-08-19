@@ -10,8 +10,6 @@ namespace Aeternum.WorldGen.Systems;
 // остаётся без опеки, что даёт небольшой риск смерти от безнадзорности
 public static class OrphanSystem
 {
-    private static readonly Random _random = new();
-
     private const double NeglectChance = 0.05; // Шанс смерти ребёнка без опекуна за год
 
     public static void Process(World world)
@@ -29,7 +27,7 @@ public static class OrphanSystem
 
             if (guardian == null)
             {
-                if (_random.NextDouble() < NeglectChance)
+                if (Rng.NextDouble() < NeglectChance)
                 {
                     DeathSystem.Kill(orphan, world, DeathReason.Neglect);
                 }
@@ -77,6 +75,6 @@ public static class OrphanSystem
 
         var pool = relatives.Count > 0 ? relatives : candidates;
 
-        return pool[_random.Next(pool.Count)];
+        return pool[Rng.Next(pool.Count)];
     }
 }

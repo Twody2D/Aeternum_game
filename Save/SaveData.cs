@@ -14,6 +14,7 @@ public class SaveData
     public int TotalDeaths { get; set; }
     public int AliveCount { get; set; }
     public double Knowledge { get; set; }
+    public int Seed { get; set; }
 
     public WorldSettings Settings { get; set; } = new();
 

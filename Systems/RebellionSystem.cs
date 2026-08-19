@@ -20,8 +20,6 @@ namespace Aeternum.WorldGen.Systems;
 // само оно выпадает из подконтрольных территорий короны
 public static class RebellionSystem
 {
-    private static readonly Random _random = new();
-
     private const double HungerWeight = 0.10; // Голодное поселение — первый и самый частый повод
     private const double AlienFaithWeight = 0.06; // Чужая вера правителя
     private const double AlienCultureWeight = 0.06; // Чужие обычаи правителя
@@ -76,7 +74,7 @@ public static class RebellionSystem
 
             crown.FoodTreasury -= SuppressionCost; // Поход стоит казне независимо от исхода
 
-            if (_random.NextDouble() >= chance)
+            if (Rng.NextDouble() >= chance)
             {
                 continue;
             }
@@ -91,7 +89,7 @@ public static class RebellionSystem
         var casualtyCount = (int)(residents.Count * SuppressionCasualtyRate);
 
         var casualties = residents
-            .OrderBy(_ => _random.Next())
+            .OrderBy(_ => Rng.Next())
             .Take(casualtyCount)
             .ToList();
 
@@ -134,7 +132,7 @@ public static class RebellionSystem
 
                 var chance = GetDiscontent(settlement, kingdom);
 
-                if (chance <= 0 || _random.NextDouble() >= chance)
+                if (chance <= 0 || Rng.NextDouble() >= chance)
                 {
                     continue;
                 }

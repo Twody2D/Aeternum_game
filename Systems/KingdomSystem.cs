@@ -9,8 +9,6 @@ namespace Aeternum.WorldGen.Systems;
 // жителей) сразу в нескольких поселениях. Никто не назначает королевство заранее
 public static class KingdomSystem
 {
-    private static readonly Random _random = new();
-
     private static int _nextId = 1;
 
     private const int MinDynastyMembersToFormKingdom = 20;
@@ -103,7 +101,7 @@ public static class KingdomSystem
                                      - dissentingCultureSettlements * CulturalDiversityPenalty);
         var effectiveChance = world.Settings.SuccessionCrisisChance / (1 + stability);
 
-        if (_random.NextDouble() >= effectiveChance)
+        if (Rng.NextDouble() >= effectiveChance)
         {
             return;
         }
@@ -112,7 +110,7 @@ public static class KingdomSystem
         var casualtyCount = (int)(rivalPool.Count * world.Settings.CivilWarCasualtyRate);
 
         var casualties = rivalPool
-            .OrderBy(_ => _random.Next())
+            .OrderBy(_ => Rng.Next())
             .Take(casualtyCount)
             .ToList();
 

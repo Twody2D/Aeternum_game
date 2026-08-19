@@ -25,6 +25,8 @@ public class World
 
     public double Knowledge { get; set; } //Накопленное знание мира — растёт трудом учёных и школ, не убывает, см. TechnologySystem
 
+    public int Seed { get; set; } //Зерно, из которого порождён мир — чтобы его можно было воспроизвести, см. Rng
+
     public List<WorldEvent> Events { get; set; } = new(); //Список событий в мире
 
     public WorldSettings Settings { get; set; } = new(); //Настройки мира

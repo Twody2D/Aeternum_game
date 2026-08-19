@@ -12,7 +12,13 @@ Console.WriteLine("=================================");
 Console.WriteLine("      Aeternum WorldGen");
 Console.WriteLine("=================================");
 
+// Зерно задаётся до первого обращения к случайности — иначе часть мира успела бы
+// родиться на старом генераторе (см. Rng)
+Rng.Initialize(ProjectSettings.Seed);
+Console.WriteLine($"Зерно мира: {Rng.Seed}");
+
 var world = new World();
+world.Seed = Rng.Seed;
 world.AliveCount = ProjectSettings.StartingPopulation; // Инициализируем счетчик живых персонажей
 world.Cultures = CultureGenerator.Create(ProjectSettings.SettlementCount);
 world.Religions = ReligionGenerator.Create(ProjectSettings.SettlementCount);

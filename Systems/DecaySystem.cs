@@ -10,13 +10,11 @@ namespace Aeternum.WorldGen.Systems;
 // уже посчитала, сколько их нужно населению, и не нашла нужды строить ещё
 public static class DecaySystem
 {
-    private static readonly Random _random = new();
-
     // Ветшает только то, что уже не нужно населению: пока построек ровно
     // столько, сколько требуется, их чинят и поддерживают. Избыток остаётся
     // без ухода — и с годами его разбирают, он гниёт и обваливается
     public static bool ShouldDecay(int current, int target, World world)
     {
-        return current > target && _random.NextDouble() < world.Settings.BuildingDecayChance;
+        return current > target && Rng.NextDouble() < world.Settings.BuildingDecayChance;
     }
 }

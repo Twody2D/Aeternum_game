@@ -1,5 +1,6 @@
 using Aeternum.WorldGen.Data;
 using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Core;
 
 namespace Aeternum.WorldGen.Systems;
 
@@ -8,8 +9,6 @@ namespace Aeternum.WorldGen.Systems;
 // Сам список профессий (имя/категория/опасность) — из Data/Professions.json
 public static class ProfessionSystem
 {
-    private static readonly Random Random = new();
-
     public static string school = "Школьник"; // Профессия для возраста 7 лет
 
     // Категория каждой профессии из ProfessionsList
@@ -103,33 +102,33 @@ public static class ProfessionSystem
 
             if (missing.Count > 0)
             {
-                return missing[Random.Next(missing.Count)];
+                return missing[Rng.Next(missing.Count)];
             }
         }
 
         if (inheritedProfession != null &&
             Categories.ContainsKey(inheritedProfession) &&
-            Random.NextDouble() < InheritanceChance)
+            Rng.NextDouble() < InheritanceChance)
         {
             return inheritedProfession;
         }
 
         if (settlement is { Schools: > 0 } &&
-            Random.NextDouble() < Math.Min(MaxSchoolBonus, settlement.Schools * SchoolBonusPerSchool) &&
+            Rng.NextDouble() < Math.Min(MaxSchoolBonus, settlement.Schools * SchoolBonusPerSchool) &&
             ProfessionsByCategory.TryGetValue(ProfessionCategory.Knowledge, out var knowledgeProfessions))
         {
-            return knowledgeProfessions[Random.Next(knowledgeProfessions.Length)];
+            return knowledgeProfessions[Rng.Next(knowledgeProfessions.Length)];
         }
 
         if (culture != null &&
-            Random.NextDouble() < CulturePreferenceChance &&
+            Rng.NextDouble() < CulturePreferenceChance &&
             ProfessionsByCategory.TryGetValue(culture.PreferredCategory, out var preferred))
         {
-            return preferred[Random.Next(preferred.Length)];
+            return preferred[Rng.Next(preferred.Length)];
         }
 
         return ProfessionsList[
-            Random.Next(ProfessionsList.Length)
+            Rng.Next(ProfessionsList.Length)
         ];
     }
 

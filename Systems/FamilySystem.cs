@@ -8,8 +8,6 @@ namespace Aeternum.WorldGen.Systems;
 // Создание семей и добавление в них детей: правила фамилии и наследования династии
 public static class FamilySystem
 {
-    private static readonly Random _random = new();
-
     private static int _nextFamilyId = 1;
 
     // Женит father и mother: жена берёт фамилию мужа, семья наследует или основывает династию
@@ -89,7 +87,7 @@ public static class FamilySystem
 
         if (mother.Dynasty != null &&
             mother.Dynasty != dynasty &&
-            _random.NextDouble() < world.Settings.MaternalDynastyChance)
+            Rng.NextDouble() < world.Settings.MaternalDynastyChance)
         {
             dynasty = mother.Dynasty;
         }

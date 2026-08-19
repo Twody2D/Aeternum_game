@@ -11,8 +11,6 @@ namespace Aeternum.WorldGen.Systems;
 // пока только копятся — тратить их не на что
 public static class EconomySystem
 {
-    private static readonly Random _random = new();
-
     // Максимальная доля годового дефицита, учитываемая при расчёте риска голода —
     // не даёт одному тяжёлому году выкосить почти всё население поселения разом
     private const double MaxDeficitRatio = 0.5;
@@ -94,7 +92,7 @@ public static class EconomySystem
 
         foreach (var character in residents)
         {
-            if (_random.NextDouble() < starvationChance)
+            if (Rng.NextDouble() < starvationChance)
             {
                 DeathSystem.Kill(character, world, DeathReason.Starvation);
             }

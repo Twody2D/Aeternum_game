@@ -8,7 +8,6 @@ namespace Aeternum.WorldGen.Systems;
 // (у опасных профессий риск несчастного случая выше — см. ProfessionSystem.IsHazardous)
 public static class DeathSystem
 {
-    private static readonly Random _random = new();
     public static void Process(World world)
     {
         foreach (var character in world.Characters)
@@ -25,7 +24,7 @@ public static class DeathSystem
             }
 
             if (character.LifeStage == LifeStage.Infant &&
-                _random.NextDouble() < world.Settings.InfantMortalityRate * HospitalSystem.GetHospitalFactor(character.Settlement, world)) // Детская смертность
+                Rng.NextDouble() < world.Settings.InfantMortalityRate * HospitalSystem.GetHospitalFactor(character.Settlement, world)) // Детская смертность
             {
                 Kill(character, world, DeathReason.Disease);
                 continue;
@@ -34,7 +33,7 @@ public static class DeathSystem
             if (character.LifeStage == LifeStage.Elder)  // Возраст 60+ — растущий с возрастом шанс смерти
             {
                 int deathChance = character.Age - 60; // Шанс смерти увеличивается с возрастом
-                if (_random.Next(100) < deathChance)  // Генерируем случайное число и сравниваем с шансом смерти
+                if (Rng.Next(100) < deathChance)  // Генерируем случайное число и сравниваем с шансом смерти
                 {
                     Kill(character, world, DeathReason.OldAge); // Если персонаж умирает, вызываем метод Kill
                     continue;
@@ -44,7 +43,7 @@ public static class DeathSystem
             // Несчастный случай — риск для тех, кто уже работает/выходит в мир;
             // у младенцев и детей его покрывает отдельная InfantMortalityRate
             if (character.LifeStage is LifeStage.Adult or LifeStage.Elder &&
-                _random.NextDouble() < GetAccidentChance(character, world))
+                Rng.NextDouble() < GetAccidentChance(character, world))
             {
                 Kill(character, world, DeathReason.Accident);
             }

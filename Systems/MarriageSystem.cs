@@ -10,8 +10,6 @@ namespace Aeternum.WorldGen.Systems;
 // поселении — невеста переезжает туда, где живёт муж (см. RelocateBride)
 public static class MarriageSystem
 {
-    private static readonly Random _random = new();
-
     private const int SameSettlementChancePercent = 50;
     private const int CrossSettlementChancePercent = 25; // Реже — переезд в другое поселение не так прост
     private const double DifferentReligionPenalty = 0.5; // Доп. множитель к межпоселенческому браку при разных религиях сторон
@@ -49,17 +47,17 @@ public static class MarriageSystem
         {
             var women = availableWomen
                 .Where(w => w.Settlement == settlementMen.Key && w.CurrentFamily == null)
-                .OrderBy(x => _random.Next())
+                .OrderBy(x => Rng.Next())
                 .ToList();
 
-            var men = settlementMen.OrderBy(x => _random.Next()).ToList();
+            var men = settlementMen.OrderBy(x => Rng.Next()).ToList();
 
             MarryWithinGroup(men, women, world, SameSettlementChancePercent);
         }
 
         // Второй проход: кто не нашёл пару дома, пробует за пределами своего поселения
-        var leftoverMen = availableMen.Where(c => c.CurrentFamily == null).OrderBy(x => _random.Next()).ToList();
-        var leftoverWomen = availableWomen.Where(c => c.CurrentFamily == null).OrderBy(x => _random.Next()).ToList();
+        var leftoverMen = availableMen.Where(c => c.CurrentFamily == null).OrderBy(x => Rng.Next()).ToList();
+        var leftoverWomen = availableWomen.Where(c => c.CurrentFamily == null).OrderBy(x => Rng.Next()).ToList();
 
         MarryWithinGroup(leftoverMen, leftoverWomen, world, CrossSettlementChancePercent);
     }
@@ -99,7 +97,7 @@ public static class MarriageSystem
                 effectiveChancePercent *= DifferentCulturePenalty;
             }
 
-            if (_random.Next(100) >= effectiveChancePercent)
+            if (Rng.Next(100) >= effectiveChancePercent)
             {
                 continue;
             }
@@ -112,7 +110,7 @@ public static class MarriageSystem
                 world
             );
 
-            var template = DescriptionTemplates[_random.Next(DescriptionTemplates.Length)];
+            var template = DescriptionTemplates[Rng.Next(DescriptionTemplates.Length)];
 
             world.Events.Add(
                 new WorldEvent

@@ -12,8 +12,6 @@ namespace Aeternum.WorldGen.Systems;
 // отдельным следующим шагом
 public static class AllianceSystem
 {
-    private static readonly Random _random = new();
-
     private const double AllianceBreakChance = 0.1; // Шанс в год, что союз распадётся, пока правящие дома разошлись в вере
 
     public static void Process(World world)
@@ -46,7 +44,7 @@ public static class AllianceSystem
             return;
         }
 
-        if (_random.NextDouble() >= world.Settings.AllianceChance)
+        if (Rng.NextDouble() >= world.Settings.AllianceChance)
         {
             return;
         }
@@ -75,7 +73,7 @@ public static class AllianceSystem
             return; // Вера всё ещё общая — союз держится
         }
 
-        if (_random.NextDouble() >= AllianceBreakChance)
+        if (Rng.NextDouble() >= AllianceBreakChance)
         {
             return;
         }

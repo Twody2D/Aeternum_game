@@ -11,8 +11,6 @@ namespace Aeternum.WorldGen.Systems;
 // остаётся тем, с которого начался мир (ProjectSettings.SettlementCount)
 public static class ColonizationSystem
 {
-    private static readonly Random _random = new();
-
     public static void Process(World world)
     {
         // ToList — Process может добавить новые поселения прямо в world.Settlements,
@@ -31,7 +29,7 @@ public static class ColonizationSystem
                 continue; // Не на что снарядить колонистов
             }
 
-            if (_random.NextDouble() >= world.Settings.ColonizationChance)
+            if (Rng.NextDouble() >= world.Settings.ColonizationChance)
             {
                 continue;
             }
@@ -47,7 +45,7 @@ public static class ColonizationSystem
                 continue; // Некому основывать — в этом году колонизации не будет
             }
 
-            var foundingFamily = candidateFamilies[_random.Next(candidateFamilies.Count)];
+            var foundingFamily = candidateFamilies[Rng.Next(candidateFamilies.Count)];
 
             Found(origin, foundingFamily, world);
         }

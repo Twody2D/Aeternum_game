@@ -18,8 +18,6 @@ namespace Aeternum.WorldGen.Systems;
 // поселениями в дне пути люди ходят и без оформившейся торговли
 public static class DisasterSystem
 {
-    private static readonly Random _random = new();
-
     private const double ContagionChance = 0.35; // Шанс, что вспышка перекинется к связанному поселению
     private const double ContagionMortalityFactor = 0.6; // До соседа болезнь доходит ослабленной
     private const double ContagionDistance = 100; // Соседство, в пределах которого люди ходят и без торгового пути
@@ -40,12 +38,12 @@ public static class DisasterSystem
                 continue;
             }
 
-            if (_random.NextDouble() >= world.Settings.DisasterChance)
+            if (Rng.NextDouble() >= world.Settings.DisasterChance)
             {
                 continue;
             }
 
-            if (_random.Next(2) == 0)
+            if (Rng.Next(2) == 0)
             {
                 TriggerEpidemic(settlement, residents, world);
                 infectedThisYear.Add(settlement);
@@ -77,7 +75,7 @@ public static class DisasterSystem
         {
             var residents = partner.Members.Where(m => m.Alive).ToList();
 
-            if (residents.Count == 0 || _random.NextDouble() >= ContagionChance)
+            if (residents.Count == 0 || Rng.NextDouble() >= ContagionChance)
             {
                 continue;
             }
@@ -97,7 +95,7 @@ public static class DisasterSystem
         var casualtyCount = (int)(residents.Count * effectiveMortalityRate);
 
         var casualties = residents
-            .OrderBy(_ => _random.Next())
+            .OrderBy(_ => Rng.Next())
             .Take(casualtyCount)
             .ToList();
 

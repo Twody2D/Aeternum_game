@@ -9,8 +9,6 @@ namespace Aeternum.WorldGen.Systems;
 // как и при вдовстве (см. DeathSystem.Kill), но без смерти
 public static class DivorceSystem
 {
-    private static readonly Random _random = new();
-
     public static void Process(World world)
     {
         var activeMarriages = world.Families.Where(f =>
@@ -23,7 +21,7 @@ public static class DivorceSystem
 
         foreach (var family in activeMarriages.ToList())
         {
-            if (_random.NextDouble() >= world.Settings.DivorceChance)
+            if (Rng.NextDouble() >= world.Settings.DivorceChance)
             {
                 continue;
             }

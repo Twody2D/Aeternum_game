@@ -1,6 +1,7 @@
 using Aeternum.WorldGen.Data;
 using Aeternum.WorldGen.Models;
 using Aeternum.WorldGen.Systems;
+using Aeternum.WorldGen.Core;
 
 namespace Aeternum.WorldGen.Generators;
 
@@ -9,7 +10,6 @@ namespace Aeternum.WorldGen.Generators;
 // загруженных из Data/Names.json (см. ContentData)
 public static class CharacterGenerator
 {
-    private static readonly Random Random = new(); // Генератор случайных чисел
     private static int _nextId = 1; // Сквозной счётчик для Character.Id
 
     private static string[] MaleNames => ContentData.Names.MaleNames;
@@ -39,7 +39,7 @@ public static class CharacterGenerator
 
         var character = CreateBaseCharacter();
 
-        character.Age = Random.Next(16, 60);
+        character.Age = Rng.Next(16, 60);
         character.Profession = ProfessionSystem.GetRandom(culture, settlement);
         AssignTraits(character);
 
@@ -66,7 +66,7 @@ public static class CharacterGenerator
     {
         foreach (var trait in Enum.GetValues<Trait>())
         {
-            if (Random.NextDouble() < TraitChance)
+            if (Rng.NextDouble() < TraitChance)
             {
                 character.Traits.Add(trait);
             }
@@ -74,12 +74,12 @@ public static class CharacterGenerator
 
         if (character.Traits.Contains(Trait.Brave) && character.Traits.Contains(Trait.Prudent))
         {
-            character.Traits.Remove(Random.Next(2) == 0 ? Trait.Brave : Trait.Prudent);
+            character.Traits.Remove(Rng.Next(2) == 0 ? Trait.Brave : Trait.Prudent);
         }
     }
     private static Gender GetRandomGender()
     {
-        return Random.Next(2) == 0 ? Gender.Male : Gender.Female; // Случайный выбор пола персонажа (мужской или женский)
+        return Rng.Next(2) == 0 ? Gender.Male : Gender.Female; // Случайный выбор пола персонажа (мужской или женский)
     }
 
     private static string GenerateName(Gender gender)
@@ -87,10 +87,10 @@ public static class CharacterGenerator
         return gender switch
         {
             Gender.Male =>
-                MaleNames[Random.Next(MaleNames.Length)],
+                MaleNames[Rng.Next(MaleNames.Length)],
 
             Gender.Female =>
-                FemaleNames[Random.Next(FemaleNames.Length)],
+                FemaleNames[Rng.Next(FemaleNames.Length)],
 
             _ => "Безымянный"
         };
@@ -98,7 +98,7 @@ public static class CharacterGenerator
 
     private static string GenerateLastName()
     {
-        return LastNames[Random.Next(LastNames.Length)];
+        return LastNames[Rng.Next(LastNames.Length)];
     }
 
     // Восстанавливает счётчик Id после загрузки сохранения

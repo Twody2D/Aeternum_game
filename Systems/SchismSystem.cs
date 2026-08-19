@@ -23,8 +23,6 @@ namespace Aeternum.WorldGen.Systems;
 // подхватывает новую веру сама, просто потому что она не равна прежней
 public static class SchismSystem
 {
-    private static readonly Random _random = new();
-
     private const int MinPopulationForSchism = 10; // Нужна община, а не горстка жителей
 
     public static void Process(World world)
@@ -43,7 +41,7 @@ public static class SchismSystem
                 continue;
             }
 
-            if (_random.NextDouble() >= world.Settings.SchismChance)
+            if (Rng.NextDouble() >= world.Settings.SchismChance)
             {
                 continue;
             }
