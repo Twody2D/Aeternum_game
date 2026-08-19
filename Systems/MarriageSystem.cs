@@ -15,6 +15,7 @@ public static class MarriageSystem
     private const int SameSettlementChancePercent = 50;
     private const int CrossSettlementChancePercent = 25; // Реже — переезд в другое поселение не так прост
     private const double DifferentReligionPenalty = 0.5; // Доп. множитель к межпоселенческому браку при разных религиях сторон
+    private const double DifferentCulturePenalty = 0.5; // Доп. множитель при разных традициях сторон — независим от религии, штрафы перемножаются
 
     private static readonly string[] DescriptionTemplates =
     {
@@ -82,13 +83,20 @@ public static class MarriageSystem
             // чтобы один и тот же человек не участвовал в нескольких парах за год
             takenWomen.Add(woman);
 
-            var effectiveChancePercent = marriageChancePercent;
+            var effectiveChancePercent = (double)marriageChancePercent;
 
             if (man.Settlement?.Religion != null &&
                 woman.Settlement?.Religion != null &&
                 man.Settlement.Religion != woman.Settlement.Religion)
             {
-                effectiveChancePercent = (int)(marriageChancePercent * DifferentReligionPenalty);
+                effectiveChancePercent *= DifferentReligionPenalty;
+            }
+
+            if (man.Settlement?.Culture != null &&
+                woman.Settlement?.Culture != null &&
+                man.Settlement.Culture != woman.Settlement.Culture)
+            {
+                effectiveChancePercent *= DifferentCulturePenalty;
             }
 
             if (_random.Next(100) >= effectiveChancePercent)
