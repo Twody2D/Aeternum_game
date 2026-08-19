@@ -135,9 +135,15 @@ public static class MarriageSystem
         husbandSettlement.Members.Add(bride);
     }
 
-    // Запрет браков между близкими родственниками: родитель/ребёнок или общий родитель (братья/сёстры)
+    // Запрет браков между близкими родственниками (родитель/ребёнок, братья/сёстры)
+    // и между враждующими семьями (см. Character.Enemies, MurderSystem.AddEnmity)
     private static bool AreRelated(Character a, Character b)
     {
+        if (a.Enemies.Contains(b))
+        {
+            return true;
+        }
+
         if (a.Mother == b || a.Father == b || b.Mother == a || b.Father == a)
         {
             return true;

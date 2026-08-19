@@ -33,4 +33,6 @@ public class Character
 
     public HashSet<Trait> Traits { get; set; } = new(); // Черты характера — фиксированы с рождения, см. CharacterGenerator.AssignTraits
 
+    public HashSet<Character> Enemies { get; set; } = new(); // Вражда — накапливается, никогда не забывается, см. MurderSystem.AddEnmity
+
 }

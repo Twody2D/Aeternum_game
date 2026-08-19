@@ -75,7 +75,8 @@ public static class SaveSystem
                 CurrentFamilyId = c.CurrentFamily?.Id,
                 DynastyId = c.Dynasty?.Id,
                 SettlementId = c.Settlement?.Id,
-                Traits = c.Traits.ToList()
+                Traits = c.Traits.ToList(),
+                EnemyIds = c.Enemies.Select(e => e.Id).ToList()
             }).ToList(),
 
             Families = world.Families.Select(f => new FamilyData
@@ -202,6 +203,7 @@ public static class SaveSystem
             character.CurrentFamily = c.CurrentFamilyId.HasValue ? familiesById[c.CurrentFamilyId.Value] : null;
             character.Dynasty = c.DynastyId.HasValue ? dynastiesById[c.DynastyId.Value] : null;
             character.Settlement = c.SettlementId.HasValue ? settlementsById[c.SettlementId.Value] : null;
+            character.Enemies = c.EnemyIds.Select(id => charactersById[id]).ToHashSet();
         }
 
         foreach (var f in data.Families)

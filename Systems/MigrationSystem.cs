@@ -16,6 +16,7 @@ public static class MigrationSystem
     private const double PrudentMigrationMultiplier = 0.5;
 
     private const double DistancePenalty = 0.5; // Штраф к привлекательности поселения за единицу расстояния
+    private const double EnemyPresentMultiplier = 2.0; // Сосед-враг в своём поселении — повод уехать не хуже голода
 
     public static void Process(World world)
     {
@@ -29,7 +30,7 @@ public static class MigrationSystem
             c.LifeStage == LifeStage.Adult &&
             c.CurrentFamily == null &&
             c.Settlement != null &&
-            c.Settlement.FoodStock < 0 &&
+            (c.Settlement.FoodStock < 0 || HasEnemyInSettlement(c)) &&
             !HasChildren(c, world));
 
         foreach (var character in candidates.ToList())
@@ -46,6 +47,11 @@ public static class MigrationSystem
                 chance *= PrudentMigrationMultiplier;
             }
 
+            if (HasEnemyInSettlement(character))
+            {
+                chance *= EnemyPresentMultiplier;
+            }
+
             chance *= HousingSystem.GetHousingFactor(character.Settlement);
 
             if (_random.NextDouble() >= chance)
@@ -54,15 +60,21 @@ public static class MigrationSystem
             }
 
             var origin = character.Settlement!;
+            var fleeingEnemy = HasEnemyInSettlement(character);
 
             var destination = world.Settlements
-                .Where(s => s != origin)
+                .Where(s => s != origin && !s.Members.Any(m => m.Alive && character.Enemies.Contains(m)))
                 .OrderByDescending(s => s.FoodStock - DistancePenalty * Distance(origin, s))
-                .First();
+                .FirstOrDefault();
 
-            if (destination.FoodStock <= origin.FoodStock)
+            if (destination == null)
             {
-                continue; // Нигде не лучше — остаёмся
+                continue; // Некуда бежать — везде враги
+            }
+
+            if (!fleeingEnemy && destination.FoodStock <= origin.FoodStock)
+            {
+                continue; // Нигде не лучше и враг не гонит — остаёмся
             }
 
             Relocate(character, origin, destination, world);
@@ -72,6 +84,13 @@ public static class MigrationSystem
     private static double Distance(Settlement a, Settlement b)
     {
         return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+    }
+
+    // Живой враг (см. Character.Enemies, MurderSystem.AddEnmity) среди соседей по поселению
+    private static bool HasEnemyInSettlement(Character character)
+    {
+        return character.Settlement != null &&
+               character.Settlement.Members.Any(m => m.Alive && m != character && character.Enemies.Contains(m));
     }
 
     // Не даём одинокому родителю уехать, бросив детей — переезжают только бездетные

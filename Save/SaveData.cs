@@ -51,6 +51,7 @@ public class CharacterData
     public int? SettlementId { get; set; }
 
     public List<Trait> Traits { get; set; } = new();
+    public List<int> EnemyIds { get; set; } = new();
 }
 
 public class FamilyData

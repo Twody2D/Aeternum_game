@@ -15,6 +15,7 @@ public static class MurderSystem
     private static readonly Random _random = new();
 
     private const int BraveWeight = 2; // Смелые соперники вдвое чаще решаются на заговор
+    private const int GrudgeWeight = 2; // Застарелая обида на правителя (см. Character.Enemies) толкает на заговор не хуже смелости
     private const int DefaultWeight = 1;
 
     public static void Process(World world)
@@ -40,10 +41,16 @@ public static class MurderSystem
                 continue;
             }
 
-            var rival = PickWeightedRival(rivals);
+            var rival = PickWeightedRival(rivals, kingdom.Ruler);
             var ruler = kingdom.Ruler;
 
             DeathSystem.Kill(ruler, world, DeathReason.Murder);
+
+            // Заговорщик наживает врагов в лице тех, кто потерял правителя-родственника
+            foreach (var heir in GetBereaved(ruler))
+            {
+                AddEnmity(rival, heir);
+            }
 
             // Label-формат ("{Королевство}: ...") вместо склонения названия
             // государства — та же договорённость, что у DisasterSystem/WarSystem
@@ -57,13 +64,62 @@ public static class MurderSystem
         }
     }
 
-    // Взвешенный выбор соперника: смелые (см. Trait.Brave) вдвое чаще решаются на заговор
-    private static Character PickWeightedRival(List<Character> rivals)
+    // Живой супруг и живые дети покойного правителя — те, у кого теперь есть мотив мести
+    private static IEnumerable<Character> GetBereaved(Character ruler)
+    {
+        if (ruler.CurrentFamily is { } family)
+        {
+            var spouse = family.Father == ruler ? family.Mother : family.Father;
+
+            if (spouse.Alive)
+            {
+                yield return spouse;
+            }
+
+            foreach (var child in family.Children.Where(c => c.Alive))
+            {
+                yield return child;
+            }
+        }
+    }
+
+    // Взвешенный выбор соперника: смелые (см. Trait.Brave) и затаившие обиду на
+    // правителя (см. Character.Enemies) чаще решаются на заговор
+    private static Character PickWeightedRival(List<Character> rivals, Character ruler)
     {
         var expanded = rivals
-            .SelectMany(r => Enumerable.Repeat(r, r.Traits.Contains(Trait.Brave) ? BraveWeight : DefaultWeight))
+            .SelectMany(r => Enumerable.Repeat(r, GetWeight(r, ruler)))
             .ToList();
 
         return expanded[_random.Next(expanded.Count)];
+    }
+
+    private static int GetWeight(Character rival, Character ruler)
+    {
+        var weight = DefaultWeight;
+
+        if (rival.Traits.Contains(Trait.Brave))
+        {
+            weight += BraveWeight - DefaultWeight;
+        }
+
+        if (rival.Enemies.Contains(ruler))
+        {
+            weight += GrudgeWeight - DefaultWeight;
+        }
+
+        return weight;
+    }
+
+    // Симметричное добавление вражды — переиспользуется KingdomSystem при кризисе наследования
+    public static void AddEnmity(Character a, Character b)
+    {
+        if (a == b)
+        {
+            return;
+        }
+
+        a.Enemies.Add(b);
+        b.Enemies.Add(a);
     }
 }

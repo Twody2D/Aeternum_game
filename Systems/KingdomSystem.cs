@@ -107,6 +107,12 @@ public static class KingdomSystem
             DeathSystem.Kill(casualty, world, DeathReason.War);
         }
 
+        // Выжившие проигравшие не получили трон и затаили обиду на нового правителя
+        foreach (var survivor in rivalPool.Except(casualties))
+        {
+            MurderSystem.AddEnmity(survivor, newRuler);
+        }
+
         world.Events.Add(new WorldEvent
         {
             Year = world.CurrentYear,
