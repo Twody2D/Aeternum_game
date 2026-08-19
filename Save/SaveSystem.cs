@@ -128,7 +128,8 @@ public static class SaveSystem
             {
                 Id = c.Id,
                 Name = c.Name,
-                PreferredCategory = c.PreferredCategory
+                PreferredCategory = c.PreferredCategory,
+                SuccessionLaw = c.SuccessionLaw
             }).ToList(),
 
             Religions = world.Religions.Select(r => new ReligionData
@@ -172,7 +173,7 @@ public static class SaveSystem
 
         var culturesById = data.Cultures.ToDictionary(
             c => c.Id,
-            c => new Culture { Id = c.Id, Name = c.Name, PreferredCategory = c.PreferredCategory });
+            c => new Culture { Id = c.Id, Name = c.Name, PreferredCategory = c.PreferredCategory, SuccessionLaw = c.SuccessionLaw });
 
         var religionsById = data.Religions.ToDictionary(
             r => r.Id,

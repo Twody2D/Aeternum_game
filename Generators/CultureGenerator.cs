@@ -15,6 +15,8 @@ public static class CultureGenerator
     {
         var cultures = new List<Culture>();
 
+        var laws = Enum.GetValues<SuccessionLaw>();
+
         for (int i = 0; i < count; i++)
         {
             var template = Templates[i % Templates.Count];
@@ -23,7 +25,12 @@ public static class CultureGenerator
             {
                 Id = _nextId++,
                 Name = template.Name,
-                PreferredCategory = template.PreferredCategory
+                PreferredCategory = template.PreferredCategory,
+
+                // Обычай наследования раздаётся по кругу, а не случайно: при малом
+                // числе культур случайность легко выдала бы всем один и тот же закон,
+                // и разница обычаев, ради которой всё затевалось, просто не проявилась бы
+                SuccessionLaw = laws[i % laws.Length]
             });
         }
 

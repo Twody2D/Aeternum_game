@@ -105,6 +105,7 @@ public class CultureData
     public int Id { get; set; }
     public string Name { get; set; } = "";
     public ProfessionCategory PreferredCategory { get; set; }
+    public SuccessionLaw SuccessionLaw { get; set; }
 }
 
 public class ReligionData

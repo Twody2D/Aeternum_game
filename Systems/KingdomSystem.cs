@@ -64,7 +64,7 @@ public static class KingdomSystem
             }
 
             var previousRuler = kingdom.Ruler;
-            var newRuler = GetSenior(aliveMembers);
+            var newRuler = SuccessionSystem.PickHeir(aliveMembers, kingdom, previousRuler);
             kingdom.Ruler = newRuler;
 
             var becameVerb = newRuler.Gender == Gender.Female ? "стала" : "стал";
@@ -161,7 +161,9 @@ public static class KingdomSystem
                 continue;
             }
 
-            var ruler = GetSenior(aliveMembers);
+            // Первого правителя выбирает не обычай наследования, а сама жизнь:
+            // передачи трона ещё не было, у дома просто становится во главе старейший
+            var ruler = SuccessionSystem.PickSenior(aliveMembers);
 
             var kingdom = new Kingdom
             {
@@ -200,12 +202,6 @@ public static class KingdomSystem
             .Where(s => !RebellionSystem.IsRebelling(s, world) &&
                         s.Members.Count(m => m.Alive && dynasty.Members.Contains(m)) >= MinResidentsForControl)
             .ToList();
-    }
-
-    // Старший живой член династии — по минимальному году рождения
-    private static Character GetSenior(List<Character> aliveMembers)
-    {
-        return aliveMembers.OrderBy(m => m.BirthYear).First();
     }
 
     // Восстанавливает счётчик Id после загрузки сохранения

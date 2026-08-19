@@ -11,4 +11,6 @@ public class Culture
     public string Name { get; set; } = "";
 
     public ProfessionCategory PreferredCategory { get; set; }
+
+    public SuccessionLaw SuccessionLaw { get; set; } // Обычай наследования престола, см. SuccessionSystem
 }
