@@ -77,11 +77,17 @@ public static class ProfessionSystem
     // семейное ремесло/дело передаётся из поколения в поколение, но не всегда (см. LifeSystem)
     private const double InheritanceChance = 0.4;
 
+    // Шанс на профессию категории Knowledge за одну школу в поселении (см. SchoolSystem)
+    private const double SchoolBonusPerSchool = 0.1;
+    private const double MaxSchoolBonus = 0.4;
+
     // Случайная профессия. Если задано поселение и в нём не хватает одной из
     // обязательных профессий (см. EssentialProfessions) — гарантированно выбирает
     // именно её. Иначе, если задана профессия родителя — с некоторым шансом
-    // наследует её. Иначе, если задана культура — с повышенным шансом выбирает
-    // профессию из её предпочитаемой категории (см. Culture.PreferredCategory)
+    // наследует её. Иначе, если в поселении есть школы — с некоторым шансом
+    // выбирает профессию категории Knowledge. Иначе, если задана культура —
+    // с повышенным шансом выбирает профессию из её предпочитаемой категории
+    // (см. Culture.PreferredCategory)
     public static string GetRandom(Culture? culture = null, Settlement? settlement = null, string? inheritedProfession = null)
     {
         if (settlement != null)
@@ -99,6 +105,13 @@ public static class ProfessionSystem
             Random.NextDouble() < InheritanceChance)
         {
             return inheritedProfession;
+        }
+
+        if (settlement is { Schools: > 0 } &&
+            Random.NextDouble() < Math.Min(MaxSchoolBonus, settlement.Schools * SchoolBonusPerSchool) &&
+            ProfessionsByCategory.TryGetValue(ProfessionCategory.Knowledge, out var knowledgeProfessions))
+        {
+            return knowledgeProfessions[Random.Next(knowledgeProfessions.Length)];
         }
 
         if (culture != null &&
