@@ -28,19 +28,23 @@ public static class WorkshopSystem
                 .GroupBy(t => t)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            foreach (var (type, count) in craftersByType)
+            // Идём и по типам, которыми ещё занимаются, и по уже стоящим мастерским:
+            // ремесло могло вымереть совсем, и тогда его мастерскую нужно доветшать,
+            // а по одним только живым ремесленникам мы бы до неё не добрались
+            var types = craftersByType.Keys.Union(settlement.Workshops.Keys).ToList();
+
+            foreach (var type in types)
             {
-                var targetWorkshops = count / CraftersPerWorkshop;
-
-                if (targetWorkshops == 0)
-                {
-                    continue;
-                }
-
+                var targetWorkshops = craftersByType.GetValueOrDefault(type) / CraftersPerWorkshop;
                 var current = settlement.Workshops.GetValueOrDefault(type);
 
                 if (current >= targetWorkshops)
                 {
+                    if (DecaySystem.ShouldDecay(current, targetWorkshops, world))
+                    {
+                        settlement.Workshops[type] = current - 1; // Ремесленников не осталось — мастерская стоит без дела и ветшает
+                    }
+
                     continue;
                 }
 

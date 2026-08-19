@@ -21,17 +21,19 @@ public static class HousingSystem
     {
         foreach (var settlement in world.Settlements)
         {
+            // Опустевшее поселение не пропускаем: там нужное число домов равно нулю,
+            // и брошенная застройка должна доветшать до пустого места, а не застыть навсегда
             var alivePopulation = settlement.Members.Count(m => m.Alive);
-
-            if (alivePopulation == 0)
-            {
-                continue;
-            }
 
             var targetHouses = (int)Math.Ceiling(alivePopulation / (double)ResidentsPerHouse);
 
             if (settlement.Houses >= targetHouses)
             {
+                if (DecaySystem.ShouldDecay(settlement.Houses, targetHouses, world))
+                {
+                    settlement.Houses--; // Опустевший дом некому чинить
+                }
+
                 continue;
             }
 

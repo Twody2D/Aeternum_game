@@ -21,17 +21,18 @@ public static class HospitalSystem
     {
         foreach (var settlement in world.Settlements)
         {
+            // Опустевшее поселение не пропускаем — брошенное должно доветшать (см. HousingSystem)
             var alivePopulation = settlement.Members.Count(m => m.Alive);
-
-            if (alivePopulation == 0)
-            {
-                continue;
-            }
 
             var targetHospitals = (int)Math.Ceiling(alivePopulation / (double)ResidentsPerHospital);
 
             if (settlement.Hospitals >= targetHospitals)
             {
+                if (DecaySystem.ShouldDecay(settlement.Hospitals, targetHospitals, world))
+                {
+                    settlement.Hospitals--; // Лечить некого — лечебница приходит в запустение
+                }
+
                 continue;
             }
 

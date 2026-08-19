@@ -21,17 +21,18 @@ public static class WallSystem
     {
         foreach (var settlement in world.Settlements)
         {
+            // Опустевшее поселение не пропускаем — брошенное должно доветшать (см. HousingSystem)
             var alivePopulation = settlement.Members.Count(m => m.Alive);
-
-            if (alivePopulation == 0)
-            {
-                continue;
-            }
 
             var targetWalls = (int)Math.Ceiling(alivePopulation / (double)ResidentsPerWall);
 
             if (settlement.Walls >= targetWalls)
             {
+                if (DecaySystem.ShouldDecay(settlement.Walls, targetWalls, world))
+                {
+                    settlement.Walls--; // Некому держать оборону — кладка осыпается
+                }
+
                 continue;
             }
 

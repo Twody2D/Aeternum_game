@@ -20,17 +20,18 @@ public static class SchoolSystem
     {
         foreach (var settlement in world.Settlements)
         {
+            // Опустевшее поселение не пропускаем — брошенное должно доветшать (см. HousingSystem)
             var alivePopulation = settlement.Members.Count(m => m.Alive);
-
-            if (alivePopulation == 0)
-            {
-                continue;
-            }
 
             var targetSchools = (int)Math.Ceiling(alivePopulation / (double)ResidentsPerSchool);
 
             if (settlement.Schools >= targetSchools)
             {
+                if (DecaySystem.ShouldDecay(settlement.Schools, targetSchools, world))
+                {
+                    settlement.Schools--; // Учить некого — школа пустеет и ветшает
+                }
+
                 continue;
             }
 

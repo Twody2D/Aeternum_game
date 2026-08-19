@@ -29,6 +29,8 @@ public static class WarSystem
     private const double TruceChance = 0.2; // Шанс в год, что затянувшаяся осада сменится перемирием
     private const int TruceDuration = 10; // На сколько лет спор замирает, даже если формально не решён
 
+    private const double SiegeWallDamageChance = 0.3; // Шанс, что за год осады рухнет одно укрепление
+
     private const int VassalizationThresholdYears = 3; // Осада, длящаяся столько лет, может закончиться вассалитетом слабой стороны
     private const double VassalizationPowerRatio = 2.0; // Во сколько раз сильная сторона должна превосходить слабую по населению
     private const double VassalizationChance = 0.15; // Шанс в год, что явно проигрышная позиция обернётся вассалитетом
@@ -196,6 +198,13 @@ public static class WarSystem
         foreach (var casualty in casualties)
         {
             DeathSystem.Kill(casualty, world, DeathReason.War);
+        }
+
+        // Стены принимают удар на себя и не выдерживают его бесследно — осада
+        // постепенно срывает ту самую защиту, что делает её дорогой для нападающих
+        if (settlement.Walls > 0 && _random.NextDouble() < SiegeWallDamageChance)
+        {
+            settlement.Walls--;
         }
 
         // Боевое братство: выжившие защитники, отбившие осаду плечом к плечу, сближаются
