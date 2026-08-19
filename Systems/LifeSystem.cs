@@ -37,8 +37,9 @@ public static class LifeSystem
         }
         else if (character.Age == 16 && character.Profession == ProfessionSystem.school)
         {
-            // Культура поселения смещает выбор в сторону её предпочитаемой категории
-            character.Profession = ProfessionSystem.GetRandom(character.Settlement?.Culture);
+            // Культура поселения смещает выбор в сторону её предпочитаемой категории;
+            // недостающая обязательная профессия в поселении имеет приоритет над этим
+            character.Profession = ProfessionSystem.GetRandom(character.Settlement?.Culture, character.Settlement);
         }
     }
 }

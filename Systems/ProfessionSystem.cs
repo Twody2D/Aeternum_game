@@ -49,6 +49,14 @@ public static class ProfessionSystem
     private const double CraftMaterialAmount = 3.0; // Годовое производство материала одним ремесленником своего типа
     private const double GeneralMaterialAmount = 0.5; // Разнорабочие производят немного неспециализированного материала
 
+    // Профессии, которые гарантированно должны быть хотя бы у одного живого жителя
+    // поселения — по одному представителю на еду и на каждый тип материала.
+    // Без этого поселение могло случайно остаться совсем без кузнеца или земледельца
+    private static readonly string[] EssentialProfessions =
+    {
+        "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар"
+    };
+
     // Профессии с повышенным риском несчастного случая — используется DeathSystem
     private static readonly HashSet<string> HazardousProfessions = ContentData.Professions
         .Where(p => p.Hazardous)
@@ -65,10 +73,22 @@ public static class ProfessionSystem
     // Шанс, что профессия будет выбрана из предпочитаемой культурой категории, а не из всего списка
     private const double CulturePreferenceChance = 0.5;
 
-    // Случайная профессия. Если задана культура — с повышенным шансом выбирает
+    // Случайная профессия. Если задано поселение и в нём не хватает одной из
+    // обязательных профессий (см. EssentialProfessions) — гарантированно выбирает
+    // именно её. Иначе, если задана культура — с повышенным шансом выбирает
     // профессию из её предпочитаемой категории (см. Culture.PreferredCategory)
-    public static string GetRandom(Culture? culture = null)
+    public static string GetRandom(Culture? culture = null, Settlement? settlement = null)
     {
+        if (settlement != null)
+        {
+            var missing = GetMissingEssentialProfessions(settlement);
+
+            if (missing.Count > 0)
+            {
+                return missing[Random.Next(missing.Count)];
+            }
+        }
+
         if (culture != null &&
             Random.NextDouble() < CulturePreferenceChance &&
             ProfessionsByCategory.TryGetValue(culture.PreferredCategory, out var preferred))
@@ -79,6 +99,17 @@ public static class ProfessionSystem
         return ProfessionsList[
             Random.Next(ProfessionsList.Length)
         ];
+    }
+
+    // Обязательные профессии, которых сейчас нет ни у одного живого жителя поселения
+    private static List<string> GetMissingEssentialProfessions(Settlement settlement)
+    {
+        var present = settlement.Members
+            .Where(m => m.Alive)
+            .Select(m => m.Profession)
+            .ToHashSet();
+
+        return EssentialProfessions.Where(p => !present.Contains(p)).ToList();
     }
 
     public static ProfessionCategory GetCategory(string? profession)
