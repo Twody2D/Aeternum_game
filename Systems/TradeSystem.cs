@@ -3,26 +3,68 @@ using Aeternum.WorldGen.Core;
 
 namespace Aeternum.WorldGen.Systems;
 
-// Торговля внутри государства: без карты/географии единственная существующая
-// группировка поселений — Kingdom.Settlements. Сглаживает дефицит/излишки еды
-// и материалов между провинциями одного государства — государство теперь даёт
-// не только политическую, но и экономическую пользу. Ничего не логирует —
-// тот же принцип, что и у EconomySystem (перераспределение не событие,
-// событие — только заметное последствие вроде голода)
+// Торговля внутри общего рынка: без карты/географии единственная существующая
+// группировка поселений — Kingdom.Settlements, расширенная на союзников
+// (AllianceSystem) транзитивно — если А союзно Б, а Б союзно В, все трое торгуют
+// на одном общем рынке, а не в трёх раздельных. Сглаживает дефицит/излишки еды
+// и материалов — государства и их союзы теперь дают не только политическую,
+// но и экономическую пользу. Ничего не логирует — тот же принцип, что и у
+// EconomySystem (перераспределение не событие, событие — только заметное
+// последствие вроде голода)
 public static class TradeSystem
 {
     public static void Process(World world)
     {
+        var visited = new HashSet<Kingdom>();
+
         foreach (var kingdom in world.Kingdoms)
         {
-            if (kingdom.FallenYear != null || kingdom.Settlements.Count < 2)
+            if (kingdom.FallenYear != null || visited.Contains(kingdom))
             {
                 continue;
             }
 
-            Redistribute(kingdom.Settlements, s => s.FoodStock, (s, v) => s.FoodStock = v, world.Settings.TradeTransferRate);
-            Redistribute(kingdom.Settlements, s => s.MaterialStock, (s, v) => s.MaterialStock = v, world.Settings.TradeTransferRate);
+            var cluster = CollectTradeCluster(kingdom, visited);
+            var settlements = cluster.SelectMany(k => k.Settlements).Distinct().ToList();
+
+            if (settlements.Count < 2)
+            {
+                continue;
+            }
+
+            Redistribute(settlements, s => s.FoodStock, (s, v) => s.FoodStock = v, world.Settings.TradeTransferRate);
+            Redistribute(settlements, s => s.MaterialStock, (s, v) => s.MaterialStock = v, world.Settings.TradeTransferRate);
         }
+    }
+
+    // Обход в ширину по AlliedKingdoms — все транзитивно союзные государства
+    // образуют один общий рынок, обрабатываемый ровно один раз за год
+    private static List<Kingdom> CollectTradeCluster(Kingdom start, HashSet<Kingdom> visited)
+    {
+        var cluster = new List<Kingdom>();
+        var queue = new Queue<Kingdom>();
+
+        queue.Enqueue(start);
+        visited.Add(start);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            cluster.Add(current);
+
+            foreach (var ally in current.AlliedKingdoms)
+            {
+                if (ally.FallenYear != null || visited.Contains(ally))
+                {
+                    continue;
+                }
+
+                visited.Add(ally);
+                queue.Enqueue(ally);
+            }
+        }
+
+        return cluster;
     }
 
     // Переносит долю излишка от поселений с положительным запасом к поселениям
