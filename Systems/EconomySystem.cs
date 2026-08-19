@@ -45,6 +45,11 @@ public static class EconomySystem
             {
                 settlement.MaterialStocks.Clear();
             }
+
+            if (settlement.Gold != 0)
+            {
+                settlement.Gold = 0;
+            }
         }
     }
 
@@ -52,6 +57,9 @@ public static class EconomySystem
     {
         double production = residents.Sum(c =>
             ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c));
+
+        settlement.Gold += residents.Sum(c =>
+            ProfessionSystem.GetGoldProduction(c.Profession) * GetProductivity(c));
 
         foreach (var resident in residents)
         {

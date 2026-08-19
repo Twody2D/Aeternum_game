@@ -27,6 +27,13 @@ public static class ProfessionSystem
         [ProfessionCategory.Military] = 1.0,
     };
 
+    // Сколько золота в год производит один взрослый работник данной категории — только Trade
+    // (торговец, купец и т.п.); остальные категории не производят золото
+    private static readonly Dictionary<ProfessionCategory, double> GoldProductionByCategory = new()
+    {
+        [ProfessionCategory.Trade] = 3.0,
+    };
+
     // Какой тип материала производит каждая конкретная ремесленная профессия —
     // привязка один-в-один, а не по грубой категории (см. MaterialType)
     private static readonly Dictionary<string, MaterialType> MaterialTypeByProfession = new()
@@ -151,6 +158,12 @@ public static class ProfessionSystem
     public static double GetFoodProduction(string? profession)
     {
         return FoodProductionByCategory[GetCategory(profession)];
+    }
+
+    // Годовое производство золота одним взрослым работником этой профессии
+    public static double GetGoldProduction(string? profession)
+    {
+        return GoldProductionByCategory.GetValueOrDefault(GetCategory(profession));
     }
 
     // Годовое производство материалов одним взрослым работником этой профессии: тип и количество

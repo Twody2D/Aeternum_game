@@ -82,7 +82,7 @@ public static class KingdomSystem
     {
         // Богатая казна (см. TributeSystem) даёт правителю чем откупиться от
         // претендентов — снижает шанс, но никогда не убирает риск полностью
-        var stability = kingdom.FoodTreasury / world.Settings.TreasuryStabilityDivisor;
+        var stability = (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor;
         var effectiveChance = world.Settings.SuccessionCrisisChance / (1 + stability);
 
         if (_random.NextDouble() >= effectiveChance)

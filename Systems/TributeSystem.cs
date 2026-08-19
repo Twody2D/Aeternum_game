@@ -27,6 +27,13 @@ public static class TributeSystem
                     kingdom.FoodTreasury += foodTribute;
                 }
 
+                if (settlement.Gold > 0)
+                {
+                    var goldTribute = settlement.Gold * world.Settings.TributeRate;
+                    settlement.Gold -= goldTribute;
+                    kingdom.GoldTreasury += goldTribute;
+                }
+
                 foreach (var type in Enum.GetValues<MaterialType>())
                 {
                     var stock = settlement.MaterialStocks.GetValueOrDefault(type);

@@ -109,6 +109,7 @@ public static class SaveSystem
                 Workshops = s.Workshops,
                 Schools = s.Schools,
                 Walls = s.Walls,
+                Gold = s.Gold,
                 MemberIds = s.Members.Select(c => c.Id).ToList(),
                 CultureId = s.Culture?.Id,
                 ReligionId = s.Religion?.Id
@@ -138,7 +139,8 @@ public static class SaveSystem
                 SettlementIds = k.Settlements.Select(s => s.Id).ToList(),
                 AlliedKingdomIds = k.AlliedKingdoms.Select(ak => ak.Id).ToList(),
                 FoodTreasury = k.FoodTreasury,
-                MaterialTreasury = k.MaterialTreasury
+                MaterialTreasury = k.MaterialTreasury,
+                GoldTreasury = k.GoldTreasury
             }).ToList()
         };
     }
@@ -161,7 +163,7 @@ public static class SaveSystem
 
         var settlementsById = data.Settlements.ToDictionary(
             s => s.Id,
-            s => new Settlement { Id = s.Id, Name = s.Name, FoodStock = s.FoodStock, MaterialStocks = s.MaterialStocks, Houses = s.Houses, Hospitals = s.Hospitals, Workshops = s.Workshops, Schools = s.Schools, Walls = s.Walls });
+            s => new Settlement { Id = s.Id, Name = s.Name, FoodStock = s.FoodStock, MaterialStocks = s.MaterialStocks, Houses = s.Houses, Hospitals = s.Hospitals, Workshops = s.Workshops, Schools = s.Schools, Walls = s.Walls, Gold = s.Gold });
 
         var familiesById = data.Families.ToDictionary(
             f => f.Id,
@@ -241,7 +243,8 @@ public static class SaveSystem
                 Ruler = charactersById[k.RulerId],
                 Settlements = k.SettlementIds.Select(id => settlementsById[id]).ToList(),
                 FoodTreasury = k.FoodTreasury,
-                MaterialTreasury = k.MaterialTreasury
+                MaterialTreasury = k.MaterialTreasury,
+                GoldTreasury = k.GoldTreasury
             });
 
         foreach (var k in data.Kingdoms)

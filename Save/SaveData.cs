@@ -84,6 +84,7 @@ public class SettlementData
     public Dictionary<MaterialType, int> Workshops { get; set; } = new();
     public int Schools { get; set; }
     public int Walls { get; set; }
+    public double Gold { get; set; }
     public List<int> MemberIds { get; set; } = new();
     public int? CultureId { get; set; }
     public int? ReligionId { get; set; }
@@ -114,4 +115,5 @@ public class KingdomData
     public List<int> AlliedKingdomIds { get; set; } = new();
     public double FoodTreasury { get; set; }
     public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new();
+    public double GoldTreasury { get; set; }
 }

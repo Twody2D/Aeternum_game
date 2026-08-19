@@ -168,7 +168,7 @@ void PrintFinalReport(WorldStatistics stats)
             $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}): " +
             $"{settlementStat.Population} жит., домов {settlement.Houses}, больниц {settlement.Hospitals}, " +
             $"школ {settlement.Schools}, укреплений {settlement.Walls}, " +
-            $"запас еды {settlement.FoodStock:0.#}, материалы: {materialsText}, мастерские: {workshopsText}");
+            $"запас еды {settlement.FoodStock:0.#}, золота {settlement.Gold:0.#}, материалы: {materialsText}, мастерские: {workshopsText}");
     }
 
     Console.WriteLine();
@@ -298,8 +298,8 @@ void PrintKingdoms(List<Kingdom> kingdoms)
 
         var treasuryMaterials = kingdom.MaterialTreasury.Where(kv => kv.Value > 0).ToList();
 
-        var treasuryText = kingdom.FoodTreasury > 0 || treasuryMaterials.Count > 0
-            ? $", казна: {kingdom.FoodTreasury:0.#} еды" +
+        var treasuryText = kingdom.FoodTreasury > 0 || kingdom.GoldTreasury > 0 || treasuryMaterials.Count > 0
+            ? $", казна: {kingdom.FoodTreasury:0.#} еды, {kingdom.GoldTreasury:0.#} золота" +
               (treasuryMaterials.Count > 0
                   ? $", {string.Join(", ", treasuryMaterials.Select(kv => $"{materialLabels[kv.Key]} {kv.Value:0.#}"))}"
                   : "")
