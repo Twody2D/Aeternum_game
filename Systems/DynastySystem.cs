@@ -14,11 +14,10 @@ public static class DynastySystem
         Character founder,
         World world)
     {
-
         var dynasty = new Dynasty
         {
             Id = _nextDynastyId++,
-            Name = $"Дом {founder.LastName}",
+            Name = GetUniqueName(founder, world),
             Founder = founder,
             FoundedYear = world.CurrentYear
         };
@@ -39,6 +38,19 @@ public static class DynastySystem
         return dynasty;
     }
 
+
+    // Фамилии берутся из общего пула (Data/Names.json), поэтому два никак не
+    // связанных основателя вполне могут её разделить — без разбивки по имени
+    // основателя два разных дома отображались бы неотличимо друг от друга
+    // (например, в списке претендентов на спорное поселение в WarSystem)
+    private static string GetUniqueName(Character founder, World world)
+    {
+        var baseName = $"Дом {founder.LastName}";
+
+        return world.Dynasties.Any(d => d.Name == baseName)
+            ? $"{baseName} ({founder.Name})"
+            : baseName;
+    }
 
     // Добавляет персонажа в уже существующую династию (по браку или по рождению).
     // Идемпотентно: при повторном браке в ту же династию (вдова/вдовец женится
