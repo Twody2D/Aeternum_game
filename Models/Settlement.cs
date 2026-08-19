@@ -17,6 +17,8 @@ public class Settlement
 
     public int Hospitals { get; set; } // Число больниц — снижают детскую смертность и тяжесть эпидемий, см. HospitalSystem
 
+    public Dictionary<MaterialType, int> Workshops { get; set; } = new(); // Мастерские по типу материала — усиливают его производство, см. WorkshopSystem
+
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 
     public Culture? Culture { get; set; } // Культура поселения — влияет на распределение профессий жителей

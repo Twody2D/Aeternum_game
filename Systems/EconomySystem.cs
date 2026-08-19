@@ -56,7 +56,7 @@ public static class EconomySystem
         foreach (var resident in residents)
         {
             var (type, amount) = ProfessionSystem.GetMaterialProduction(resident.Profession);
-            var materialAmount = amount * GetProductivity(resident);
+            var materialAmount = amount * GetProductivity(resident) * WorkshopSystem.GetProductionMultiplier(settlement, type);
 
             if (materialAmount <= 0)
             {

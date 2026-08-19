@@ -160,10 +160,14 @@ void PrintFinalReport(WorldStatistics stats)
             ? string.Join(", ", settlement.MaterialStocks.Where(kv => kv.Value > 0).Select(kv => $"{materialLabels[kv.Key]} {kv.Value:0.#}"))
             : "нет";
 
+        var workshopsText = settlement.Workshops.Count(kv => kv.Value > 0) > 0
+            ? string.Join(", ", settlement.Workshops.Where(kv => kv.Value > 0).Select(kv => $"{materialLabels[kv.Key]} {kv.Value}"))
+            : "нет";
+
         Console.WriteLine(
             $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}): " +
             $"{settlementStat.Population} жит., домов {settlement.Houses}, больниц {settlement.Hospitals}, " +
-            $"запас еды {settlement.FoodStock:0.#}, материалы: {materialsText}");
+            $"запас еды {settlement.FoodStock:0.#}, материалы: {materialsText}, мастерские: {workshopsText}");
     }
 
     Console.WriteLine();
