@@ -3,8 +3,8 @@ using Aeternum.WorldGen.Core;
 
 namespace Aeternum.WorldGen.Systems;
 
-// Производство и потребление еды, производство материалов — по каждому поселению
-// отдельно (сглаживание между поселениями одного государства — см. TradeSystem).
+// Производство и потребление еды, производство материалов по типам — по каждому
+// поселению отдельно (сглаживание между поселениями одного государства — см. TradeSystem).
 // Взрослые работники кормят всё живое население поселения по своей профессии
 // (см. ProfessionSystem.GetFoodProduction/GetMaterialProduction). При устойчивом
 // дефиците еды часть жителей гибнет от голода (DeathReason.Starvation); материалы
@@ -41,9 +41,9 @@ public static class EconomySystem
                 settlement.FoodStock = 0;
             }
 
-            if (settlement.MaterialStock != 0)
+            if (settlement.MaterialStocks.Count > 0)
             {
-                settlement.MaterialStock = 0;
+                settlement.MaterialStocks.Clear();
             }
         }
     }
@@ -53,10 +53,18 @@ public static class EconomySystem
         double production = residents.Sum(c =>
             ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c.LifeStage));
 
-        double materialProduction = residents.Sum(c =>
-            ProfessionSystem.GetMaterialProduction(c.Profession) * GetProductivity(c.LifeStage));
+        foreach (var resident in residents)
+        {
+            var (type, amount) = ProfessionSystem.GetMaterialProduction(resident.Profession);
+            var materialAmount = amount * GetProductivity(resident.LifeStage);
 
-        settlement.MaterialStock += materialProduction; // Пока только копится — потребления материалов ещё нет
+            if (materialAmount <= 0)
+            {
+                continue;
+            }
+
+            settlement.MaterialStocks[type] = settlement.MaterialStocks.GetValueOrDefault(type) + materialAmount;
+        }
 
         double consumption = residents.Count * world.Settings.FoodConsumptionPerCapita;
 

@@ -66,6 +66,16 @@ var ageGroupLabels = new Dictionary<AgeGroup, string>
     [AgeGroup.Elder] = "Пожилые"
 };
 
+var materialLabels = new Dictionary<MaterialType, string>
+{
+    [MaterialType.Wood] = "дерево",
+    [MaterialType.Stone] = "камень",
+    [MaterialType.Metal] = "металл",
+    [MaterialType.Textile] = "ткани",
+    [MaterialType.Clay] = "утварь",
+    [MaterialType.General] = "разное"
+};
+
 PrintInitialPopulation(StatisticsSystem.BuildInitialPopulationReport(world));
 
 var engine = new SimulationEngine();
@@ -133,9 +143,13 @@ void PrintFinalReport(WorldStatistics stats)
     {
         var settlement = settlementStat.Settlement;
 
+        var materialsText = settlement.MaterialStocks.Count(kv => kv.Value > 0) > 0
+            ? string.Join(", ", settlement.MaterialStocks.Where(kv => kv.Value > 0).Select(kv => $"{materialLabels[kv.Key]} {kv.Value:0.#}"))
+            : "нет";
+
         Console.WriteLine(
             $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}): " +
-            $"{settlementStat.Population} жит., запас еды {settlement.FoodStock:0.#}, материалов {settlement.MaterialStock:0.#}");
+            $"{settlementStat.Population} жит., запас еды {settlement.FoodStock:0.#}, материалы: {materialsText}");
     }
 
     Console.WriteLine();
@@ -263,8 +277,13 @@ void PrintKingdoms(List<Kingdom> kingdoms)
             ? $", союзники: {string.Join(", ", kingdom.AlliedKingdoms.Select(k => k.Name))}"
             : "";
 
-        var treasuryText = kingdom.FoodTreasury > 0 || kingdom.MaterialTreasury > 0
-            ? $", казна: {kingdom.FoodTreasury:0.#} еды, {kingdom.MaterialTreasury:0.#} материалов"
+        var treasuryMaterials = kingdom.MaterialTreasury.Where(kv => kv.Value > 0).ToList();
+
+        var treasuryText = kingdom.FoodTreasury > 0 || treasuryMaterials.Count > 0
+            ? $", казна: {kingdom.FoodTreasury:0.#} еды" +
+              (treasuryMaterials.Count > 0
+                  ? $", {string.Join(", ", treasuryMaterials.Select(kv => $"{materialLabels[kv.Key]} {kv.Value:0.#}"))}"
+                  : "")
             : "";
 
         Console.WriteLine(

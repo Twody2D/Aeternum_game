@@ -23,5 +23,5 @@ public class Kingdom
 
     public double FoodTreasury { get; set; } // Казна еды — собирается данью с подконтрольных поселений (см. TributeSystem)
 
-    public double MaterialTreasury { get; set; } // Казна материалов — то же для материалов
+    public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new(); // Казна материалов по типам — то же для материалов
 }

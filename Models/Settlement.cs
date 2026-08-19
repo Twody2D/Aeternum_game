@@ -11,7 +11,7 @@ public class Settlement
 
     public double FoodStock { get; set; } // Локальный запас еды (аналог World.FoodStock, но на одно поселение)
 
-    public double MaterialStock { get; set; } // Запас материалов (ремесленное производство) — пока только копится, тратить пока не на что
+    public Dictionary<MaterialType, double> MaterialStocks { get; set; } = new(); // Запасы материалов по типам (ремесленное производство), см. MaterialType
 
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 

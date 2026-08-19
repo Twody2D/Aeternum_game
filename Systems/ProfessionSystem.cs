@@ -27,17 +27,27 @@ public static class ProfessionSystem
         [ProfessionCategory.Military] = 1.0,
     };
 
-    // Сколько условных материалов в год производит один взрослый работник данной категории —
-    // пока только ремесленники и разнорабочие, тратить материалы пока не на что (см. EconomySystem)
-    private static readonly Dictionary<ProfessionCategory, double> MaterialProductionByCategory = new()
+    // Какой тип материала производит каждая конкретная ремесленная профессия —
+    // привязка один-в-один, а не по грубой категории (см. MaterialType)
+    private static readonly Dictionary<string, MaterialType> MaterialTypeByProfession = new()
     {
-        [ProfessionCategory.Craft] = 3.0,
-        [ProfessionCategory.General] = 0.5,
-        [ProfessionCategory.FoodProducer] = 0.0,
-        [ProfessionCategory.Trade] = 0.0,
-        [ProfessionCategory.Knowledge] = 0.0,
-        [ProfessionCategory.Military] = 0.0,
+        ["Кузнец"] = MaterialType.Metal,
+        ["Оружейник"] = MaterialType.Metal,
+        ["Столяр"] = MaterialType.Wood,
+        ["Строитель"] = MaterialType.Wood,
+        ["Каменщик"] = MaterialType.Stone,
+        ["Ткач"] = MaterialType.Textile,
+        ["Портной"] = MaterialType.Textile,
+        ["Сапожник"] = MaterialType.Textile,
+        ["Кожевник"] = MaterialType.Textile,
+        ["Гончар"] = MaterialType.Clay,
+        ["Стекольщик"] = MaterialType.Clay,
+        ["Ювелир"] = MaterialType.Clay,
+        ["Ремесленник"] = MaterialType.Clay,
     };
+
+    private const double CraftMaterialAmount = 3.0; // Годовое производство материала одним ремесленником своего типа
+    private const double GeneralMaterialAmount = 0.5; // Разнорабочие производят немного неспециализированного материала
 
     // Профессии с повышенным риском несчастного случая — используется DeathSystem
     private static readonly HashSet<string> HazardousProfessions = ContentData.Professions
@@ -87,10 +97,20 @@ public static class ProfessionSystem
         return FoodProductionByCategory[GetCategory(profession)];
     }
 
-    // Годовое производство материалов одним взрослым работником этой профессии
-    public static double GetMaterialProduction(string? profession)
+    // Годовое производство материалов одним взрослым работником этой профессии: тип и количество
+    public static (MaterialType Type, double Amount) GetMaterialProduction(string? profession)
     {
-        return MaterialProductionByCategory[GetCategory(profession)];
+        if (profession != null && MaterialTypeByProfession.TryGetValue(profession, out var type))
+        {
+            return (type, CraftMaterialAmount);
+        }
+
+        if (GetCategory(profession) == ProfessionCategory.General)
+        {
+            return (MaterialType.General, GeneralMaterialAmount);
+        }
+
+        return (MaterialType.General, 0.0);
     }
 
     public static bool IsHazardous(string? profession)

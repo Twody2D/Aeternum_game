@@ -33,7 +33,15 @@ public static class TradeSystem
             }
 
             Redistribute(settlements, s => s.FoodStock, (s, v) => s.FoodStock = v, world.Settings.TradeTransferRate);
-            Redistribute(settlements, s => s.MaterialStock, (s, v) => s.MaterialStock = v, world.Settings.TradeTransferRate);
+
+            foreach (var type in Enum.GetValues<MaterialType>())
+            {
+                Redistribute(
+                    settlements,
+                    s => s.MaterialStocks.GetValueOrDefault(type),
+                    (s, v) => s.MaterialStocks[type] = v,
+                    world.Settings.TradeTransferRate);
+            }
         }
     }
 

@@ -27,11 +27,18 @@ public static class TributeSystem
                     kingdom.FoodTreasury += foodTribute;
                 }
 
-                if (settlement.MaterialStock > 0)
+                foreach (var type in Enum.GetValues<MaterialType>())
                 {
-                    var materialTribute = settlement.MaterialStock * world.Settings.TributeRate;
-                    settlement.MaterialStock -= materialTribute;
-                    kingdom.MaterialTreasury += materialTribute;
+                    var stock = settlement.MaterialStocks.GetValueOrDefault(type);
+
+                    if (stock <= 0)
+                    {
+                        continue;
+                    }
+
+                    var materialTribute = stock * world.Settings.TributeRate;
+                    settlement.MaterialStocks[type] = stock - materialTribute;
+                    kingdom.MaterialTreasury[type] = kingdom.MaterialTreasury.GetValueOrDefault(type) + materialTribute;
                 }
             }
         }
