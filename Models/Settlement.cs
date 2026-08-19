@@ -28,6 +28,8 @@ public class Settlement
     public double X { get; set; } // Координаты на условной карте — см. SettlementGenerator
     public double Y { get; set; }
 
+    public int SiegeYears { get; set; } // Сколько подряд лет поселение находится в осаде, см. WarSystem
+
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 
     public Culture? Culture { get; set; } // Культура поселения — влияет на распределение профессий жителей

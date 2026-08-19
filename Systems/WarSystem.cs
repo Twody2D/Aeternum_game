@@ -4,15 +4,23 @@ using Aeternum.WorldGen.Events;
 
 namespace Aeternum.WorldGen.Systems;
 
-// Войны между государствами — без армий и битв как отдельной механики.
-// Казус белли уже есть в данных: спорное поселение — то, что попадает в
+// Войны между государствами — без отдельной сущности "армия", гарнизон
+// поселения определяется прямо по живущим в нём профессиям Military. Казус
+// белли уже есть в данных: спорное поселение — то, что попадает в
 // Kingdom.Settlements сразу у двух и более королевств одновременно (порог
 // контроля в KingdomSystem — "заметное присутствие", не большинство, поэтому
-// пересечения реальны). Передел территории ничего досчитывать не нужно —
-// KingdomSystem и так пересчитывает контроль каждый год по числу живых жителей
+// пересечения реальны). Однажды начавшись, война становится осадой — длится
+// подряд несколько лет с растущими потерями, пока спор не разрешится сам собой
+// через обычный ежегодный пересчёт территориального контроля (KingdomSystem)
 public static class WarSystem
 {
     private static readonly Random _random = new();
+
+    private const double EscalationPerYear = 0.15; // Затяжная осада изматывает сильнее внезапного набега
+    private const int MaxEscalationYears = 5; // Максимум +75% к потерям на 5+ году осады
+
+    private const double DefenseBonusPerDefender = 0.05; // Гарнизон (профессии Military) снижает потери
+    private const double MaxDefenseBonus = 0.3;
 
     public static void Process(World world)
     {
@@ -22,20 +30,21 @@ public static class WarSystem
                 .Where(k => k.Settlements.Contains(settlement))
                 .ToList();
 
-            if (claimants.Count < 2)
+            if (claimants.Count < 2 || AreAllAllied(claimants))
+            {
+                settlement.SiegeYears = 0; // Спор разрешился или снят — осада прекращается
+                continue;
+            }
+
+            // Осада ещё не началась — как и раньше, решает WarChance. Уже идущая
+            // осада не бросает эту монету заново — раз начавшись, не может
+            // случайно "передумать" и продолжается, пока не разрешится исходом
+            if (settlement.SiegeYears == 0 && _random.NextDouble() >= world.Settings.WarChance)
             {
                 continue;
             }
 
-            if (AreAllAllied(claimants))
-            {
-                continue; // Союзники не воюют друг с другом за спорное поселение
-            }
-
-            if (_random.NextDouble() >= world.Settings.WarChance)
-            {
-                continue;
-            }
+            settlement.SiegeYears++;
 
             DeclareWar(settlement, claimants, world);
         }
@@ -60,7 +69,13 @@ public static class WarSystem
     private static void DeclareWar(Settlement settlement, List<Kingdom> claimants, World world)
     {
         var residents = settlement.Members.Where(m => m.Alive).ToList();
-        var effectiveCasualtyRate = world.Settings.WarCasualtyRate * WallSystem.GetWallFactor(settlement);
+
+        var escalation = 1 + EscalationPerYear * Math.Min(settlement.SiegeYears, MaxEscalationYears);
+
+        var defenders = residents.Count(m => ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Military);
+        var defenseFactor = 1 - Math.Min(MaxDefenseBonus, defenders * DefenseBonusPerDefender);
+
+        var effectiveCasualtyRate = world.Settings.WarCasualtyRate * escalation * defenseFactor * WallSystem.GetWallFactor(settlement);
         var casualtyCount = (int)(residents.Count * effectiveCasualtyRate);
 
         var casualties = residents
@@ -81,7 +96,7 @@ public static class WarSystem
         {
             Year = world.CurrentYear,
             Type = EventType.War,
-            Description = $"{settlement.Name}: спор перерос в войну. Претенденты: {claimantNames}. Погибших: {casualties.Count}"
+            Description = $"{settlement.Name}: {settlement.SiegeYears}-й год осады. Претенденты: {claimantNames}. Погибших: {casualties.Count}"
         });
     }
 }
