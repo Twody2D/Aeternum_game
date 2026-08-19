@@ -18,6 +18,7 @@ public static class MigrationSystem
     private const double DistancePenalty = 0.5; // Штраф к привлекательности поселения за единицу расстояния
     private const double EnemyPresentMultiplier = 2.0; // Сосед-враг в своём поселении — повод уехать не хуже голода
     private const double LegendBonusPerLegend = 3.0; // Слава легендарного места способна перевесить средний урожай по соседству
+    private const double FriendBonusPerFriend = 1.5; // Друзья в поселении-цели — попутный довод при выборе, куда переехать
 
     public static void Process(World world)
     {
@@ -65,7 +66,7 @@ public static class MigrationSystem
 
             var destination = world.Settlements
                 .Where(s => s != origin && !s.Members.Any(m => m.Alive && character.Enemies.Contains(m)))
-                .OrderByDescending(s => Attractiveness(origin, s))
+                .OrderByDescending(s => Attractiveness(character, origin, s))
                 .FirstOrDefault();
 
             if (destination == null)
@@ -76,7 +77,7 @@ public static class MigrationSystem
             // Слава легендарного места (см. Settlement.LegendCount) способна перетянуть
             // даже при не лучшем урожае — сравниваем не сырой запас еды, а всю
             // привлекательность целиком (расстояние до себя самого равно нулю)
-            if (!fleeingEnemy && Attractiveness(origin, destination) <= Attractiveness(origin, origin))
+            if (!fleeingEnemy && Attractiveness(character, origin, destination) <= Attractiveness(character, origin, origin))
             {
                 continue; // Нигде не лучше и враг не гонит — остаёмся
             }
@@ -85,11 +86,15 @@ public static class MigrationSystem
         }
     }
 
-    // Привлекательность поселения-цели: запас еды за вычетом расстояния и с добавкой
-    // за легендарную славу (см. Settlement.LegendCount)
-    private static double Attractiveness(Settlement origin, Settlement destination)
+    // Привлекательность поселения-цели: запас еды за вычетом расстояния, с добавкой
+    // за легендарную славу (см. Settlement.LegendCount) и за друзей персонажа,
+    // которые уже там живут (см. Character.Friends) — попутный, не решающий довод
+    private static double Attractiveness(Character character, Settlement origin, Settlement destination)
     {
-        return destination.FoodStock - DistancePenalty * Distance(origin, destination) + LegendBonusPerLegend * destination.LegendCount;
+        var friendsThere = destination.Members.Count(m => m.Alive && character.Friends.Contains(m));
+
+        return destination.FoodStock - DistancePenalty * Distance(origin, destination) +
+               LegendBonusPerLegend * destination.LegendCount + FriendBonusPerFriend * friendsThere;
     }
 
     private static double Distance(Settlement a, Settlement b)

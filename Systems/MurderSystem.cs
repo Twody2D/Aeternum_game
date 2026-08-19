@@ -96,6 +96,16 @@ public static class MurderSystem
 
     private static int GetWeight(Character rival, Character ruler)
     {
+        // Друг правителя (см. Character.Friends) не пойдёт на предательство —
+        // ни смелость, ни застарелая обида его на это не толкнут. Откатываем
+        // вес обратно к DefaultWeight, а не ниже: при весе 0 персонаж выпал бы
+        // из пула заговорщиков совсем, а если так вышло бы у всех соперников
+        // разом — случайный выбор из пустого списка обрушил бы систему
+        if (rival.Friends.Contains(ruler))
+        {
+            return DefaultWeight;
+        }
+
         var weight = DefaultWeight;
 
         if (rival.Traits.Contains(Trait.Brave))

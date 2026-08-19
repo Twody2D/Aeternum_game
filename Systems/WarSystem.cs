@@ -176,8 +176,8 @@ public static class WarSystem
 
         var escalation = 1 + EscalationPerYear * Math.Min(settlement.SiegeYears, MaxEscalationYears);
 
-        var defenders = residents.Count(m => ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Military);
-        var defenseFactor = 1 - Math.Min(MaxDefenseBonus, defenders * DefenseBonusPerDefender);
+        var defenders = residents.Where(m => ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Military).ToList();
+        var defenseFactor = 1 - Math.Min(MaxDefenseBonus, defenders.Count * DefenseBonusPerDefender);
 
         var effectiveCasualtyRate = world.Settings.WarCasualtyRate * escalation * defenseFactor * WallSystem.GetWallFactor(settlement);
 
@@ -196,6 +196,18 @@ public static class WarSystem
         foreach (var casualty in casualties)
         {
             DeathSystem.Kill(casualty, world, DeathReason.War);
+        }
+
+        // Боевое братство: выжившие защитники, отбившие осаду плечом к плечу, сближаются
+        var survivingDefenders = defenders.Where(d => !casualties.Contains(d)).ToList();
+
+        for (var i = 0; i < survivingDefenders.Count; i++)
+        {
+            for (var j = i + 1; j < survivingDefenders.Count; j++)
+            {
+                survivingDefenders[i].Friends.Add(survivingDefenders[j]);
+                survivingDefenders[j].Friends.Add(survivingDefenders[i]);
+            }
         }
 
         // Именительный падеж безопасен для любого числа претендентов —

@@ -35,4 +35,6 @@ public class Character
 
     public HashSet<Character> Enemies { get; set; } = new(); // Вражда — накапливается, никогда не забывается, см. MurderSystem.AddEnmity
 
+    public HashSet<Character> Friends { get; set; } = new(); // Дружба — опекунство и совместная оборона поселения, см. OrphanSystem, WarSystem
+
 }

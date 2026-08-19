@@ -38,6 +38,8 @@ public static class OrphanSystem
             }
 
             orphan.Guardian = guardian;
+            orphan.Friends.Add(guardian);
+            guardian.Friends.Add(orphan);
 
             var tookVerb = guardian.Gender == Gender.Female ? "взяла" : "взял";
 

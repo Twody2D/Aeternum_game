@@ -53,6 +53,7 @@ public class CharacterData
 
     public List<Trait> Traits { get; set; } = new();
     public List<int> EnemyIds { get; set; } = new();
+    public List<int> FriendIds { get; set; } = new();
 }
 
 public class FamilyData
