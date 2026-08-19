@@ -15,6 +15,7 @@ public class World
     public List<Culture> Cultures { get; set; } = new(); //Список культур
     public List<Religion> Religions { get; set; } = new(); //Список религий
     public List<Kingdom> Kingdoms { get; set; } = new(); //Список государств
+    public List<TradeRoute> TradeRoutes { get; set; } = new(); //Список торговых путей между поселениями
 
     public int TotalBirths { get; set; } //Всего рождений в мире
 

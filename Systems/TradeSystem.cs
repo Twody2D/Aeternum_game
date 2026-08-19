@@ -13,6 +13,9 @@ namespace Aeternum.WorldGen.Systems;
 // последствие вроде голода)
 public static class TradeSystem
 {
+    private const double RouteBonusPerYear = 0.05; // Наезженный путь год от года снижает потери при обмене
+    private const double MaxRouteBonus = 0.5; // Потолок — до +50% к эффективности передачи
+
     public static void Process(World world)
     {
         var visited = new HashSet<Kingdom>();
@@ -32,17 +35,51 @@ public static class TradeSystem
                 continue;
             }
 
-            Redistribute(settlements, s => s.FoodStock, (s, v) => s.FoodStock = v, world.Settings.TradeTransferRate);
+            // Redistribute вызывается 7 раз за год (еда + каждый MaterialType) — собираем
+            // все пары, которые в этом году хоть раз реально поторговали, и крепим путь
+            // ровно один раз за год на пару, а не один раз за каждый вид товара
+            var tradedPairs = new HashSet<(Settlement, Settlement)>();
+
+            tradedPairs.UnionWith(Redistribute(settlements, s => s.FoodStock, (s, v) => s.FoodStock = v, world.Settings.TradeTransferRate, world));
 
             foreach (var type in Enum.GetValues<MaterialType>())
             {
-                Redistribute(
+                tradedPairs.UnionWith(Redistribute(
                     settlements,
                     s => s.MaterialStocks.GetValueOrDefault(type),
                     (s, v) => s.MaterialStocks[type] = v,
-                    world.Settings.TradeTransferRate);
+                    world.Settings.TradeTransferRate,
+                    world));
+            }
+
+            foreach (var (a, b) in tradedPairs)
+            {
+                GetOrCreateRoute(a, b, world).Years++;
             }
         }
+    }
+
+    // Путь — ненаправленная пара (A/B симметричны, как Character.Enemies), создаётся при первой торговле
+    private static TradeRoute GetOrCreateRoute(Settlement a, Settlement b, World world)
+    {
+        var route = world.TradeRoutes.FirstOrDefault(r => (r.A == a && r.B == b) || (r.A == b && r.B == a));
+
+        if (route != null)
+        {
+            return route;
+        }
+
+        route = new TradeRoute { A = a, B = b, Years = 0 };
+        world.TradeRoutes.Add(route);
+
+        return route;
+    }
+
+    private static double GetRouteFactor(Settlement a, Settlement b, World world)
+    {
+        var route = world.TradeRoutes.FirstOrDefault(r => (r.A == a && r.B == b) || (r.A == b && r.B == a));
+
+        return route == null ? 1 : 1 + Math.Min(MaxRouteBonus, route.Years * RouteBonusPerYear);
     }
 
     // Обход в ширину по AlliedKingdoms — все транзитивно союзные государства
@@ -76,19 +113,23 @@ public static class TradeSystem
     }
 
     // Переносит долю излишка от поселений с положительным запасом к поселениям
-    // с отрицательным, пока не покроет дефицит или не иссякнет доступный излишек
-    private static void Redistribute(
+    // с отрицательным, пока не покроет дефицит или не иссякнет доступный излишек.
+    // Возвращает пары, между которыми реально прошла передача — для усиления TradeRoute
+    private static HashSet<(Settlement, Settlement)> Redistribute(
         List<Settlement> settlements,
         Func<Settlement, double> get,
         Action<Settlement, double> set,
-        double transferRate)
+        double transferRate,
+        World world)
     {
+        var tradedPairs = new HashSet<(Settlement, Settlement)>();
+
         var deficits = settlements.Where(s => get(s) < 0).ToList();
         var donors = settlements.Where(s => get(s) > 0).ToList();
 
         if (deficits.Count == 0 || donors.Count == 0)
         {
-            return;
+            return tradedPairs;
         }
 
         foreach (var deficit in deficits)
@@ -102,7 +143,8 @@ public static class TradeSystem
                     break;
                 }
 
-                var available = get(donor) * transferRate;
+                var effectiveRate = transferRate * GetRouteFactor(donor, deficit, world);
+                var available = get(donor) * effectiveRate;
                 var transfer = Math.Min(available, needed);
 
                 if (transfer <= 0)
@@ -113,7 +155,10 @@ public static class TradeSystem
                 set(donor, get(donor) - transfer);
                 set(deficit, get(deficit) + transfer);
                 needed -= transfer;
+                tradedPairs.Add((donor, deficit));
             }
         }
+
+        return tradedPairs;
     }
 }

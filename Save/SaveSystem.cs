@@ -146,6 +146,13 @@ public static class SaveSystem
                 FoodTreasury = k.FoodTreasury,
                 MaterialTreasury = k.MaterialTreasury,
                 GoldTreasury = k.GoldTreasury
+            }).ToList(),
+
+            TradeRoutes = world.TradeRoutes.Select(r => new TradeRouteData
+            {
+                SettlementAId = r.A.Id,
+                SettlementBId = r.B.Id,
+                Years = r.Years
             }).ToList()
         };
     }
@@ -272,7 +279,13 @@ public static class SaveSystem
             Settlements = data.Settlements.Select(s => settlementsById[s.Id]).ToList(),
             Cultures = data.Cultures.Select(c => culturesById[c.Id]).ToList(),
             Religions = data.Religions.Select(r => religionsById[r.Id]).ToList(),
-            Kingdoms = data.Kingdoms.Select(k => kingdomsById[k.Id]).ToList()
+            Kingdoms = data.Kingdoms.Select(k => kingdomsById[k.Id]).ToList(),
+            TradeRoutes = data.TradeRoutes.Select(r => new TradeRoute
+            {
+                A = settlementsById[r.SettlementAId],
+                B = settlementsById[r.SettlementBId],
+                Years = r.Years
+            }).ToList()
         };
 
         // Продолжаем нумерацию Id с того места, где остановилось сохранение,

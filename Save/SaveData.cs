@@ -23,6 +23,7 @@ public class SaveData
     public List<CultureData> Cultures { get; set; } = new();
     public List<ReligionData> Religions { get; set; } = new();
     public List<KingdomData> Kingdoms { get; set; } = new();
+    public List<TradeRouteData> TradeRoutes { get; set; } = new();
 
     // У WorldEvent нет ссылок на объекты — сохраняется как есть, без DTO-обёртки
     public List<WorldEvent> Events { get; set; } = new();
@@ -121,4 +122,11 @@ public class KingdomData
     public double FoodTreasury { get; set; }
     public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new();
     public double GoldTreasury { get; set; }
+}
+
+public class TradeRouteData
+{
+    public int SettlementAId { get; set; }
+    public int SettlementBId { get; set; }
+    public int Years { get; set; }
 }
