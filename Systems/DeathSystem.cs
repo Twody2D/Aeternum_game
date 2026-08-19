@@ -81,6 +81,8 @@ public static class DeathSystem
             chance *= PrudentAccidentMultiplier;
         }
 
+        chance *= HousingSystem.GetHousingFactor(character.Settlement);
+
         return chance;
     }
 

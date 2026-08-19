@@ -162,7 +162,7 @@ void PrintFinalReport(WorldStatistics stats)
 
         Console.WriteLine(
             $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}): " +
-            $"{settlementStat.Population} жит., запас еды {settlement.FoodStock:0.#}, материалы: {materialsText}");
+            $"{settlementStat.Population} жит., домов {settlement.Houses}, запас еды {settlement.FoodStock:0.#}, материалы: {materialsText}");
     }
 
     Console.WriteLine();

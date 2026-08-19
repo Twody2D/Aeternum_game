@@ -13,6 +13,8 @@ public class Settlement
 
     public Dictionary<MaterialType, double> MaterialStocks { get; set; } = new(); // Запасы материалов по типам (ремесленное производство), см. MaterialType
 
+    public int Houses { get; set; } // Число домов — растут вместе с населением, см. HousingSystem
+
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 
     public Culture? Culture { get; set; } // Культура поселения — влияет на распределение профессий жителей

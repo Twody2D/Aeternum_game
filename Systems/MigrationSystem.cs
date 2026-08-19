@@ -44,6 +44,8 @@ public static class MigrationSystem
                 chance *= PrudentMigrationMultiplier;
             }
 
+            chance *= HousingSystem.GetHousingFactor(character.Settlement);
+
             if (_random.NextDouble() >= chance)
             {
                 continue;
