@@ -99,6 +99,9 @@ public class WorldSettings
     // Шанс в год, что переполненное поселение породит новое (см. ColonizationSystem)
     public double ColonizationChance { get; set; } = 0.05;
 
+    // Сколько материалов должно быть у поселения-родителя, чтобы позволить себе колонизацию
+    public double ColonizationMaterialCost { get; set; } = 50;
+
 
 
     // Заговоры

@@ -5,9 +5,10 @@ using Aeternum.WorldGen.Generators;
 
 namespace Aeternum.WorldGen.Systems;
 
-// Рост населения расширяет территорию: переполненное поселение с некоторым
-// шансом отпускает одну семью основать новое поселение — иначе число
-// поселений навсегда остаётся тем, с которого начался мир (ProjectSettings.SettlementCount)
+// Рост населения расширяет территорию: переполненное поселение с накопленными
+// материалами (первое реальное применение MaterialStock) и с некоторым шансом
+// отпускает одну семью основать новое поселение — иначе число поселений навсегда
+// остаётся тем, с которого начался мир (ProjectSettings.SettlementCount)
 public static class ColonizationSystem
 {
     private static readonly Random _random = new();
@@ -23,6 +24,11 @@ public static class ColonizationSystem
             if (alivePopulation < world.Settings.ColonizationPopulationThreshold)
             {
                 continue;
+            }
+
+            if (origin.MaterialStock < world.Settings.ColonizationMaterialCost)
+            {
+                continue; // Не на что снарядить колонистов
             }
 
             if (_random.NextDouble() >= world.Settings.ColonizationChance)
@@ -49,6 +55,8 @@ public static class ColonizationSystem
 
     private static void Found(Settlement origin, Family foundingFamily, World world)
     {
+        origin.MaterialStock -= world.Settings.ColonizationMaterialCost;
+
         var newSettlement = SettlementGenerator.Create(1)[0];
 
         newSettlement.Culture = origin.Culture;
