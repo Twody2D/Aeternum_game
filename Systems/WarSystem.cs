@@ -60,7 +60,8 @@ public static class WarSystem
     private static void DeclareWar(Settlement settlement, List<Kingdom> claimants, World world)
     {
         var residents = settlement.Members.Where(m => m.Alive).ToList();
-        var casualtyCount = (int)(residents.Count * world.Settings.WarCasualtyRate);
+        var effectiveCasualtyRate = world.Settings.WarCasualtyRate * WallSystem.GetWallFactor(settlement);
+        var casualtyCount = (int)(residents.Count * effectiveCasualtyRate);
 
         var casualties = residents
             .OrderBy(_ => _random.Next())

@@ -21,6 +21,8 @@ public class Settlement
 
     public int Schools { get; set; } // Число школ — повышают шанс профессии категории Knowledge при взрослении, см. SchoolSystem/ProfessionSystem
 
+    public int Walls { get; set; } // Число укреплений — снижают потери при войне за поселение, см. WallSystem
+
     public List<Character> Members { get; set; } = new(); // Все, кто когда-либо жил здесь, включая умерших
 
     public Culture? Culture { get; set; } // Культура поселения — влияет на распределение профессий жителей
