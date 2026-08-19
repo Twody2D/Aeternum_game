@@ -1,5 +1,6 @@
 using Aeternum.WorldGen.Data;
 using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Systems;
 
 namespace Aeternum.WorldGen.Generators;
 
@@ -13,8 +14,8 @@ public static class SettlementGenerator
 
     private static string[] Names => ContentData.SettlementNames;
 
-    private const double MapSize = 1000; // Условная карта, на которой размещаются поселения
     private const double ColonyOffsetRange = 50; // Насколько далеко от родителя может оказаться новая колония
+    private const int ColonySiteCandidates = 3; // Сколько мест колонисты осматривают, прежде чем осесть
 
     // origin задан — колония появляется рядом с родительским поселением (см. ColonizationSystem),
     // не задан — стартовая генерация раскидывает поселения случайно по всей карте
@@ -30,8 +31,8 @@ public static class SettlementGenerator
             var id = _nextId++;
 
             var (x, y) = origin != null
-                ? (Clamp(origin.X + RandomOffset()), Clamp(origin.Y + RandomOffset()))
-                : (_random.NextDouble() * MapSize, _random.NextDouble() * MapSize);
+                ? PickColonySite(origin)
+                : (_random.NextDouble() * ClimateSystem.MapSize, _random.NextDouble() * ClimateSystem.MapSize);
 
             settlements.Add(new Settlement
             {
@@ -45,6 +46,26 @@ public static class SettlementGenerator
         return settlements;
     }
 
+    // Колонисты не селятся вслепую: осматривают несколько мест в округе родительского
+    // поселения и оседают на самом плодородном (см. ClimateSystem) — за поколения
+    // это уводит колонии от скупых краёв карты к умеренному поясу
+    private static (double X, double Y) PickColonySite(Settlement origin)
+    {
+        var best = (X: Clamp(origin.X + RandomOffset()), Y: Clamp(origin.Y + RandomOffset()));
+
+        for (var i = 1; i < ColonySiteCandidates; i++)
+        {
+            var candidate = (X: Clamp(origin.X + RandomOffset()), Y: Clamp(origin.Y + RandomOffset()));
+
+            if (ClimateSystem.GetFertility(candidate.Y) > ClimateSystem.GetFertility(best.Y))
+            {
+                best = candidate;
+            }
+        }
+
+        return best;
+    }
+
     private static double RandomOffset()
     {
         return (_random.NextDouble() * 2 - 1) * ColonyOffsetRange;
@@ -52,7 +73,7 @@ public static class SettlementGenerator
 
     private static double Clamp(double value)
     {
-        return Math.Clamp(value, 0, MapSize);
+        return Math.Clamp(value, 0, ClimateSystem.MapSize);
     }
 
     // Восстанавливает счётчик Id после загрузки сохранения
