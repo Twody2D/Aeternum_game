@@ -131,6 +131,7 @@ public class KingdomData
     public double FoodTreasury { get; set; }
     public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new();
     public double GoldTreasury { get; set; }
+    public double TributeRate { get; set; }
 }
 
 public class TradeRouteData

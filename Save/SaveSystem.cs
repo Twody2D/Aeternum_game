@@ -154,7 +154,8 @@ public static class SaveSystem
                 SuzerainId = k.Suzerain?.Id,
                 FoodTreasury = k.FoodTreasury,
                 MaterialTreasury = k.MaterialTreasury,
-                GoldTreasury = k.GoldTreasury
+                GoldTreasury = k.GoldTreasury,
+                TributeRate = k.TributeRate
             }).ToList(),
 
             TradeRoutes = world.TradeRoutes.Select(r => new TradeRouteData
@@ -267,7 +268,8 @@ public static class SaveSystem
                 Settlements = k.SettlementIds.Select(id => settlementsById[id]).ToList(),
                 FoodTreasury = k.FoodTreasury,
                 MaterialTreasury = k.MaterialTreasury,
-                GoldTreasury = k.GoldTreasury
+                GoldTreasury = k.GoldTreasury,
+                TributeRate = k.TributeRate
             });
 
         foreach (var k in data.Kingdoms)

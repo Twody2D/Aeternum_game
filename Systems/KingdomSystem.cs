@@ -170,7 +170,8 @@ public static class KingdomSystem
                 Dynasty = dynasty,
                 Ruler = ruler,
                 FoundedYear = world.CurrentYear,
-                Settlements = controlled
+                Settlements = controlled,
+                TributeRate = world.Settings.TributeRate // Пока правитель не осмотрелся — как у всех
             };
 
             world.Kingdoms.Add(kingdom);

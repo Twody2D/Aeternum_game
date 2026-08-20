@@ -25,6 +25,11 @@ public static class RebellionSystem
     private const double AlienCultureWeight = 0.06; // Чужие обычаи правителя
     private const double SiegeWeight = 0.03; // ...за каждый год осады
 
+    // Поборы сверх привычной меры: считается не сама ставка, а насколько она
+    // превышает общепринятую в мире (см. TributeSystem). Вес подобран так,
+    // чтобы предельная жадность весила примерно как голод
+    private const double TaxWeight = 0.35;
+
     private const int MaxSiegeYearsCounted = 5; // Дальше терпение уже не ухудшается
 
     private const double SuppressionCost = 40; // Во что обходится короне поход на мятежное поселение
@@ -130,7 +135,7 @@ public static class RebellionSystem
                     continue; // Восставать некому
                 }
 
-                var chance = GetDiscontent(settlement, kingdom);
+                var chance = GetDiscontent(settlement, kingdom, world);
 
                 if (chance <= 0 || Rng.NextDouble() >= chance)
                 {
@@ -143,9 +148,17 @@ public static class RebellionSystem
     }
 
     // Сумма уже существующих в мире поводов быть недовольным короной
-    private static double GetDiscontent(Settlement settlement, Kingdom kingdom)
+    private static double GetDiscontent(Settlement settlement, Kingdom kingdom, World world)
     {
         var discontent = 0.0;
+
+        // Терпят привычное; злит именно то, что берут больше обычного
+        var excessTax = kingdom.TributeRate - world.Settings.TributeRate;
+
+        if (excessTax > 0)
+        {
+            discontent += excessTax * TaxWeight;
+        }
 
         if (settlement.FoodStock < 0)
         {

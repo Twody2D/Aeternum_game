@@ -23,6 +23,10 @@ public class Kingdom
 
     public Kingdom? Suzerain { get; set; } // Сюзерен — null, если государство независимо, см. WarSystem.DeclareVassalization
 
+    // Ставка дани, которую держит нынешний правитель: не мировая константа, а его
+    // собственное решение, пересчитываемое каждый год по обстоятельствам (см. TributeSystem)
+    public double TributeRate { get; set; }
+
     public double FoodTreasury { get; set; } // Казна еды — собирается данью с подконтрольных поселений (см. TributeSystem)
 
     public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new(); // Казна материалов по типам — то же для материалов
