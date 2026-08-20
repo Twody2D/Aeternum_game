@@ -13,6 +13,27 @@ public class SuccessionSystemTests
         return new Character { Id = id, Name = name, LastName = "Тестов", BirthYear = birthYear, Alive = true };
     }
 
+    // Законность ребёнка выражается принадлежностью к семье рождения: рождённый
+    // вне её наследует последним, каким бы ни был обычай (см. BastardSystem)
+    private static void MakeChildOf(Character child, Character parent)
+    {
+        var family = new Family { Id = child.Id, FormedYear = 0 };
+
+        if (parent.Gender == Gender.Female)
+        {
+            family.Mother = parent;
+            child.Mother = parent;
+        }
+        else
+        {
+            family.Father = parent;
+            child.Father = parent;
+        }
+
+        family.Children.Add(child);
+        child.BirthFamily = family;
+    }
+
     private static Kingdom KingdomWithLaw(SuccessionLaw law, Character ruler)
     {
         var culture = new Culture { Id = 1, Name = "Тестовый народ", SuccessionLaw = law };
@@ -49,7 +70,7 @@ public class SuccessionSystemTests
         var ruler = Person(1, 10, "Правитель");
         var olderRelative = Person(2, 5, "Старший дядя");
         var child = Person(3, 40, "Дитя");
-        child.Father = ruler;
+        MakeChildOf(child, ruler);
 
         var heir = SuccessionSystem.PickHeir([olderRelative, child], KingdomWithLaw(SuccessionLaw.Primogeniture, ruler), ruler);
 
@@ -62,8 +83,9 @@ public class SuccessionSystemTests
         var ruler = Person(1, 10, "Правитель");
         var firstborn = Person(2, 35, "Первенец");
         var secondborn = Person(3, 40, "Второй");
-        firstborn.Mother = ruler;
-        secondborn.Mother = ruler;
+        ruler.Gender = Gender.Female;
+        MakeChildOf(firstborn, ruler);
+        MakeChildOf(secondborn, ruler);
 
         var heir = SuccessionSystem.PickHeir([secondborn, firstborn], KingdomWithLaw(SuccessionLaw.Primogeniture, ruler), ruler);
 

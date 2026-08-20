@@ -19,6 +19,16 @@ public static class SuccessionSystem
     {
         var law = kingdom.Ruler.Settlement?.Culture?.SuccessionLaw ?? SuccessionLaw.Seniority;
 
+        // Рождённый вне семьи наследует только тогда, когда законных не осталось
+        // вовсе, — и это единственное правило, общее для всех обычаев мира
+        // (см. BastardSystem)
+        var legitimate = aliveMembers.Where(m => !BastardSystem.IsBastard(m)).ToList();
+
+        if (legitimate.Count > 0)
+        {
+            aliveMembers = legitimate;
+        }
+
         return law switch
         {
             SuccessionLaw.Primogeniture => PickFirstborn(aliveMembers, previousRuler),

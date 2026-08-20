@@ -103,6 +103,9 @@ public static class YearProcessor
             world
         );
 
+        // ...и те, кто родился вне семьи
+        BastardSystem.Process(newborns, world);
+
         // 29. Добавляем детей
         world.Characters.AddRange(newborns);
     }

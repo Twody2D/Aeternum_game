@@ -16,6 +16,7 @@ public static class KingdomSystem
 
     private const double ReputationWeight = 0.2; // Вес репутации династии (см. Dynasty.Reputation) в стабильности казны
     private const double HeirStability = 1.0; // Сколько спокойствия трону даёт признанный наследник (см. CourtSystem)
+    private const double BastardPenalty = 1.5; // ...и сколько его отнимает происхождение правителя вне брака
     private const double ReligiousDiversityPenalty = 0.15; // Штраф к стабильности за каждое инаковерующее поселение в составе государства
     private const double CulturalDiversityPenalty = 0.15; // Штраф за каждое поселение с иной культурой — независим от религиозного, оба вычитаются
 
@@ -99,6 +100,13 @@ public static class KingdomSystem
         // Признанный наследник — сам по себе довод против распри: спорить
         // становится не о чем (см. CourtSystem)
         var heirClarity = CourtSystem.HasOffice(kingdom, CourtOffice.Heir) ? HeirStability : 0;
+
+        // Корона на голове рождённого вне брака — сама по себе повод оспорить
+        // её у соперников (см. BastardSystem)
+        if (BastardSystem.IsBastard(newRuler))
+        {
+            heirClarity -= BastardPenalty;
+        }
 
         var stability = Math.Max(0, heirClarity + (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor
                                      + kingdom.Dynasty.Reputation * ReputationWeight
