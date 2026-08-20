@@ -30,3 +30,16 @@ public record DynastyStat(Dynasty Dynasty, int AliveCount, int? ExtinctYear, Lis
 public record WorldMap(int Width, int Height, MapCell[][] Cells);
 
 public record MapCell(Relief Relief, Settlement? Settlement, Kingdom? Owner);
+
+public enum MarriageStatus { Current, Ended }
+
+public record MarriageRecord(Character Spouse, int FormedYear, MarriageStatus Status);
+
+public record Biography(
+    Character Character,
+    List<MarriageRecord> Marriages,
+    List<Character> Children,
+    List<Character> Wards,
+    Kingdom? RulesKingdom,
+    CourtOffice? Office,
+    Kingdom? OfficeKingdom);

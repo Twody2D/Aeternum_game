@@ -99,6 +99,17 @@ var ageGroupLabels = new Dictionary<AgeGroup, string>
     [AgeGroup.Elder] = "Пожилые"
 };
 
+var deathReasonLabels = new Dictionary<DeathReason, string>
+{
+    [DeathReason.OldAge] = "от старости",
+    [DeathReason.Disease] = "от болезни",
+    [DeathReason.Accident] = "от несчастного случая",
+    [DeathReason.War] = "на войне",
+    [DeathReason.Starvation] = "от голода",
+    [DeathReason.Murder] = "будучи убит(а)",
+    [DeathReason.Neglect] = "оставшись без присмотра"
+};
+
 var materialLabels = new Dictionary<MaterialType, string>
 {
     [MaterialType.Wood] = "дерево",
@@ -141,7 +152,9 @@ engine.Run(world, ProjectSettings.SimulationYears, w =>
 PrintFinalReport(StatisticsSystem.BuildFinalReport(world), world.Knowledge);
 PrintWorldMap(WorldMapSystem.Build(world));
 PrintChronicle(ChronicleSystem.BuildChronicle(world));
-PrintNotablePeople(NotablePeopleSystem.BuildReport(world));
+var notablePeople = NotablePeopleSystem.BuildReport(world);
+PrintNotablePeople(notablePeople);
+PrintBiographies(notablePeople, world);
 PrintDynasties(DynastyEncyclopediaSystem.BuildReport(world));
 PrintKingdoms(DynastyEncyclopediaSystem.BuildKingdomsReport(world));
 
@@ -346,6 +359,92 @@ void PrintNotablePeople(List<NotablePerson> notable)
     }
 
     Console.WriteLine();
+}
+
+// Биография собирает уже рассыпанные по миру факты (см. BiographySystem) в один
+// связный текст — та же выборка личностей, что и в PrintNotablePeople
+void PrintBiographies(List<NotablePerson> notable, World world)
+{
+    Console.WriteLine();
+    Console.WriteLine("===== Биографии выдающихся личностей =====");
+
+    if (notable.Count == 0)
+    {
+        Console.WriteLine();
+        return;
+    }
+
+    foreach (var entry in notable)
+    {
+        Console.WriteLine();
+        Console.WriteLine(BuildBiographyText(BiographySystem.Build(entry.Character, world), world));
+    }
+
+    Console.WriteLine();
+}
+
+string BuildBiographyText(Biography bio, World world)
+{
+    var character = bio.Character;
+    var isFemale = character.Gender == Gender.Female;
+    var sentences = new List<string>();
+
+    var bornVerb = isFemale ? "родилась" : "родился";
+    var parents = character.Mother != null || character.Father != null
+        ? $", в семье {(character.Father != null ? SurnameSystem.GetDisplayFullName(character.Father) : "неизвестного отца")}" +
+          $" и {(character.Mother != null ? SurnameSystem.GetDisplayFullName(character.Mother) : "неизвестной матери")}"
+        : "";
+    var bastardNote = BastardSystem.IsBastard(character) ? ", рождён(а) вне брака" : "";
+
+    sentences.Add($"{SurnameSystem.GetDisplayFullName(character)} {bornVerb} в {character.BirthYear} году{parents}{bastardNote}.");
+
+    var estate = EstateSystem.GetName(EstateSystem.GetEstate(character, world));
+    var professionText = character.Profession != null ? $" Занимается ремеслом «{character.Profession}»." : "";
+    sentences.Add($"Сословие — {estate}.{professionText}");
+
+    foreach (var marriage in bio.Marriages)
+    {
+        var marryVerb = isFemale ? "вышла замуж за" : "женился на";
+        var spouseName = SurnameSystem.GetDisplayFullName(marriage.Spouse);
+
+        var outcome = marriage.Status == MarriageStatus.Current
+            ? ""
+            : marriage.Spouse.Alive
+                ? "; позднее расстались"
+                : $"; {(marriage.Spouse.Gender == Gender.Female ? "она" : "он")} умер(ла) в {marriage.Spouse.DeathYear} году";
+
+        sentences.Add($"В {marriage.FormedYear} году {marryVerb} {spouseName}{outcome}.");
+    }
+
+    if (bio.Children.Count > 0)
+    {
+        sentences.Add($"Дети: {string.Join(", ", bio.Children.Select(SurnameSystem.GetDisplayFullName))}.");
+    }
+
+    if (bio.Wards.Count > 0)
+    {
+        sentences.Add($"Взял(а) под опеку: {string.Join(", ", bio.Wards.Select(SurnameSystem.GetDisplayFullName))}.");
+    }
+
+    if (bio.RulesKingdom != null)
+    {
+        sentences.Add($"Правит государством {bio.RulesKingdom.Name}.");
+    }
+
+    if (bio.Office != null && bio.OfficeKingdom != null)
+    {
+        sentences.Add($"Служит {CourtSystem.GetTitle(bio.Office.Value)} при дворе {bio.OfficeKingdom.Name}.");
+    }
+
+    if (!character.Alive)
+    {
+        var reason = deathReasonLabels.GetValueOrDefault(character.DeathReason, "по неизвестной причине");
+        var diedVerb = isFemale ? "умерла" : "умер";
+
+        sentences.Add($"{(isFemale ? "Она" : "Он")} {diedVerb} в {character.DeathYear} году в возрасте {character.Age} лет ({reason}).");
+    }
+
+    return string.Join(" ", sentences);
 }
 
 // Карточки крупнейших династий: основание, статус, число представителей, долгожители
