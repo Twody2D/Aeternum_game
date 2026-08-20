@@ -7,13 +7,30 @@ namespace Aeternum.WorldGen.Systems;
 
 // Заключение браков раз в год. Пары подбираются в первую очередь внутри одного
 // поселения; те, кому не нашлось пары дома, реже, но могут найти её в другом
-// поселении — невеста переезжает туда, где живёт муж (см. RelocateBride)
+// поселении — невеста переезжает туда, где живёт муж (см. RelocateBride).
+//
+// Внутри доступного круга выбор не случаен: считается взаимная склонность,
+// и человек берёт того, к кому её больше. Ничего нового для этого заводить
+// не пришлось — всё уже было в мире: дружба (Character.Friends), общий круг
+// знакомых, сходство нрава (Character.Traits) и разница в возрасте. Та же
+// склонность решает, состоится ли брак вообще, и она же потом удерживает
+// семью от распада (см. DivorceSystem)
 public static class MarriageSystem
 {
     private const int SameSettlementChancePercent = 50;
     private const int CrossSettlementChancePercent = 25; // Реже — переезд в другое поселение не так прост
     private const double DifferentReligionPenalty = 0.5; // Доп. множитель к межпоселенческому браку при разных религиях сторон
     private const double DifferentCulturePenalty = 0.5; // Доп. множитель при разных традициях сторон — независим от религии, штрафы перемножаются
+
+    private const double FriendshipAffinity = 0.8; // Дружба — самый весомый довод: этих двоих уже свела жизнь
+    private const double SharedFriendAffinity = 0.15; // Общий круг знакомых сближает
+    private const double MaxSharedFriendAffinity = 0.45;
+    private const double SharedTraitAffinity = 0.2; // Сходство нрава
+    private const double AgeGapPenalty = 0.03; // ...за каждый год разницы в возрасте
+    private const double MaxAgeGapPenalty = 0.6;
+
+    private const double MinAffinity = 0.1; // Совсем безнадёжных пар не бывает...
+    private const double MaxAffinity = 2.5; // ...как и предрешённых
 
     private static readonly string[] DescriptionTemplates =
     {
@@ -68,9 +85,12 @@ public static class MarriageSystem
 
         foreach (var man in men)
         {
-            var woman = women.FirstOrDefault(w =>
-                !takenWomen.Contains(w) &&
-                !AreRelated(man, w));
+            // Из доступных берётся не первая попавшаяся, а та, к кому больше склонности
+            var woman = women
+                .Where(w => !takenWomen.Contains(w) && !AreRelated(man, w))
+                .OrderByDescending(w => GetAffinity(man, w))
+                .ThenBy(w => w.Id)
+                .FirstOrDefault();
 
             if (woman == null)
             {
@@ -81,7 +101,7 @@ public static class MarriageSystem
             // чтобы один и тот же человек не участвовал в нескольких парах за год
             takenWomen.Add(woman);
 
-            var effectiveChancePercent = (double)marriageChancePercent;
+            var effectiveChancePercent = marriageChancePercent * GetAffinity(man, woman);
 
             if (man.Settlement?.Religion != null &&
                 woman.Settlement?.Religion != null &&
@@ -126,6 +146,31 @@ public static class MarriageSystem
                 }
             );
         }
+    }
+
+    // Взаимная склонность двоих: во сколько раз охотнее они пойдут под венец
+    // друг с другом, чем со случайным встречным. Единица — полное безразличие
+    public static double GetAffinity(Character a, Character b)
+    {
+        var affinity = 1.0;
+
+        if (a.Friends.Contains(b))
+        {
+            affinity += FriendshipAffinity;
+        }
+
+        var sharedFriends = a.Friends.Count(f => f.Alive && b.Friends.Contains(f));
+
+        affinity += Math.Min(MaxSharedFriendAffinity, sharedFriends * SharedFriendAffinity);
+
+        var sharedTraits = a.Traits.Count(t => b.Traits.Contains(t));
+
+        affinity += sharedTraits * SharedTraitAffinity;
+
+        // Чем дальше друг от друга по возрасту, тем меньше общего
+        affinity -= Math.Min(MaxAgeGapPenalty, Math.Abs(a.Age - b.Age) * AgeGapPenalty);
+
+        return Math.Clamp(affinity, MinAffinity, MaxAffinity);
     }
 
     // Невеста переезжает в поселение мужа (если оно другое). Прежнее поселение

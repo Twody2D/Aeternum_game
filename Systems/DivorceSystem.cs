@@ -6,7 +6,11 @@ namespace Aeternum.WorldGen.Systems;
 
 // Развод: раз в год у бездетных браков, переживших порог ChildlessDivorceThresholdYears,
 // есть небольшой шанс распасться. И муж, и жена освобождаются для нового брака —
-// как и при вдовстве (см. DeathSystem.Kill), но без смерти
+// как и при вдовстве (см. DeathSystem.Kill), но без смерти.
+//
+// Распадается не всякий бездетный брак: та же взаимная склонность, что свела
+// этих двоих (см. MarriageSystem.GetAffinity), потом их и удерживает. Союз
+// по расчёту рвётся втрое легче, чем союз по сердцу
 public static class DivorceSystem
 {
     public static void Process(World world)
@@ -21,7 +25,10 @@ public static class DivorceSystem
 
         foreach (var family in activeMarriages.ToList())
         {
-            if (Rng.NextDouble() >= world.Settings.DivorceChance)
+            // Чем выше склонность, тем ниже риск: единица — полное безразличие
+            var effectiveChance = world.Settings.DivorceChance / MarriageSystem.GetAffinity(family.Father, family.Mother);
+
+            if (Rng.NextDouble() >= effectiveChance)
             {
                 continue;
             }
