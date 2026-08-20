@@ -156,7 +156,8 @@ public static class SaveSystem
                 FoodTreasury = k.FoodTreasury,
                 MaterialTreasury = k.MaterialTreasury,
                 GoldTreasury = k.GoldTreasury,
-                TributeRate = k.TributeRate
+                TributeRate = k.TributeRate,
+                CourtIds = k.Court.ToDictionary(kv => kv.Key, kv => kv.Value.Id)
             }).ToList(),
 
             TradeRoutes = world.TradeRoutes.Select(r => new TradeRouteData
@@ -271,7 +272,8 @@ public static class SaveSystem
                 FoodTreasury = k.FoodTreasury,
                 MaterialTreasury = k.MaterialTreasury,
                 GoldTreasury = k.GoldTreasury,
-                TributeRate = k.TributeRate
+                TributeRate = k.TributeRate,
+                Court = k.CourtIds.ToDictionary(kv => kv.Key, kv => charactersById[kv.Value])
             });
 
         foreach (var k in data.Kingdoms)

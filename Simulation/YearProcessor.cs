@@ -74,25 +74,28 @@ public static class YearProcessor
         // 20. Государства: обновление контроля территорий, престолонаследие, новые королевства
         KingdomSystem.Process(world);
 
-        // 21. Союзы между государствами
+        // 21. Двор: наследник, воевода, казначей и советник при короне
+        CourtSystem.Process(world);
+
+        // 22. Союзы между государствами
         AllianceSystem.Process(world);
 
-        // 22. Войны за спорные поселения между государствами
+        // 23. Войны за спорные поселения между государствами
         WarSystem.Process(world);
 
-        // 23. Восстания: поселения отказывают короне в повиновении
+        // 24. Восстания: поселения отказывают короне в повиновении
         RebellionSystem.Process(world);
 
-        // 24. Расколы веры в общинах, отрезанных от единоверцев
+        // 25. Расколы веры в общинах, отрезанных от единоверцев
         SchismSystem.Process(world);
 
-        // 25. Накопление знаний и смена эпох
+        // 26. Накопление знаний и смена эпох
         TechnologySystem.Process(world);
 
-        // 26. Заговоры против правителя
+        // 27. Заговоры против правителя
         MurderSystem.Process(world);
 
-        // 27. Рождение детей
+        // 28. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -100,7 +103,7 @@ public static class YearProcessor
             world
         );
 
-        // 28. Добавляем детей
+        // 29. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }

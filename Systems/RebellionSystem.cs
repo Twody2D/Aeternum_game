@@ -75,7 +75,10 @@ public static class RebellionSystem
                 .SelectMany(s => s.Members)
                 .Count(m => m.Alive && ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Military);
 
-            var chance = Math.Min(MaxSuppressionChance, soldiers * SuppressionPerSoldier);
+            // Войско ведёт воевода, если он у короны есть: одно и то же число
+            // солдат под опытной рукой стоит большего (см. CourtSystem)
+            var marshal = CourtSystem.GetOfficeStrength(crown, CourtOffice.Marshal, world);
+            var chance = Math.Min(MaxSuppressionChance, soldiers * SuppressionPerSoldier * marshal);
 
             crown.FoodTreasury -= SuppressionCost; // Поход стоит казне независимо от исхода
 

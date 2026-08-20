@@ -50,6 +50,11 @@ public static class TributeSystem
 
             kingdom.TributeRate = ChooseRate(kingdom, world);
 
+            // Казначей знает, где что лежит: та же ставка приносит короне больше
+            // (см. CourtSystem). Подданным от этого не легче и не тяжелее —
+            // недовольство считается по ставке, а не по собранному
+            var collection = CourtSystem.GetOfficeStrength(kingdom, CourtOffice.Treasurer, world);
+
             foreach (var settlement in kingdom.Settlements)
             {
                 if (RebellionSystem.IsRebelling(settlement, world))
@@ -59,14 +64,14 @@ public static class TributeSystem
 
                 if (settlement.FoodStock > 0)
                 {
-                    var foodTribute = settlement.FoodStock * kingdom.TributeRate;
+                    var foodTribute = settlement.FoodStock * kingdom.TributeRate * collection;
                     settlement.FoodStock -= foodTribute;
                     kingdom.FoodTreasury += foodTribute;
                 }
 
                 if (settlement.Gold > 0)
                 {
-                    var goldTribute = settlement.Gold * kingdom.TributeRate;
+                    var goldTribute = settlement.Gold * kingdom.TributeRate * collection;
                     settlement.Gold -= goldTribute;
                     kingdom.GoldTreasury += goldTribute;
                 }
@@ -80,7 +85,7 @@ public static class TributeSystem
                         continue;
                     }
 
-                    var materialTribute = stock * kingdom.TributeRate;
+                    var materialTribute = stock * kingdom.TributeRate * collection;
                     settlement.MaterialStocks[type] = stock - materialTribute;
                     kingdom.MaterialTreasury[type] = kingdom.MaterialTreasury.GetValueOrDefault(type) + materialTribute;
                 }

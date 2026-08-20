@@ -21,6 +21,7 @@ public static class TechnologySystem
 {
     private const double KnowledgePerScholar = 1.0; // Вклад одного живого носителя знания за год
     private const double SchoolContribution = 0.5; // Школа помогает копить знание и сама по себе
+    private const double ChancellorContribution = 2.0; // Советник при короне двигает мысль сильнее книжника без покровителя
 
     // Пороги эпох и их отдача. Первая — то состояние, в котором мир жил до сих пор,
     // поэтому её множитель равен единице: без неё прежний баланс сместился бы на ровном месте.
@@ -49,9 +50,17 @@ public static class TechnologySystem
 
         var schools = world.Settlements.Sum(s => s.Schools);
 
+        // Учёный, приближённый к трону, работает не только на себя: у него есть
+        // и средства, и заказ (см. CourtSystem)
+        var chancellors = world.Kingdoms
+            .Where(k => k.FallenYear == null)
+            .Sum(k => CourtSystem.HasOffice(k, CourtOffice.Chancellor)
+                ? CourtSystem.GetOfficeStrength(k, CourtOffice.Chancellor, world) * ChancellorContribution
+                : 0);
+
         var previousEra = GetEraName(world.Knowledge);
 
-        world.Knowledge += scholars * KnowledgePerScholar + schools * SchoolContribution;
+        world.Knowledge += scholars * KnowledgePerScholar + schools * SchoolContribution + chancellors;
 
         var currentEra = GetEraName(world.Knowledge);
 

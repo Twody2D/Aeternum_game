@@ -200,7 +200,9 @@ public class CareerSystemTests
 
         var watched = new List<Character>();
 
-        for (var i = 0; i < 50; i++)
+        // Выборка нарочно большая: разница в шансах невелика, и на полусотне
+        // человек её легко перекрыл бы разброс одного броска
+        for (var i = 0; i < 500; i++)
         {
             watched.Add(Add(world, settlement, "Кузнец", age: 45, professionYear: professionYear));
         }

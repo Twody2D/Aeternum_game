@@ -78,7 +78,8 @@ var eventLabels = new Dictionary<EventType, string>
     [EventType.Era] = "смен эпохи",
     [EventType.Suppression] = "подавленных мятежей",
     [EventType.Independence] = "обретений независимости",
-    [EventType.Relief] = "раздач хлеба"
+    [EventType.Relief] = "раздач хлеба",
+    [EventType.Appointment] = "назначений ко двору"
 };
 
 var ageGroupLabels = new Dictionary<AgeGroup, string>
@@ -333,6 +334,12 @@ void PrintKingdoms(List<Kingdom> kingdoms)
 
         var taxText = $", дань {kingdom.TributeRate:P0}";
 
+        var courtText = kingdom.Court.Count > 0
+            ? ", двор: " + string.Join(", ", kingdom.Court
+                .Where(kv => kv.Value.Alive)
+                .Select(kv => $"{CourtSystem.GetTitle(kv.Key)} {SurnameSystem.GetDisplayFullName(kv.Value)}"))
+            : "";
+
         var treasuryMaterials = kingdom.MaterialTreasury.Where(kv => kv.Value > 0).ToList();
 
         var treasuryText = kingdom.FoodTreasury > 0 || kingdom.GoldTreasury > 0 || treasuryMaterials.Count > 0
@@ -345,7 +352,7 @@ void PrintKingdoms(List<Kingdom> kingdoms)
         Console.WriteLine(
             $"{kingdom.Name}: основано в {kingdom.FoundedYear} году, " +
             $"{SurnameSystem.GetDisplayFullName(kingdom.Ruler)} {rulerStatus}, " +
-            $"поселений под контролем: {kingdom.Settlements.Count}{taxText}{alliesText}{treasuryText}");
+            $"поселений под контролем: {kingdom.Settlements.Count}{taxText}{alliesText}{treasuryText}{courtText}");
     }
 
     Console.WriteLine();

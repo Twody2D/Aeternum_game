@@ -23,6 +23,10 @@ public class Kingdom
 
     public Kingdom? Suzerain { get; set; } // Сюзерен — null, если государство независимо, см. WarSystem.DeclareVassalization
 
+    // Двор: кто занимает какую должность прямо сейчас. Пустует — значит достойного
+    // не нашлось либо прежний умер (см. CourtSystem)
+    public Dictionary<CourtOffice, Character> Court { get; set; } = new();
+
     // Ставка дани, которую держит нынешний правитель: не мировая константа, а его
     // собственное решение, пересчитываемое каждый год по обстоятельствам (см. TributeSystem)
     public double TributeRate { get; set; }
