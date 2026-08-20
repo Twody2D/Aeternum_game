@@ -52,6 +52,12 @@ public static class ProfessionSystem
         ["Ремесленник"] = MaterialType.Clay,
     };
 
+    // Обратная карта к MaterialTypeByProfession: каким ремёслам учиться в городе,
+    // который живёт этим материалом (см. GetRandom)
+    private static readonly Dictionary<MaterialType, string[]> ProfessionsByMaterial = MaterialTypeByProfession
+        .GroupBy(kv => kv.Value)
+        .ToDictionary(g => g.Key, g => g.Select(kv => kv.Key).ToArray());
+
     private const double CraftMaterialAmount = 3.0; // Годовое производство материала одним ремесленником своего типа
     private const double GeneralMaterialAmount = 0.5; // Разнорабочие производят немного неспециализированного материала
 
@@ -87,13 +93,23 @@ public static class ProfessionSystem
     private const double SchoolBonusPerSchool = 0.1;
     private const double MaxSchoolBonus = 0.4;
 
-    // Случайная профессия. Если задано поселение и в нём не хватает одной из
-    // обязательных профессий (см. EssentialProfessions) — гарантированно выбирает
-    // именно её. Иначе, если задана профессия родителя — с некоторым шансом
-    // наследует её. Иначе, если в поселении есть школы — с некоторым шансом
-    // выбирает профессию категории Knowledge. Иначе, если задана культура —
-    // с повышенным шансом выбирает профессию из её предпочитаемой категории
-    // (см. Culture.PreferredCategory)
+    // Шанс уйти в главное ремесло города за каждую его мастерскую (см. WorkshopSystem).
+    // Потолок обязателен: мастерские строятся от числа ремесленников, а ремесленники
+    // берутся от мастерских — без предела эта петля схлопнула бы поселение в одно ремесло
+    private const double WorkshopBonusPerWorkshop = 0.15;
+    private const double MaxWorkshopBonus = 0.4;
+
+    // Насколько сильно щедрая земля тянет в земледелие: на самой плодородной
+    // почве (см. ClimateSystem) это примерно каждый третий, на скудной — никого
+    private const double FertilityPull = 1.0;
+
+    // Случайная профессия — по цепочке приоритетов, от самого сильного довода
+    // к самому слабому: нехватка обязательной профессии в поселении
+    // (см. EssentialProfessions) перевешивает всё; затем семейное дело
+    // (профессия родителя); затем школы поселения (категория Knowledge);
+    // затем специализация самого места — его главное ремесло (мастерские)
+    // и плодородие его земли; затем культурный уклад
+    // (см. Culture.PreferredCategory); в остатке — чистая случайность
     public static string GetRandom(Culture? culture = null, Settlement? settlement = null, string? inheritedProfession = null)
     {
         if (settlement != null)
@@ -120,6 +136,20 @@ public static class ProfessionSystem
             return knowledgeProfessions[Rng.Next(knowledgeProfessions.Length)];
         }
 
+        // Специализация места идёт раньше культурного уклада: чем город живёт
+        // сегодня, тому и учат детей — иначе назначенная при рождении мира
+        // культура определяла бы занятия жителей вечно, и поселения так и
+        // остались бы неотличимы друг от друга
+        if (settlement != null && TryPickLocalCraft(settlement, out var localCraft))
+        {
+            return localCraft;
+        }
+
+        if (settlement != null && TryPickFarming(settlement, out var farming))
+        {
+            return farming;
+        }
+
         if (culture != null &&
             Rng.NextDouble() < CulturePreferenceChance &&
             ProfessionsByCategory.TryGetValue(culture.PreferredCategory, out var preferred))
@@ -130,6 +160,58 @@ public static class ProfessionSystem
         return ProfessionsList[
             Rng.Next(ProfessionsList.Length)
         ];
+    }
+
+    // Город, где стоят мастерские, растит себе смену по тому же ремеслу.
+    // Считается по самому развитому ремеслу — у города одно главное дело,
+    // а не поровну все сразу
+    private static bool TryPickLocalCraft(Settlement settlement, out string profession)
+    {
+        profession = "";
+
+        var main = settlement.Workshops
+            .Where(kv => kv.Value > 0)
+            .OrderByDescending(kv => kv.Value)
+            .ThenBy(kv => kv.Key)
+            .ToList();
+
+        if (main.Count == 0)
+        {
+            return false;
+        }
+
+        var (type, count) = main[0];
+
+        if (Rng.NextDouble() >= Math.Min(MaxWorkshopBonus, count * WorkshopBonusPerWorkshop) ||
+            !ProfessionsByMaterial.TryGetValue(type, out var crafts))
+        {
+            return false;
+        }
+
+        profession = crafts[Rng.Next(crafts.Length)];
+
+        return true;
+    }
+
+    // На щедрой земле выгоднее пахать, чем ремесленничать: тяга тем сильнее,
+    // чем плодороднее место (см. ClimateSystem). Скудная почва не отталкивает
+    // от земли насильно — она просто ничего не добавляет
+    private static bool TryPickFarming(Settlement settlement, out string profession)
+    {
+        profession = "";
+
+        var pull = (ClimateSystem.GetFertility(settlement) - 1.0) * FertilityPull;
+
+        if (pull <= 0 ||
+            Rng.NextDouble() >= pull ||
+            !ProfessionsByCategory.TryGetValue(ProfessionCategory.FoodProducer, out var farmers))
+        {
+            return false;
+        }
+
+        profession = farmers[Rng.Next(farmers.Length)];
+
+        return true;
     }
 
     // Обязательные профессии, которых сейчас нет ни у одного живого жителя поселения
