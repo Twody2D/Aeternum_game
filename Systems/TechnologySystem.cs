@@ -39,10 +39,13 @@ public static class TechnologySystem
 
     public static void Process(World world)
     {
-        var scholars = world.Characters.Count(c =>
-            c.Alive &&
-            c.LifeStage is LifeStage.Adult or LifeStage.Elder &&
-            ProfessionSystem.GetCategory(c.Profession) == ProfessionCategory.Knowledge);
+        // Считаем не головы, а вклад: седой книжник продвигает мир дальше,
+        // чем вчерашний школяр (см. ProfessionSystem.GetMastery)
+        var scholars = world.Characters
+            .Where(c => c.Alive &&
+                        c.LifeStage is LifeStage.Adult or LifeStage.Elder &&
+                        ProfessionSystem.GetCategory(c.Profession) == ProfessionCategory.Knowledge)
+            .Sum(c => ProfessionSystem.GetMastery(c, world.Settings));
 
         var schools = world.Settlements.Sum(s => s.Schools);
 

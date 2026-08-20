@@ -84,6 +84,12 @@ public static class ProfessionSystem
     // Шанс, что профессия будет выбрана из предпочитаемой культурой категории, а не из всего списка
     private const double CulturePreferenceChance = 0.5;
 
+    // Мастерство: сколько прибавляет к делу каждый год, прожитый в ремесле,
+    // и где эта прибавка упирается в потолок. Стаж не хранится отдельным полем —
+    // он выводится из возраста: профессию получают при взрослении (см. LifeSystem)
+    private const double MasteryPerYear = 0.02;
+    private const double MaxMasteryBonus = 0.5;
+
     // Шанс, что персонаж унаследует профессию родителя своего пола вместо случайного выбора —
     // семейное ремесло/дело передаётся из поколения в поколение, но не всегда (см. LifeSystem)
     private const double InheritanceChance = 0.4;
@@ -257,6 +263,27 @@ public static class ProfessionSystem
         }
 
         return (null, 0.0);
+    }
+
+    // Во сколько раз опытный работник делает своё дело лучше новичка. Умение
+    // копится годами и упирается в потолок — дальше растёт только слабость тела
+    // (см. EconomySystem.GetProductivity), поэтому мастер на склоне лет работает
+    // медленнее себя же в зрелости, но заметно лучше юнца
+    public static double GetMastery(Character character, WorldSettings settings)
+    {
+        if (character.Profession == null)
+        {
+            return 1.0;
+        }
+
+        var yearsInTrade = character.Age - settings.AdultAge;
+
+        if (yearsInTrade <= 0)
+        {
+            return 1.0; // Ученик ещё только смотрит, как делают другие
+        }
+
+        return 1 + Math.Min(MaxMasteryBonus, yearsInTrade * MasteryPerYear);
     }
 
     public static bool IsHazardous(string? profession)

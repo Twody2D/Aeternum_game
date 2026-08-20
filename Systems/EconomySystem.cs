@@ -57,12 +57,12 @@ public static class EconomySystem
         // плодородие зависит от того, где поселение стоит (см. ClimateSystem),
         // а накопленное миром знание одинаково помогает всем (см. TechnologySystem)
         double production = residents.Sum(c =>
-            ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c))
+            ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c, world))
             * ClimateSystem.GetFertility(settlement)
             * TechnologySystem.GetProductionMultiplier(world);
 
         settlement.Gold += residents.Sum(c =>
-            ProfessionSystem.GetGoldProduction(c.Profession) * GetProductivity(c));
+            ProfessionSystem.GetGoldProduction(c.Profession) * GetProductivity(c, world));
 
         foreach (var resident in residents)
         {
@@ -73,7 +73,7 @@ public static class EconomySystem
                 continue; // Профессия не ремесленная — сырья от неё нет
             }
 
-            var materialAmount = amount * GetProductivity(resident) * WorkshopSystem.GetProductionMultiplier(settlement, type.Value);
+            var materialAmount = amount * GetProductivity(resident, world) * WorkshopSystem.GetProductionMultiplier(settlement, type.Value);
 
             if (materialAmount <= 0)
             {
@@ -111,10 +111,14 @@ public static class EconomySystem
 
     private const double HardworkingMultiplier = 1.25;
 
-    // Доля полноценной выработки в зависимости от возраста: работают в основном взрослые,
-    // старики и ученики помогают лишь частично, дети не производят ничего.
-    // Трудолюбивые (см. Trait) дают надбавку сверху
-    private static double GetProductivity(Character character)
+    // Доля полноценной выработки: сила тела зависит от возраста (работают в
+    // основном взрослые, старики и ученики помогают лишь частично, дети не
+    // производят ничего), умение рук — от прожитых в ремесле лет
+    // (см. ProfessionSystem.GetMastery). Трудолюбивые (см. Trait) дают надбавку
+    // сверху. Отсюда сам собой выходит возраст расцвета: юнец силён, да неумел,
+    // мастер умел, да немощен, а лучше всех работает тот, у кого ещё есть силы
+    // и уже есть навык
+    private static double GetProductivity(Character character, World world)
     {
         double baseProductivity = character.LifeStage switch
         {
@@ -123,6 +127,8 @@ public static class EconomySystem
             LifeStage.Student => 0.3,
             _ => 0.0
         };
+
+        baseProductivity *= ProfessionSystem.GetMastery(character, world.Settings);
 
         return character.Traits.Contains(Trait.Hardworking) ? baseProductivity * HardworkingMultiplier : baseProductivity;
     }
