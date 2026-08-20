@@ -11,8 +11,7 @@ namespace Aeternum.WorldGen.Systems;
 // Кого уводят, решает та же шкала, что решает, кто погибнет
 // (см. WarSystem.GetWarRisk), только наоборот: бойцов на стенах убивают,
 // а уводят тех, кто не отбивается, — за ними и приходят. Уводит сильнейший
-// из претендентов, к себе в главное поселение (столицы у государств пока нет,
-// поэтому берётся самое населённое из подконтрольных).
+// из претендентов, к себе в столицу (см. CapitalSystem).
 //
 // Дальше пленный живёт обычной жизнью мира: он числится жителем чужого
 // поселения, работает, женится, а вот наречие вокруг него — чужое, и
@@ -35,7 +34,7 @@ public static class CaptiveSystem
             return;
         }
 
-        var destination = GetSeat(captor);
+        var destination = captor.Capital;
 
         if (destination == null || destination == settlement)
         {
@@ -112,12 +111,4 @@ public static class CaptiveSystem
         }
     }
 
-    // Главное поселение государства: самое населённое из подконтрольных
-    private static Settlement? GetSeat(Kingdom kingdom)
-    {
-        return kingdom.Settlements
-            .OrderByDescending(s => s.Members.Count(m => m.Alive))
-            .ThenBy(s => s.Id)
-            .FirstOrDefault();
-    }
 }

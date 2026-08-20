@@ -62,16 +62,19 @@ public static class TributeSystem
                     continue; // Восставшие короне не платят
                 }
 
+                // ...а до дальней окраины рука короны дотягивается хуже (см. CapitalSystem)
+                var reach = collection * CapitalSystem.GetControl(kingdom, settlement);
+
                 if (settlement.FoodStock > 0)
                 {
-                    var foodTribute = settlement.FoodStock * kingdom.TributeRate * collection;
+                    var foodTribute = settlement.FoodStock * kingdom.TributeRate * reach;
                     settlement.FoodStock -= foodTribute;
                     kingdom.FoodTreasury += foodTribute;
                 }
 
                 if (settlement.Gold > 0)
                 {
-                    var goldTribute = settlement.Gold * kingdom.TributeRate * collection;
+                    var goldTribute = settlement.Gold * kingdom.TributeRate * reach;
                     settlement.Gold -= goldTribute;
                     kingdom.GoldTreasury += goldTribute;
                 }
@@ -85,7 +88,7 @@ public static class TributeSystem
                         continue;
                     }
 
-                    var materialTribute = stock * kingdom.TributeRate * collection;
+                    var materialTribute = stock * kingdom.TributeRate * reach;
                     settlement.MaterialStocks[type] = stock - materialTribute;
                     kingdom.MaterialTreasury[type] = kingdom.MaterialTreasury.GetValueOrDefault(type) + materialTribute;
                 }

@@ -19,6 +19,8 @@ public class Kingdom
 
     public List<Settlement> Settlements { get; set; } = new(); // Контролируемые поселения на текущий год
 
+    public Settlement? Capital { get; set; } // Столица — там, где живёт правитель (см. CapitalSystem)
+
     public List<Kingdom> AlliedKingdoms { get; set; } = new(); // Союзные государства (см. AllianceSystem) — симметрично, есть у обеих сторон
 
     public Kingdom? Suzerain { get; set; } // Сюзерен — null, если государство независимо, см. WarSystem.DeclareVassalization

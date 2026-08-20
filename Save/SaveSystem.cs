@@ -164,7 +164,8 @@ public static class SaveSystem
                 MaterialTreasury = k.MaterialTreasury,
                 GoldTreasury = k.GoldTreasury,
                 TributeRate = k.TributeRate,
-                CourtIds = k.Court.ToDictionary(kv => kv.Key, kv => kv.Value.Id)
+                CourtIds = k.Court.ToDictionary(kv => kv.Key, kv => kv.Value.Id),
+                CapitalId = k.Capital?.Id
             }).ToList(),
 
             TradeRoutes = world.TradeRoutes.Select(r => new TradeRouteData
@@ -285,7 +286,8 @@ public static class SaveSystem
                 MaterialTreasury = k.MaterialTreasury,
                 GoldTreasury = k.GoldTreasury,
                 TributeRate = k.TributeRate,
-                Court = k.CourtIds.ToDictionary(kv => kv.Key, kv => charactersById[kv.Value])
+                Court = k.CourtIds.ToDictionary(kv => kv.Key, kv => charactersById[kv.Value]),
+                Capital = k.CapitalId.HasValue ? settlementsById[k.CapitalId.Value] : null
             });
 
         foreach (var k in data.Kingdoms)

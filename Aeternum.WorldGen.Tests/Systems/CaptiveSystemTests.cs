@@ -37,7 +37,8 @@ public class CaptiveSystemTests
             Dynasty = dynasty,
             Ruler = conqueror,
             FoundedYear = 1,
-            Settlements = [seat]
+            Settlements = [seat],
+            Capital = seat // Пленных ведут в столицу (см. CapitalSystem)
         };
 
         world.Characters.Add(conqueror);
@@ -108,6 +109,7 @@ public class CaptiveSystemTests
     {
         var (world, besieged, _, captor) = BuildWar();
         captor.Settlements.Clear();
+        captor.Capital = null; // Земель нет — и престола тоже
 
         var survivors = new List<Character>();
 

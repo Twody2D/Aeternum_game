@@ -142,6 +142,7 @@ public class KingdomData
     public double GoldTreasury { get; set; }
     public double TributeRate { get; set; }
     public Dictionary<CourtOffice, int> CourtIds { get; set; } = new();
+    public int? CapitalId { get; set; }
 }
 
 public class TradeRouteData

@@ -30,6 +30,10 @@ public static class RebellionSystem
     // чтобы предельная жадность весила примерно как голод
     private const double TaxWeight = 0.35;
 
+    // Даль от престола: до окраины не доходят ни приказ, ни защита,
+    // ни справедливость (см. CapitalSystem)
+    private const double DistanceWeight = 0.08;
+
     private const int MaxSiegeYearsCounted = 5; // Дальше терпение уже не ухудшается
 
     private const double SuppressionCost = 40; // Во что обходится короне поход на мятежное поселение
@@ -154,6 +158,8 @@ public static class RebellionSystem
     private static double GetDiscontent(Settlement settlement, Kingdom kingdom, World world)
     {
         var discontent = 0.0;
+
+        discontent += (1 - CapitalSystem.GetControl(kingdom, settlement)) * DistanceWeight;
 
         // Терпят привычное; злит именно то, что берут больше обычного
         var excessTax = kingdom.TributeRate - world.Settings.TributeRate;
