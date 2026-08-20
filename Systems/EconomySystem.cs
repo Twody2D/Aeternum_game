@@ -76,7 +76,9 @@ public static class EconomySystem
                 continue; // Профессия не ремесленная — сырья от неё нет
             }
 
-            var materialAmount = amount * GetProductivity(resident, world) * WorkshopSystem.GetProductionMultiplier(settlement, type.Value);
+            var materialAmount = amount * GetProductivity(resident, world)
+                * WorkshopSystem.GetProductionMultiplier(settlement, type.Value)
+                * DepositSystem.GetYieldMultiplier(settlement, type.Value, world);
 
             if (materialAmount <= 0)
             {
