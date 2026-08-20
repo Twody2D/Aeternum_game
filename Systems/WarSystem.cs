@@ -281,7 +281,9 @@ public static class WarSystem
         // десяток ветеранов на стенах стоит полусотни новобранцев
         var defenseFactor = 1 - Math.Min(MaxDefenseBonus, ArmySystem.GetGarrisonStrength(settlement, world) * DefenseBonusPerDefender);
 
-        var effectiveCasualtyRate = world.Settings.WarCasualtyRate * escalation * defenseFactor * WallSystem.GetWallFactor(settlement, world);
+        // Горы и холмы обороняют сами по себе, безо всякого гарнизона (см. TerrainSystem)
+        var effectiveCasualtyRate = world.Settings.WarCasualtyRate * escalation * defenseFactor
+            * WallSystem.GetWallFactor(settlement, world) * TerrainSystem.GetDefenseFactor(settlement, world);
 
         if (isHolyWar)
         {

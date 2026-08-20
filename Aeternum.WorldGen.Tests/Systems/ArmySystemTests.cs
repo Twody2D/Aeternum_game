@@ -204,7 +204,9 @@ public class ArmySystemTests
     {
         var world = new World { CurrentYear = 100 };
 
-        var disputed = new Settlement { Id = 1, Name = "Спорная" };
+        // Низина (см. TerrainSystem) — координаты подобраны для Seed по умолчанию (0),
+        // чтобы бонус обороны от рельефа не примешивался к тому, что здесь проверяется
+        var disputed = new Settlement { Id = 1, Name = "Спорная", X = 180, Y = 0 };
         world.Settlements.Add(disputed);
 
         // Мирные жители, ради которых всё и считается

@@ -211,7 +211,7 @@ void PrintFinalReport(WorldStatistics stats, double knowledge)
 
         Console.WriteLine(
             $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}, {settlement.Language?.Name}) " +
-            $"[{settlement.X:0}, {settlement.Y:0}, плодородие {ClimateSystem.GetFertility(settlement):0.00}]: " +
+            $"[{settlement.X:0}, {settlement.Y:0}, плодородие {ClimateSystem.GetFertility(settlement):0.00}, {TerrainSystem.GetName(TerrainSystem.GetRelief(settlement, world))}]: " +
             $"{settlementStat.Population} жит., домов {settlement.Houses}, больниц {settlement.Hospitals}, " +
             $"школ {settlement.Schools}, укреплений {settlement.Walls}, " +
             $"запас еды {settlement.FoodStock:0.#}/{StorageSystem.GetFoodCapacity(settlement):0}, золота {settlement.Gold:0.#}, материалы: {materialsText}, мастерские: {workshopsText}{legendText}");
