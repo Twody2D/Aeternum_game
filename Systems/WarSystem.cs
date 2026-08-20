@@ -290,6 +290,13 @@ public static class WarSystem
             DeathSystem.Kill(casualty, world, DeathReason.War);
         }
 
+        // Война не только убивает: уцелевших уводят (см. CaptiveSystem).
+        // Уводит сильнейший из претендентов — тот, кому осада по средствам
+        var captor = claimants.OrderByDescending(GetPower).ThenBy(k => k.Id).First();
+        var survivors = residents.Where(m => m.Alive && !casualties.Contains(m)).ToList();
+
+        CaptiveSystem.Process(settlement, survivors, casualtyCount, captor, world);
+
         // Стены принимают удар на себя и не выдерживают его бесследно — осада
         // постепенно срывает ту самую защиту, что делает её дорогой для нападающих
         if (settlement.Walls > 0 && Rng.NextDouble() < SiegeWallDamageChance)

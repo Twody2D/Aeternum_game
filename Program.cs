@@ -85,7 +85,8 @@ var eventLabels = new Dictionary<EventType, string>
     [EventType.Independence] = "обретений независимости",
     [EventType.Relief] = "раздач хлеба",
     [EventType.Appointment] = "назначений ко двору",
-    [EventType.Assimilation] = "смен наречия"
+    [EventType.Assimilation] = "смен наречия",
+    [EventType.Captivity] = "угонов пленных"
 };
 
 var ageGroupLabels = new Dictionary<AgeGroup, string>
