@@ -29,6 +29,17 @@ public static class WarSystem
 
     private const double SiegeWallDamageChance = 0.3; // Шанс, что за год осады рухнет одно укрепление
 
+    // Насколько вероятнее прочих погибнуть на войне. Первыми стоят те, кто
+    // держит оборону; за ними — мужчины призывного возраста, которых сгоняют
+    // на стены ополчением; женщин и стариков задевает уже случайностью осады
+    // (обстрел, штурм, голод), а до детей война добирается в последнюю очередь.
+    // Веса относительные: важно не само число, а во сколько раз одни рискуют
+    // больше других
+    private const double DefenderRisk = 1.0;
+    private const double MilitiaRisk = 0.4;
+    private const double CivilianRisk = 0.15;
+    private const double ChildRisk = 0.05;
+
     private const int VassalizationThresholdYears = 3; // Осада, длящаяся столько лет, может закончиться вассалитетом слабой стороны
     private const double VassalizationPowerRatio = 2.0; // Во сколько раз сильная сторона должна превосходить слабую по населению
     private const double VassalizationChance = 0.15; // Шанс в год, что явно проигрышная позиция обернётся вассалитетом
@@ -215,6 +226,40 @@ public static class WarSystem
         return true;
     }
 
+    // Кого именно заберёт эта война. Выкашивает не всех подряд: гибнут прежде
+    // всего те, кто вышел её встречать. Отбор взвешенный, а не по очереди —
+    // гражданских задевает тоже, просто много реже, и когда защитники
+    // кончаются, удар неминуемо приходится по остальным
+    public static List<Character> PickCasualties(List<Character> residents, int count)
+    {
+        return residents
+            .OrderByDescending(m => Math.Pow(Rng.NextDouble(), 1 / GetWarRisk(m)))
+            .Take(count)
+            .ToList();
+    }
+
+    // Во сколько раз этому жителю опаснее прочих оказаться среди погибших
+    public static double GetWarRisk(Character character)
+    {
+        if (ProfessionSystem.GetCategory(character.Profession) == ProfessionCategory.Military)
+        {
+            return DefenderRisk;
+        }
+
+        if (character.LifeStage is LifeStage.Infant or LifeStage.Child or LifeStage.Student)
+        {
+            return ChildRisk;
+        }
+
+        // Ополчение собирают из тех, кого при осаде и правда ставят на стены
+        if (character.LifeStage == LifeStage.Adult && character.Gender == Gender.Male)
+        {
+            return MilitiaRisk;
+        }
+
+        return CivilianRisk;
+    }
+
     private static bool AreAtPeace(Kingdom a, Kingdom b)
     {
         return a.AlliedKingdoms.Contains(b) || a.Suzerain == b || b.Suzerain == a;
@@ -238,10 +283,7 @@ public static class WarSystem
 
         var casualtyCount = (int)(residents.Count * effectiveCasualtyRate);
 
-        var casualties = residents
-            .OrderBy(_ => Rng.Next())
-            .Take(casualtyCount)
-            .ToList();
+        var casualties = PickCasualties(residents, casualtyCount);
 
         foreach (var casualty in casualties)
         {
