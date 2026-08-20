@@ -203,7 +203,7 @@ void PrintFinalReport(WorldStatistics stats, double knowledge)
             $"[{settlement.X:0}, {settlement.Y:0}, плодородие {ClimateSystem.GetFertility(settlement):0.00}]: " +
             $"{settlementStat.Population} жит., домов {settlement.Houses}, больниц {settlement.Hospitals}, " +
             $"школ {settlement.Schools}, укреплений {settlement.Walls}, " +
-            $"запас еды {settlement.FoodStock:0.#}, золота {settlement.Gold:0.#}, материалы: {materialsText}, мастерские: {workshopsText}{legendText}");
+            $"запас еды {settlement.FoodStock:0.#}/{StorageSystem.GetFoodCapacity(settlement):0}, золота {settlement.Gold:0.#}, материалы: {materialsText}, мастерские: {workshopsText}{legendText}");
     }
 
     Console.WriteLine();
@@ -334,7 +334,7 @@ void PrintKingdoms(List<Kingdom> kingdoms)
         var treasuryMaterials = kingdom.MaterialTreasury.Where(kv => kv.Value > 0).ToList();
 
         var treasuryText = kingdom.FoodTreasury > 0 || kingdom.GoldTreasury > 0 || treasuryMaterials.Count > 0
-            ? $", казна: {kingdom.FoodTreasury:0.#} еды, {kingdom.GoldTreasury:0.#} золота" +
+            ? $", казна: {kingdom.FoodTreasury:0.#}/{StorageSystem.GetTreasuryCapacity(kingdom):0} еды, {kingdom.GoldTreasury:0.#} золота" +
               (treasuryMaterials.Count > 0
                   ? $", {string.Join(", ", treasuryMaterials.Select(kv => $"{materialLabels[kv.Key]} {kv.Value:0.#}"))}"
                   : "")

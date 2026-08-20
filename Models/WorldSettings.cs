@@ -158,6 +158,17 @@ public class WorldSettings
 
 
 
+    // Хранение
+
+    // Доля запаса еды, которая пропадает за год сама по себе — зерно не лежит вечно (см. StorageSystem)
+    public double FoodSpoilageRate { get; set; } = 0.1;
+
+    // Доля излишка сверх вместимости складов, теряемая за год: лежащее под
+    // открытым небом пропадает быстро, но не мгновенно (см. StorageSystem)
+    public double StorageOverflowLossRate { get; set; } = 0.5;
+
+
+
     // Дань
 
     // Доля излишка (еды или материалов), которую государство забирает в казну за год (см. TributeSystem)
