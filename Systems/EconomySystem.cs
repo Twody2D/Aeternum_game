@@ -67,14 +67,20 @@ public static class EconomySystem
         foreach (var resident in residents)
         {
             var (type, amount) = ProfessionSystem.GetMaterialProduction(resident.Profession);
-            var materialAmount = amount * GetProductivity(resident) * WorkshopSystem.GetProductionMultiplier(settlement, type);
+
+            if (type == null)
+            {
+                continue; // Профессия не ремесленная — сырья от неё нет
+            }
+
+            var materialAmount = amount * GetProductivity(resident) * WorkshopSystem.GetProductionMultiplier(settlement, type.Value);
 
             if (materialAmount <= 0)
             {
                 continue;
             }
 
-            settlement.MaterialStocks[type] = settlement.MaterialStocks.GetValueOrDefault(type) + materialAmount;
+            settlement.MaterialStocks[type.Value] = settlement.MaterialStocks.GetValueOrDefault(type.Value) + materialAmount;
         }
 
         double consumption = residents.Count * world.Settings.FoodConsumptionPerCapita;

@@ -24,7 +24,8 @@ public static class WorkshopSystem
             var craftersByType = settlement.Members
                 .Where(m => m.Alive)
                 .Select(m => ProfessionSystem.GetMaterialProduction(m.Profession).Type)
-                .Where(t => t != MaterialType.General)
+                .Where(t => t != null)
+                .Select(t => t!.Value)
                 .GroupBy(t => t)
                 .ToDictionary(g => g.Key, g => g.Count());
 

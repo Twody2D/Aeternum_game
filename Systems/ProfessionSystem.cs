@@ -59,7 +59,6 @@ public static class ProfessionSystem
         .ToDictionary(g => g.Key, g => g.Select(kv => kv.Key).ToArray());
 
     private const double CraftMaterialAmount = 3.0; // Годовое производство материала одним ремесленником своего типа
-    private const double GeneralMaterialAmount = 0.5; // Разнорабочие производят немного неспециализированного материала
 
     // Профессии, которые гарантированно должны быть хотя бы у одного живого жителя
     // поселения — по одному представителю на еду и на каждый тип материала.
@@ -247,20 +246,17 @@ public static class ProfessionSystem
         return GoldProductionByCategory.GetValueOrDefault(GetCategory(profession));
     }
 
-    // Годовое производство материалов одним взрослым работником этой профессии: тип и количество
-    public static (MaterialType Type, double Amount) GetMaterialProduction(string? profession)
+    // Годовое производство материалов одним взрослым работником этой профессии:
+    // тип и количество. Сырьё даёт только конкретное ремесло — у остальных
+    // профессий типа нет вовсе (null), и вклад их в мир идёт едой и золотом
+    public static (MaterialType? Type, double Amount) GetMaterialProduction(string? profession)
     {
         if (profession != null && MaterialTypeByProfession.TryGetValue(profession, out var type))
         {
             return (type, CraftMaterialAmount);
         }
 
-        if (GetCategory(profession) == ProfessionCategory.General)
-        {
-            return (MaterialType.General, GeneralMaterialAmount);
-        }
-
-        return (MaterialType.General, 0.0);
+        return (null, 0.0);
     }
 
     public static bool IsHazardous(string? profession)

@@ -7,6 +7,5 @@ public enum MaterialType
     Stone,
     Metal,
     Textile,
-    Clay,
-    General
+    Clay
 }
