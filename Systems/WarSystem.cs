@@ -45,6 +45,13 @@ public static class WarSystem
     private const double VassalizationChance = 0.15; // Шанс в год, что явно проигрышная позиция обернётся вассалитетом
     private const double IndependenceChance = 0.25; // Шанс в год, что переросший вассал сбросит зависимость
 
+    // Нрав государя решает не только налоги (см. TributeSystem.ChooseRate) — тот же
+    // Trait.Brave/Prudent сказывается и на войне: смелый охотнее берётся за оружие,
+    // осторожный ищет повод не браться. Множители на каждого претендента разом —
+    // спор двух смелых государей эскалирует быстрее, чем спор смелого с осторожным
+    private const double BraveRulerWarBoost = 1.3;
+    private const double PrudentRulerWarCut = 0.7;
+
     public static void Process(World world)
     {
         TryBreakFree(world);
@@ -72,6 +79,7 @@ public static class WarSystem
             // Спор родни решается тяжелее: воевать с домом, куда выдана сестра,
             // не то же самое, что с чужим (см. DynasticSystem)
             effectiveWarChance *= DynasticSystem.GetWarRestraint(claimants, world);
+            effectiveWarChance *= GetRulerTemperamentFactor(claimants);
 
             // Осада ещё не началась — как и раньше, решает WarChance. Уже идущая
             // осада не бросает эту монету заново — раз начавшись, не может
@@ -200,6 +208,25 @@ public static class WarSystem
             Description = $"{settlement.Name}: затянувшаяся осада закончилась перемирием. Стороны: {claimantNames}",
             Kingdoms = claimants
         });
+    }
+
+    private static double GetRulerTemperamentFactor(List<Kingdom> claimants)
+    {
+        var factor = 1.0;
+
+        foreach (var claimant in claimants)
+        {
+            if (claimant.Ruler.Traits.Contains(Trait.Brave))
+            {
+                factor *= BraveRulerWarBoost;
+            }
+            else if (claimant.Ruler.Traits.Contains(Trait.Prudent))
+            {
+                factor *= PrudentRulerWarCut;
+            }
+        }
+
+        return factor;
     }
 
     // Спор религиозный, если у претендентов есть хотя бы два разных вероисповедания

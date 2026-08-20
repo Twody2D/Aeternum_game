@@ -56,7 +56,7 @@ public class ProfessionSystemTests
         return matching / (double)Sample;
     }
 
-    private static double ShareOfCategory(Settlement settlement, ProfessionCategory category, int seed = 1)
+    private static double ShareOfCategory(Settlement settlement, ProfessionCategory category, int seed = 1, HashSet<Trait>? traits = null)
     {
         Rng.Initialize(seed);
 
@@ -64,7 +64,7 @@ public class ProfessionSystemTests
 
         for (var i = 0; i < Sample; i++)
         {
-            if (ProfessionSystem.GetCategory(ProfessionSystem.GetRandom(settlement: settlement)) == category)
+            if (ProfessionSystem.GetCategory(ProfessionSystem.GetRandom(settlement: settlement, traits: traits)) == category)
             {
                 matching++;
             }
@@ -159,5 +159,47 @@ public class ProfessionSystemTests
         }
 
         Assert.True(inherited > Sample / 10, $"ремесло родителя должно передаваться заметно чаще, а вышло {inherited} из {Sample}");
+    }
+
+    [Fact]
+    public void GetRandom_BraveCharacter_LeansTowardMilitary()
+    {
+        // Скудная земля (см. ClimateSystem) — тяга к земледелию не мешает разглядеть тягу к ратному делу
+        var settlement = SettledSettlement(y: 0);
+        var brave = new HashSet<Trait> { Trait.Brave };
+
+        var braveShare = ShareOfCategory(settlement, ProfessionCategory.Military, traits: brave);
+        var neutralShare = ShareOfCategory(settlement, ProfessionCategory.Military);
+
+        Assert.True(braveShare > neutralShare, $"смелых должно чаще тянуть в военное дело: {braveShare} против {neutralShare}");
+    }
+
+    [Fact]
+    public void GetRandom_FrailCharacter_LessOftenEndsUpInHazardousWork()
+    {
+        var settlement = SettledSettlement(y: 0);
+        var frail = new HashSet<Trait> { Trait.Frail };
+
+        var frailShare = ShareOfHazardous(settlement, traits: frail);
+        var neutralShare = ShareOfHazardous(settlement);
+
+        Assert.True(frailShare < neutralShare, $"хрупких должно реже заносить в опасное ремесло: {frailShare} против {neutralShare}");
+    }
+
+    private static double ShareOfHazardous(Settlement settlement, int seed = 1, HashSet<Trait>? traits = null)
+    {
+        Rng.Initialize(seed);
+
+        var matching = 0;
+
+        for (var i = 0; i < Sample; i++)
+        {
+            if (ProfessionSystem.IsHazardous(ProfessionSystem.GetRandom(settlement: settlement, traits: traits)))
+            {
+                matching++;
+            }
+        }
+
+        return matching / (double)Sample;
     }
 }

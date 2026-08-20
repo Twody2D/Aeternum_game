@@ -41,12 +41,12 @@ public static class CharacterGenerator
         var character = CreateBaseCharacter();
 
         character.Age = Rng.Next(16, 60);
-        character.Profession = ProfessionSystem.GetRandom(culture, settlement);
+        AssignTraits(character); // до выбора профессии — нрав должен успеть на неё повлиять (см. ProfessionSystem.GetRandom)
+        character.Profession = ProfessionSystem.GetRandom(culture, settlement, traits: character.Traits);
 
         // Мир начинается не с нуля: стартовые жители уже прожили в своём деле
         // столько, сколько пробыли взрослыми (см. ProfessionSystem.GetMastery)
         character.ProfessionYear = -(character.Age - StartingAdultAge);
-        AssignTraits(character);
 
         return character;
 

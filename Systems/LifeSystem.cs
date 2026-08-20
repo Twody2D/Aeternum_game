@@ -46,7 +46,7 @@ public static class LifeSystem
 
             // Недостающая обязательная профессия в поселении важнее наследования,
             // а культура поселения смещает выбор, когда ни то ни другое не сработало
-            character.Profession = ProfessionSystem.GetRandom(character.Settlement?.Culture, character.Settlement, inheritedProfession);
+            character.Profession = ProfessionSystem.GetRandom(character.Settlement?.Culture, character.Settlement, inheritedProfession, character.Traits);
             character.ProfessionYear = world.CurrentYear;
         }
     }

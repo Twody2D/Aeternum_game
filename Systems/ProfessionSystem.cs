@@ -76,6 +76,11 @@ public static class ProfessionSystem
 
     public static readonly string[] ProfessionsList = Categories.Keys.ToArray();
 
+    // Тот же список без опасных ремёсел — для чистой случайности хрупких (см. GetRandom)
+    private static readonly string[] NonHazardousProfessionsList = ProfessionsList
+        .Where(p => !HazardousProfessions.Contains(p))
+        .ToArray();
+
     // Профессии, сгруппированные по категории — для культурного смещения в GetRandom
     private static readonly Dictionary<ProfessionCategory, string[]> ProfessionsByCategory = Categories
         .GroupBy(kv => kv.Value)
@@ -109,14 +114,19 @@ public static class ProfessionSystem
     // почве (см. ClimateSystem) это примерно каждый третий, на скудной — никого
     private const double FertilityPull = 1.0;
 
+    private const double BraveMilitaryPull = 0.3; // Смелых (см. Trait.Brave) тянет к ратному делу
+
     // Случайная профессия — по цепочке приоритетов, от самого сильного довода
     // к самому слабому: нехватка обязательной профессии в поселении
     // (см. EssentialProfessions) перевешивает всё; затем семейное дело
     // (профессия родителя); затем школы поселения (категория Knowledge);
-    // затем специализация самого места — его главное ремесло (мастерские)
-    // и плодородие его земли; затем культурный уклад
-    // (см. Culture.PreferredCategory); в остатке — чистая случайность
-    public static string GetRandom(Culture? culture = null, Settlement? settlement = null, string? inheritedProfession = null)
+    // затем специализация самого места — его главное ремесло (мастерские),
+    // плодородие его земли и нрав самого человека (Trait.Brave — к ратному
+    // делу); затем культурный уклад (см. Culture.PreferredCategory); в
+    // остатке — чистая случайность, но не совсем слепая: слабое здоровье
+    // (Trait.Frail) не выбирает опасное ремесло, если ничто другое не потянуло
+    // туда сильнее (см. IsHazardous)
+    public static string GetRandom(Culture? culture = null, Settlement? settlement = null, string? inheritedProfession = null, HashSet<Trait>? traits = null)
     {
         if (settlement != null)
         {
@@ -156,6 +166,11 @@ public static class ProfessionSystem
             return farming;
         }
 
+        if (TryPickByTemperament(traits, out var temperament))
+        {
+            return temperament;
+        }
+
         if (culture != null &&
             Rng.NextDouble() < CulturePreferenceChance &&
             ProfessionsByCategory.TryGetValue(culture.PreferredCategory, out var preferred))
@@ -163,9 +178,29 @@ public static class ProfessionSystem
             return preferred[Rng.Next(preferred.Length)];
         }
 
-        return ProfessionsList[
-            Rng.Next(ProfessionsList.Length)
-        ];
+        // Чистая случайность — но не совсем слепая: хрупкому не подвернётся
+        // опасное ремесло, если до сих пор ничто другое не потянуло его именно туда
+        var pool = traits != null && traits.Contains(Trait.Frail) ? NonHazardousProfessionsList : ProfessionsList;
+
+        return pool[Rng.Next(pool.Length)];
+    }
+
+    // Смелых тянет в военное дело — тот же принцип, что у TryPickFarming, только
+    // не от места, а от собственного нрава, и потому не привязан к поселению
+    private static bool TryPickByTemperament(HashSet<Trait>? traits, out string profession)
+    {
+        profession = "";
+
+        if (traits == null || !traits.Contains(Trait.Brave) ||
+            Rng.NextDouble() >= BraveMilitaryPull ||
+            !ProfessionsByCategory.TryGetValue(ProfessionCategory.Military, out var military))
+        {
+            return false;
+        }
+
+        profession = military[Rng.Next(military.Length)];
+
+        return true;
     }
 
     // Город, где стоят мастерские, растит себе смену по тому же ремеслу.

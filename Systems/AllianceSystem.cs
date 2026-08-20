@@ -14,6 +14,12 @@ public static class AllianceSystem
 {
     private const double AllianceBreakChance = 0.1; // Шанс в год, что союз распадётся, пока правящие дома разошлись в вере
 
+    // Тот же нрав государя, что толкает к войне сильнее прочих (см. WarSystem) или
+    // держит казну спокойнее (см. TributeSystem), здесь работает в обратную сторону:
+    // осторожный ищет опору в союзе, смелому чужая помощь ни к чему
+    private const double PrudentRulerAllianceBoost = 1.4;
+    private const double BraveRulerAllianceCut = 0.75;
+
     public static void Process(World world)
     {
         var activeKingdoms = world.Kingdoms.Where(k => k.FallenYear == null).ToList();
@@ -45,10 +51,12 @@ public static class AllianceSystem
         }
 
         // Общая вера сводит, общий язык помогает договориться, родство домов
-        // добавляет прямой интерес (см. DynasticSystem)
+        // добавляет прямой интерес (см. DynasticSystem), а нрав государей решает,
+        // ищут ли они союза вообще
         var chance = world.Settings.AllianceChance
                      * LanguageSystem.GetDiplomacyFactor(a, b)
-                     * DynasticSystem.GetAllianceFactor(a, b, world);
+                     * DynasticSystem.GetAllianceFactor(a, b, world)
+                     * GetRulerTemperamentFactor(a, b);
 
         if (Rng.NextDouble() >= chance)
         {
@@ -67,6 +75,25 @@ public static class AllianceSystem
                           (DynasticSystem.AreRealmsWed(a, b, world) ? " (дома в родстве)" : ""),
             Kingdoms = [a, b]
         });
+    }
+
+    private static double GetRulerTemperamentFactor(Kingdom a, Kingdom b)
+    {
+        var factor = 1.0;
+
+        foreach (var ruler in new[] { a.Ruler, b.Ruler })
+        {
+            if (ruler.Traits.Contains(Trait.Prudent))
+            {
+                factor *= PrudentRulerAllianceBoost;
+            }
+            else if (ruler.Traits.Contains(Trait.Brave))
+            {
+                factor *= BraveRulerAllianceCut;
+            }
+        }
+
+        return factor;
     }
 
     // Союз держится на той же общей вере, что его создала (см. TryFormAlliance) —
