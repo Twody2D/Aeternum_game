@@ -276,7 +276,10 @@ public static class WarSystem
         var escalation = 1 + EscalationPerYear * Math.Min(settlement.SiegeYears, MaxEscalationYears);
 
         var defenders = residents.Where(m => ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Military).ToList();
-        var defenseFactor = 1 - Math.Min(MaxDefenseBonus, defenders.Count * DefenseBonusPerDefender);
+
+        // Обороняет не число голов, а умение гарнизона (см. ArmySystem):
+        // десяток ветеранов на стенах стоит полусотни новобранцев
+        var defenseFactor = 1 - Math.Min(MaxDefenseBonus, ArmySystem.GetGarrisonStrength(settlement, world) * DefenseBonusPerDefender);
 
         var effectiveCasualtyRate = world.Settings.WarCasualtyRate * escalation * defenseFactor * WallSystem.GetWallFactor(settlement, world);
 

@@ -75,14 +75,8 @@ public static class RebellionSystem
                 continue; // Нечем платить войску — поход не состоится
             }
 
-            var soldiers = crown.Settlements
-                .SelectMany(s => s.Members)
-                .Count(m => m.Alive && ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Military);
-
-            // Войско ведёт воевода, если он у короны есть: одно и то же число
-            // солдат под опытной рукой стоит большего (см. CourtSystem)
-            var marshal = CourtSystem.GetOfficeStrength(crown, CourtOffice.Marshal, world);
-            var chance = Math.Min(MaxSuppressionChance, soldiers * SuppressionPerSoldier * marshal);
+            // Поход ведёт войско целиком — с его умением и его воеводой (см. ArmySystem)
+            var chance = Math.Min(MaxSuppressionChance, ArmySystem.GetStrength(crown, world) * SuppressionPerSoldier);
 
             crown.FoodTreasury -= SuppressionCost; // Поход стоит казне независимо от исхода
 
