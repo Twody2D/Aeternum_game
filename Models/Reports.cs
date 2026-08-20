@@ -26,3 +26,7 @@ public record EventTally(EventType Type, int Count);
 public record NotablePerson(Character Character, bool IsLongLived, Dynasty? FoundedSignificantDynasty);
 
 public record DynastyStat(Dynasty Dynasty, int AliveCount, int? ExtinctYear, List<Character> LongLived);
+
+public record WorldMap(int Width, int Height, MapCell[][] Cells);
+
+public record MapCell(Relief Relief, Settlement? Settlement, Kingdom? Owner);

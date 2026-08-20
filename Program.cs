@@ -139,6 +139,7 @@ engine.Run(world, ProjectSettings.SimulationYears, w =>
 });
 
 PrintFinalReport(StatisticsSystem.BuildFinalReport(world), world.Knowledge);
+PrintWorldMap(WorldMapSystem.Build(world));
 PrintChronicle(ChronicleSystem.BuildChronicle(world));
 PrintNotablePeople(NotablePeopleSystem.BuildReport(world));
 PrintDynasties(DynastyEncyclopediaSystem.BuildReport(world));
@@ -233,6 +234,67 @@ void PrintFinalReport(WorldStatistics stats, double knowledge)
     foreach (var ageGroup in stats.AgeGroups)
     {
         Console.WriteLine($"{ageGroupLabels[ageGroup.Group]}: {ageGroup.Count}");
+    }
+
+    Console.WriteLine();
+}
+
+// ASCII-карта мира: фон — рельеф (см. TerrainSystem), поверх — поселения,
+// подписанные буквой государства, которому заметнее прочих принадлежат
+void PrintWorldMap(WorldMap map)
+{
+    Console.WriteLine();
+    Console.WriteLine("===== Карта мира =====");
+
+    var kingdoms = map.Cells
+        .SelectMany(row => row)
+        .Select(c => c.Owner)
+        .Where(k => k != null)
+        .Select(k => k!)
+        .Distinct()
+        .OrderBy(k => k.Id)
+        .ToList();
+
+    var symbolByKingdom = kingdoms
+        .Select((k, i) => (Kingdom: k, Symbol: (char)('A' + i % 26)))
+        .ToDictionary(t => t.Kingdom, t => t.Symbol);
+
+    for (var row = 0; row < map.Height; row++)
+    {
+        var line = new System.Text.StringBuilder();
+
+        for (var col = 0; col < map.Width; col++)
+        {
+            var cell = map.Cells[row][col];
+
+            char symbol;
+
+            if (cell.Settlement != null)
+            {
+                symbol = cell.Owner != null && symbolByKingdom.TryGetValue(cell.Owner, out var kingdomSymbol) ? kingdomSymbol : '*';
+            }
+            else
+            {
+                symbol = cell.Relief switch
+                {
+                    Relief.Mountain => '^',
+                    Relief.Hill => ',',
+                    _ => '.'
+                };
+            }
+
+            line.Append(symbol);
+        }
+
+        Console.WriteLine(line.ToString());
+    }
+
+    Console.WriteLine();
+    Console.WriteLine(". низина   , холмы   ^ горы   * поселение вне государств");
+
+    foreach (var (kingdom, symbol) in symbolByKingdom)
+    {
+        Console.WriteLine($"{symbol} — {kingdom.Name}");
     }
 
     Console.WriteLine();
