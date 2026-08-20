@@ -27,6 +27,8 @@ public class World
 
     public double Knowledge { get; set; } //Накопленное знание мира — растёт трудом учёных и школ, не убывает, см. TechnologySystem
 
+    public double WeatherFactor { get; set; } = 1.0; //Погода этого года — множитель к плодородию, блуждает год от года, см. WeatherSystem
+
     public int Seed { get; set; } //Зерно, из которого порождён мир — чтобы его можно было воспроизвести, см. Rng
 
     public List<WorldEvent> Events { get; set; } = new(); //Список событий в мире
