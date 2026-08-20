@@ -3,31 +3,123 @@ using Aeternum.WorldGen.Core;
 
 namespace Aeternum.WorldGen.Systems;
 
-// То, чего бартер (TradeSystem) не может: поселение с дефицитом еды после
-// торговли с союзниками покупает недостающее на внешнем рынке за накопленное
-// золото (производится профессиями Trade — см. ProfessionSystem.GetGoldProduction).
-// Работает независимо от союзов и соседей — единственная уникальная польза золота,
-// не сводящаяся к обычному перераспределению
+// То, чего бартер (TradeSystem) не может: поселение торгует с внешним миром
+// за золото, независимо от союзов и соседей. Работает в обе стороны — сначала
+// сбывает то, что всё равно не пережило бы зимы на складе (см. StorageSystem),
+// потом на вырученное докупает недостающую еду. Отсюда сам собой выходит
+// сюжет, который нигде не прописан: голодающее поселение распродаёт запасы
+// сырья, чтобы купить хлеб.
+//
+// Цена еды не постоянна, а следует за спросом: она считается по тому, на
+// сколько лет вперёд миру хватит уже собранного зерна. В сытый год хлеб
+// дёшев, в голодный дорожает вчетверо — и золото торговых поселений
+// обесценивается ровно тогда, когда оно нужнее всего. Сырьё идёт по
+// постоянной цене: мирового дефицита дерева или камня модель пока не знает,
+// и выдумывать его на пустом месте не из чего.
+//
+// Сколько удастся сбыть — зависит от купцов: заезжий торговец подберёт
+// немного в любом поселении, но всерьёз вывозит товар только тот, кто живёт
+// этим ремеслом (категория Trade)
 public static class MarketSystem
 {
-    private const double FoodPerGold = 2.0; // Обменный курс внешнего рынка
+    private const double BaseFoodPrice = 0.5; // Золота за единицу еды в обычный год
+    private const double ReferenceYearsOfSupply = 5; // Запас, при котором цена держится базовой
+
+    private const double MinPriceFactor = 0.5; // В сытые годы хлеб дешевеет, но не даром
+    private const double MaxPriceFactor = 4.0; // В голодные дорожает, но не бесконечно
+
+    private const double MaterialPrice = 0.3;
+
+    private const double SellRate = 0.5; // Купец берёт товар вдвое дешевле, чем продаёт — на разнице и живёт
+
+    private const double BaseCarry = 5; // Заезжий торговец подберёт немного и там, где своих купцов нет
+    private const double GoodsPerTrader = 20; // Сколько лишнего товара один свой купец успевает вывезти за год
 
     public static void Process(World world)
     {
+        var foodPrice = GetFoodPrice(world);
+
         foreach (var settlement in world.Settlements)
         {
-            if (settlement.FoodStock >= 0 || settlement.Gold <= 0)
+            SellSurplus(settlement, world, foodPrice);
+            BuyFood(settlement, foodPrice);
+        }
+    }
+
+    // Цена единицы еды в золоте: чем на меньшее число лет миру хватит запаса, тем дороже хлеб
+    public static double GetFoodPrice(World world)
+    {
+        var demand = world.Characters.Count(c => c.Alive) * world.Settings.FoodConsumptionPerCapita;
+
+        if (demand <= 0)
+        {
+            return BaseFoodPrice; // Покупателей не осталось — цену не на чем строить
+        }
+
+        var supply = world.Settlements.Sum(s => Math.Max(0, s.FoodStock));
+        var yearsOfSupply = supply / demand;
+
+        var factor = yearsOfSupply <= 0
+            ? MaxPriceFactor
+            : Math.Clamp(ReferenceYearsOfSupply / yearsOfSupply, MinPriceFactor, MaxPriceFactor);
+
+        return BaseFoodPrice * factor;
+    }
+
+    // Сбыт излишка, которому не хватило места на складе: его всё равно ждала
+    // порча, поэтому продают даже по половинной цене
+    private static void SellSurplus(Settlement settlement, World world, double foodPrice)
+    {
+        var traders = settlement.Members.Count(m =>
+            m.Alive && ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Trade);
+
+        var carryLeft = BaseCarry + traders * GoodsPerTrader;
+
+        var foodSurplus = settlement.FoodStock - StorageSystem.GetFoodCapacity(settlement);
+
+        if (foodSurplus > 0)
+        {
+            var sold = Math.Min(foodSurplus, carryLeft);
+
+            settlement.FoodStock -= sold;
+            settlement.Gold += sold * foodPrice * SellRate;
+            carryLeft -= sold;
+        }
+
+        foreach (var type in settlement.MaterialStocks.Keys.ToList())
+        {
+            if (carryLeft <= 0)
+            {
+                break;
+            }
+
+            var surplus = settlement.MaterialStocks[type] - StorageSystem.GetMaterialCapacity(settlement, type);
+
+            if (surplus <= 0)
             {
                 continue;
             }
 
-            var neededFood = -settlement.FoodStock;
-            var affordableFood = settlement.Gold * FoodPerGold;
-            var boughtFood = Math.Min(neededFood, affordableFood);
-            var goldSpent = boughtFood / FoodPerGold;
+            var sold = Math.Min(surplus, carryLeft);
 
-            settlement.Gold -= goldSpent;
-            settlement.FoodStock += boughtFood;
+            settlement.MaterialStocks[type] -= sold;
+            settlement.Gold += sold * MaterialPrice * SellRate;
+            carryLeft -= sold;
         }
+    }
+
+    private static void BuyFood(Settlement settlement, double foodPrice)
+    {
+        if (settlement.FoodStock >= 0 || settlement.Gold <= 0 || foodPrice <= 0)
+        {
+            return;
+        }
+
+        var neededFood = -settlement.FoodStock;
+        var affordableFood = settlement.Gold / foodPrice;
+        var boughtFood = Math.Min(neededFood, affordableFood);
+
+        settlement.Gold -= boughtFood * foodPrice;
+        settlement.FoodStock += boughtFood;
     }
 }
