@@ -10,6 +10,7 @@ namespace Aeternum.WorldGen.Generators;
 // загруженных из Data/Names.json (см. ContentData)
 public static class CharacterGenerator
 {
+    private const int StartingAdultAge = 16; // С этого возраста генератор создаёт стартовых жителей — с него же считается их стаж
     private static int _nextId = 1; // Сквозной счётчик для Character.Id
 
     private static string[] MaleNames => ContentData.Names.MaleNames;
@@ -41,6 +42,10 @@ public static class CharacterGenerator
 
         character.Age = Rng.Next(16, 60);
         character.Profession = ProfessionSystem.GetRandom(culture, settlement);
+
+        // Мир начинается не с нуля: стартовые жители уже прожили в своём деле
+        // столько, сколько пробыли взрослыми (см. ProfessionSystem.GetMastery)
+        character.ProfessionYear = -(character.Age - StartingAdultAge);
         AssignTraits(character);
 
         return character;

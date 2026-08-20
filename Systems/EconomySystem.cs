@@ -128,7 +128,7 @@ public static class EconomySystem
             _ => 0.0
         };
 
-        baseProductivity *= ProfessionSystem.GetMastery(character, world.Settings);
+        baseProductivity *= ProfessionSystem.GetMastery(character, world);
 
         return character.Traits.Contains(Trait.Hardworking) ? baseProductivity * HardworkingMultiplier : baseProductivity;
     }

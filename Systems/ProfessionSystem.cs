@@ -85,8 +85,9 @@ public static class ProfessionSystem
     private const double CulturePreferenceChance = 0.5;
 
     // Мастерство: сколько прибавляет к делу каждый год, прожитый в ремесле,
-    // и где эта прибавка упирается в потолок. Стаж не хранится отдельным полем —
-    // он выводится из возраста: профессию получают при взрослении (см. LifeSystem)
+    // и где эта прибавка упирается в потолок. Стаж считается от того года,
+    // когда персонаж взялся за нынешнее дело (см. Character.ProfessionYear) —
+    // сменивший ремесло начинает с нуля
     private const double MasteryPerYear = 0.02;
     private const double MaxMasteryBonus = 0.5;
 
@@ -219,6 +220,37 @@ public static class ProfessionSystem
         return true;
     }
 
+    // Любая профессия названной категории — для тех, кто выбирает занятие
+    // не сам, а по нужде поселения (см. CareerSystem)
+    public static string? PickFromCategory(ProfessionCategory category)
+    {
+        return ProfessionsByCategory.TryGetValue(category, out var professions)
+            ? professions[Rng.Next(professions.Length)]
+            : null;
+    }
+
+    // Главное ремесло города, если оно у него есть
+    public static string? PickLocalCraft(Settlement settlement)
+    {
+        var main = settlement.Workshops
+            .Where(kv => kv.Value > 0)
+            .OrderByDescending(kv => kv.Value)
+            .ThenBy(kv => kv.Key)
+            .ToList();
+
+        return main.Count > 0 && ProfessionsByMaterial.TryGetValue(main[0].Key, out var crafts)
+            ? crafts[Rng.Next(crafts.Length)]
+            : null;
+    }
+
+    // Первая из обязательных профессий, которой в поселении не занят никто
+    public static string? GetMissingEssential(Settlement settlement)
+    {
+        var missing = GetMissingEssentialProfessions(settlement);
+
+        return missing.Count > 0 ? missing[Rng.Next(missing.Count)] : null;
+    }
+
     // Обязательные профессии, которых сейчас нет ни у одного живого жителя поселения
     private static List<string> GetMissingEssentialProfessions(Settlement settlement)
     {
@@ -269,18 +301,18 @@ public static class ProfessionSystem
     // копится годами и упирается в потолок — дальше растёт только слабость тела
     // (см. EconomySystem.GetProductivity), поэтому мастер на склоне лет работает
     // медленнее себя же в зрелости, но заметно лучше юнца
-    public static double GetMastery(Character character, WorldSettings settings)
+    public static double GetMastery(Character character, World world)
     {
         if (character.Profession == null)
         {
             return 1.0;
         }
 
-        var yearsInTrade = character.Age - settings.AdultAge;
+        var yearsInTrade = world.CurrentYear - character.ProfessionYear;
 
         if (yearsInTrade <= 0)
         {
-            return 1.0; // Ученик ещё только смотрит, как делают другие
+            return 1.0; // Только взялся за дело — ещё смотрит, как делают другие
         }
 
         return 1 + Math.Min(MaxMasteryBonus, yearsInTrade * MasteryPerYear);

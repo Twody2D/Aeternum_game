@@ -13,6 +13,11 @@ public class Character
     public int Age { get; set; } //Возраст
     public string? Profession { get; set; }  //Профессия
 
+    // Год, с которого персонаж занят нынешним делом. Мастерство отсчитывается
+    // отсюда, а не от рождения: сменивший ремесло начинает заново
+    // (см. ProfessionSystem.GetMastery, CareerSystem)
+    public int ProfessionYear { get; set; }
+
     public Gender Gender { get; set; }
     public Family? BirthFamily { get; set; } //Семья, в которой родился (не меняется)
     public Family? CurrentFamily { get; set; } //Семья, созданная браком; null — персонаж не женат/не замужем

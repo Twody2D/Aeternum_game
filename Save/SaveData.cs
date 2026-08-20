@@ -38,6 +38,7 @@ public class CharacterData
     public string LastName { get; set; } = "";
     public int Age { get; set; }
     public string? Profession { get; set; }
+    public int ProfessionYear { get; set; }
     public Gender Gender { get; set; }
     public bool Alive { get; set; }
     public DeathReason DeathReason { get; set; }

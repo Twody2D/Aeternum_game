@@ -45,7 +45,7 @@ public static class TechnologySystem
             .Where(c => c.Alive &&
                         c.LifeStage is LifeStage.Adult or LifeStage.Elder &&
                         ProfessionSystem.GetCategory(c.Profession) == ProfessionCategory.Knowledge)
-            .Sum(c => ProfessionSystem.GetMastery(c, world.Settings));
+            .Sum(c => ProfessionSystem.GetMastery(c, world));
 
         var schools = world.Settlements.Sum(s => s.Schools);
 

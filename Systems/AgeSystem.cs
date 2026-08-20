@@ -23,7 +23,7 @@ public static class AgeSystem
             LifeSystem.UpdateLifeStage(character); // Пересчитываем этап жизни по новому возрасту
 
 
-            LifeSystem.AssignProfession(character); // Школа в 7 лет, профессия в 16
+            LifeSystem.AssignProfession(character, world); // Школа в 7 лет, профессия в 16
         }
     }
 }

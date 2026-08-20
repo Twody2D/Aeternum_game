@@ -9,6 +9,10 @@ namespace Aeternum.WorldGen.Tests.Systems;
 // она заведена: возраст расцвета работника
 public class MasteryTests
 {
+    private const int AdultAge = 18;
+
+    // Стаж отсчитывается от года, когда взялись за дело (см. Character.ProfessionYear).
+    // В мире, стоящем на нулевом году, столько же лет опыта даёт отрицательный год начала
     private static Character Worker(int id, int age, string profession = "Фермер")
     {
         return new Character
@@ -19,8 +23,14 @@ public class MasteryTests
             Age = age,
             Alive = true,
             LifeStage = age >= 60 ? LifeStage.Elder : age >= 16 ? LifeStage.Adult : LifeStage.Student,
-            Profession = profession
+            Profession = profession,
+            ProfessionYear = -Math.Max(0, age - AdultAge)
         };
+    }
+
+    private static World WorldAtYearZero()
+    {
+        return new World();
     }
 
     private static World WorldOfWorkers(int count, int age)
@@ -43,47 +53,47 @@ public class MasteryTests
     [Fact]
     public void GetMastery_Novice_HasNoBonus()
     {
-        var settings = new WorldSettings();
+        var world = WorldAtYearZero();
 
-        Assert.Equal(1.0, ProfessionSystem.GetMastery(Worker(1, settings.AdultAge), settings));
+        Assert.Equal(1.0, ProfessionSystem.GetMastery(Worker(1, AdultAge), world));
     }
 
     [Fact]
     public void GetMastery_GrowsWithYearsInTrade()
     {
-        var settings = new WorldSettings();
+        var world = WorldAtYearZero();
 
-        Assert.True(ProfessionSystem.GetMastery(Worker(1, 40), settings)
-                    > ProfessionSystem.GetMastery(Worker(2, 25), settings));
+        Assert.True(ProfessionSystem.GetMastery(Worker(1, 40), world)
+                    > ProfessionSystem.GetMastery(Worker(2, 25), world));
     }
 
     [Fact]
     public void GetMastery_StopsAtCeiling()
     {
         // Иначе столетний старик оказался бы вдвое полезнее зрелого мастера
-        var settings = new WorldSettings();
+        var world = WorldAtYearZero();
 
-        Assert.Equal(ProfessionSystem.GetMastery(Worker(1, 60), settings),
-                     ProfessionSystem.GetMastery(Worker(2, 99), settings));
+        Assert.Equal(ProfessionSystem.GetMastery(Worker(1, 60), world),
+                     ProfessionSystem.GetMastery(Worker(2, 99), world));
     }
 
     [Fact]
     public void GetMastery_WithoutProfession_IsNeutral()
     {
-        var settings = new WorldSettings();
+        var world = WorldAtYearZero();
         var idler = Worker(1, 50);
         idler.Profession = null;
 
-        Assert.Equal(1.0, ProfessionSystem.GetMastery(idler, settings));
+        Assert.Equal(1.0, ProfessionSystem.GetMastery(idler, world));
     }
 
     [Fact]
     public void GetMastery_Child_IsNeutral()
     {
         // Стаж считается от совершеннолетия, и до него он не может быть отрицательным
-        var settings = new WorldSettings();
+        var world = WorldAtYearZero();
 
-        Assert.Equal(1.0, ProfessionSystem.GetMastery(Worker(1, 10, "Школьник"), settings));
+        Assert.Equal(1.0, ProfessionSystem.GetMastery(Worker(1, 10, "Школьник"), world));
     }
 
     [Fact]

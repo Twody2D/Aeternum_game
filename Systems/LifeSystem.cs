@@ -1,4 +1,5 @@
 using Aeternum.WorldGen.Models;
+using Aeternum.WorldGen.Core;
 
 namespace Aeternum.WorldGen.Systems;
 
@@ -29,7 +30,7 @@ public static class LifeSystem
         }
     }
 
-    public static void AssignProfession(Character character) // Метод для назначения профессии персонажу на основе его возраста
+    public static void AssignProfession(Character character, World world) // Метод для назначения профессии персонажу на основе его возраста
     {
         if (character.Age == 7 && character.Profession == null)
         {
@@ -46,6 +47,7 @@ public static class LifeSystem
             // Недостающая обязательная профессия в поселении важнее наследования,
             // а культура поселения смещает выбор, когда ни то ни другое не сработало
             character.Profession = ProfessionSystem.GetRandom(character.Settlement?.Culture, character.Settlement, inheritedProfession);
+            character.ProfessionYear = world.CurrentYear;
         }
     }
 }
