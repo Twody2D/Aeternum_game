@@ -143,7 +143,10 @@ public static class TradeSystem
                     break;
                 }
 
-                var effectiveRate = transferRate * GetRouteFactor(donor, deficit, world);
+                // Наезженный путь помогает, языковая граница мешает (см. LanguageSystem)
+                var effectiveRate = transferRate
+                                    * GetRouteFactor(donor, deficit, world)
+                                    * LanguageSystem.GetTradeFactor(donor, deficit);
                 var available = get(donor) * effectiveRate;
                 var transfer = Math.Min(available, needed);
 

@@ -13,6 +13,8 @@ public class World
     public List<Dynasty> Dynasties { get; set; } = []; //Список династий
     public List<Settlement> Settlements { get; set; } = new(); //Список поселений
     public List<Culture> Cultures { get; set; } = new(); //Список культур
+
+    public List<Language> Languages { get; set; } = new(); //Наречия мира, см. LanguageSystem
     public List<Religion> Religions { get; set; } = new(); //Список религий
     public List<Kingdom> Kingdoms { get; set; } = new(); //Список государств
     public List<TradeRoute> TradeRoutes { get; set; } = new(); //Список торговых путей между поселениями

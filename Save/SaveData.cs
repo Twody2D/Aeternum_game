@@ -23,6 +23,7 @@ public class SaveData
     public List<DynastyData> Dynasties { get; set; } = new();
     public List<SettlementData> Settlements { get; set; } = new();
     public List<CultureData> Cultures { get; set; } = new();
+    public List<LanguageData> Languages { get; set; } = new();
     public List<ReligionData> Religions { get; set; } = new();
     public List<KingdomData> Kingdoms { get; set; } = new();
     public List<TradeRouteData> TradeRoutes { get; set; } = new();
@@ -100,6 +101,7 @@ public class SettlementData
     public int? RebellingAgainstKingdomId { get; set; }
     public List<int> MemberIds { get; set; } = new();
     public int? CultureId { get; set; }
+    public int? LanguageId { get; set; }
     public int? ReligionId { get; set; }
     public int LegendCount { get; set; }
 }
@@ -110,6 +112,12 @@ public class CultureData
     public string Name { get; set; } = "";
     public ProfessionCategory PreferredCategory { get; set; }
     public SuccessionLaw SuccessionLaw { get; set; }
+}
+
+public class LanguageData
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
 }
 
 public class ReligionData

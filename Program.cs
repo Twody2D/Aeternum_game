@@ -28,12 +28,17 @@ world.AliveCount = ProjectSettings.StartingPopulation; // Инициализир
 world.Cultures = CultureGenerator.Create(ProjectSettings.SettlementCount);
 world.Religions = ReligionGenerator.Create(ProjectSettings.SettlementCount);
 world.Settlements = SettlementGenerator.Create(ProjectSettings.SettlementCount);
+world.Languages = LanguageGenerator.Create(world.Cultures.Count);
 
 // У каждого поселения — своя культура и религия. Религия назначается со сдвигом
 // относительно культуры, чтобы они не были жёстко связаны 1:1
 for (int i = 0; i < world.Settlements.Count; i++)
 {
     world.Settlements[i].Culture = world.Cultures[i % world.Cultures.Count];
+
+    // Наречие идёт по культуре, но их меньше, чем народов: родственные культуры
+    // достаются одному языку, и языковая граница не совпадает с культурной
+    world.Settlements[i].Language = world.Languages[(i % world.Cultures.Count) % world.Languages.Count];
     world.Settlements[i].Religion = world.Religions[(i + 1) % world.Religions.Count];
 }
 
@@ -79,7 +84,8 @@ var eventLabels = new Dictionary<EventType, string>
     [EventType.Suppression] = "подавленных мятежей",
     [EventType.Independence] = "обретений независимости",
     [EventType.Relief] = "раздач хлеба",
-    [EventType.Appointment] = "назначений ко двору"
+    [EventType.Appointment] = "назначений ко двору",
+    [EventType.Assimilation] = "смен наречия"
 };
 
 var ageGroupLabels = new Dictionary<AgeGroup, string>
@@ -200,7 +206,7 @@ void PrintFinalReport(WorldStatistics stats, double knowledge)
         var legendText = settlement.LegendCount > 0 ? $", легенд {settlement.LegendCount}" : "";
 
         Console.WriteLine(
-            $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}) " +
+            $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}, {settlement.Language?.Name}) " +
             $"[{settlement.X:0}, {settlement.Y:0}, плодородие {ClimateSystem.GetFertility(settlement):0.00}]: " +
             $"{settlementStat.Population} жит., домов {settlement.Houses}, больниц {settlement.Hospitals}, " +
             $"школ {settlement.Schools}, укреплений {settlement.Walls}, " +

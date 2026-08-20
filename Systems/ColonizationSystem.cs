@@ -66,6 +66,7 @@ public static class ColonizationSystem
 
         newSettlement.Culture = origin.Culture;
         newSettlement.Religion = origin.Religion;
+        newSettlement.Language = origin.Language; // Переселенцы увозят с собой и речь
 
         world.Settlements.Add(newSettlement);
 

@@ -44,7 +44,8 @@ public static class AllianceSystem
             return;
         }
 
-        if (Rng.NextDouble() >= world.Settings.AllianceChance)
+        // Общая вера сводит, общий язык помогает договориться (см. LanguageSystem)
+        if (Rng.NextDouble() >= world.Settings.AllianceChance * LanguageSystem.GetDiplomacyFactor(a, b))
         {
             return;
         }
@@ -56,7 +57,8 @@ public static class AllianceSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Alliance,
-            Description = $"{a.Name} и {b.Name} заключили союз на почве общей веры"
+            Description = $"{a.Name} и {b.Name} заключили союз на почве общей веры" +
+                          (LanguageSystem.SharesLanguage(a.Ruler.Settlement, b.Ruler.Settlement) ? " и общего наречия" : "")
         });
     }
 
