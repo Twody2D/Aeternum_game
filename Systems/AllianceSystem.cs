@@ -44,8 +44,13 @@ public static class AllianceSystem
             return;
         }
 
-        // Общая вера сводит, общий язык помогает договориться (см. LanguageSystem)
-        if (Rng.NextDouble() >= world.Settings.AllianceChance * LanguageSystem.GetDiplomacyFactor(a, b))
+        // Общая вера сводит, общий язык помогает договориться, родство домов
+        // добавляет прямой интерес (см. DynasticSystem)
+        var chance = world.Settings.AllianceChance
+                     * LanguageSystem.GetDiplomacyFactor(a, b)
+                     * DynasticSystem.GetAllianceFactor(a, b, world);
+
+        if (Rng.NextDouble() >= chance)
         {
             return;
         }
@@ -58,7 +63,8 @@ public static class AllianceSystem
             Year = world.CurrentYear,
             Type = EventType.Alliance,
             Description = $"{a.Name} и {b.Name} заключили союз на почве общей веры" +
-                          (LanguageSystem.SharesLanguage(a.Ruler.Settlement, b.Ruler.Settlement) ? " и общего наречия" : "")
+                          (LanguageSystem.SharesLanguage(a.Ruler.Settlement, b.Ruler.Settlement) ? " и общего наречия" : "") +
+                          (DynasticSystem.AreRealmsWed(a, b, world) ? " (дома в родстве)" : "")
         });
     }
 

@@ -69,6 +69,10 @@ public static class WarSystem
             var isHolyWar = IsReligiousDispute(claimants);
             var effectiveWarChance = isHolyWar ? world.Settings.WarChance * HolyWarChanceMultiplier : world.Settings.WarChance;
 
+            // Спор родни решается тяжелее: воевать с домом, куда выдана сестра,
+            // не то же самое, что с чужим (см. DynasticSystem)
+            effectiveWarChance *= DynasticSystem.GetWarRestraint(claimants, world);
+
             // Осада ещё не началась — как и раньше, решает WarChance. Уже идущая
             // осада не бросает эту монету заново — раз начавшись, не может
             // случайно "передумать" и продолжается, пока не разрешится исходом

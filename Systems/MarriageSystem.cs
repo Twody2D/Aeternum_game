@@ -163,6 +163,9 @@ public static class MarriageSystem
 
         affinity += estateGap == 0 ? SameEstateAffinity : -estateGap * EstateGapPenalty;
 
+        // Брак, способный связать два престола, стоит дороже прочих (см. DynasticSystem)
+        affinity += DynasticSystem.GetMatchAffinity(a, b, world);
+
         if (a.Friends.Contains(b))
         {
             affinity += FriendshipAffinity;
