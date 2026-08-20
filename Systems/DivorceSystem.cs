@@ -26,7 +26,7 @@ public static class DivorceSystem
         foreach (var family in activeMarriages.ToList())
         {
             // Чем выше склонность, тем ниже риск: единица — полное безразличие
-            var effectiveChance = world.Settings.DivorceChance / MarriageSystem.GetAffinity(family.Father, family.Mother);
+            var effectiveChance = world.Settings.DivorceChance / MarriageSystem.GetAffinity(family.Father, family.Mother, world);
 
             if (Rng.NextDouble() >= effectiveChance)
             {

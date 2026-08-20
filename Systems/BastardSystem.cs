@@ -64,7 +64,7 @@ public static class BastardSystem
                         && c.Settlement == mother.Settlement
                         && !IsCloseKin(mother, c)
                         && !mother.Enemies.Contains(c))
-            .OrderByDescending(c => MarriageSystem.GetAffinity(mother, c))
+            .OrderByDescending(c => MarriageSystem.GetAffinity(mother, c, world))
             .ThenBy(c => c.Id)
             .FirstOrDefault();
     }

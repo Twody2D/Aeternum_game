@@ -31,6 +31,11 @@ public class AffinityTests
         return character;
     }
 
+    // Сословие считается по состоянию мира, поэтому склонность без него
+    // теперь не вычислить. Для шкалы достаточно пустого мира: без государств
+    // все проверяемые одинаково простолюдины
+    private static readonly World Nowhere = new();
+
     private static void MakeFriends(Character a, Character b)
     {
         a.Friends.Add(b);
@@ -46,7 +51,7 @@ public class AffinityTests
 
         MakeFriends(man, friend);
 
-        Assert.True(MarriageSystem.GetAffinity(man, friend) > MarriageSystem.GetAffinity(man, stranger));
+        Assert.True(MarriageSystem.GetAffinity(man, friend, Nowhere) > MarriageSystem.GetAffinity(man, stranger, Nowhere));
     }
 
     [Fact]
@@ -56,7 +61,7 @@ public class AffinityTests
         var alike = Person(2, Gender.Female, 25, Trait.Brave, Trait.Hardworking);
         var unlike = Person(3, Gender.Female, 25, Trait.Frail);
 
-        Assert.True(MarriageSystem.GetAffinity(man, alike) > MarriageSystem.GetAffinity(man, unlike));
+        Assert.True(MarriageSystem.GetAffinity(man, alike, Nowhere) > MarriageSystem.GetAffinity(man, unlike, Nowhere));
     }
 
     [Fact]
@@ -74,7 +79,7 @@ public class AffinityTests
             MakeFriends(woman, mutual);
         }
 
-        Assert.True(MarriageSystem.GetAffinity(man, woman) > MarriageSystem.GetAffinity(man, stranger));
+        Assert.True(MarriageSystem.GetAffinity(man, woman, Nowhere) > MarriageSystem.GetAffinity(man, stranger, Nowhere));
     }
 
     [Fact]
@@ -91,7 +96,7 @@ public class AffinityTests
         MakeFriends(man, ghost);
         MakeFriends(woman, ghost);
 
-        Assert.Equal(MarriageSystem.GetAffinity(man, stranger), MarriageSystem.GetAffinity(man, woman));
+        Assert.Equal(MarriageSystem.GetAffinity(man, stranger, Nowhere), MarriageSystem.GetAffinity(man, woman, Nowhere));
     }
 
     [Fact]
@@ -101,7 +106,7 @@ public class AffinityTests
         var peer = Person(2, Gender.Female, age: 26);
         var elder = Person(3, Gender.Female, age: 45);
 
-        Assert.True(MarriageSystem.GetAffinity(man, peer) > MarriageSystem.GetAffinity(man, elder));
+        Assert.True(MarriageSystem.GetAffinity(man, peer, Nowhere) > MarriageSystem.GetAffinity(man, elder, Nowhere));
     }
 
     [Fact]
@@ -122,8 +127,8 @@ public class AffinityTests
 
         var opposite = Person(3, Gender.Female, age: 99);
 
-        Assert.True(MarriageSystem.GetAffinity(man, soulmate) <= 2.5);
-        Assert.True(MarriageSystem.GetAffinity(man, opposite) >= 0.1);
+        Assert.True(MarriageSystem.GetAffinity(man, soulmate, Nowhere) <= 2.5);
+        Assert.True(MarriageSystem.GetAffinity(man, opposite, Nowhere) >= 0.1);
     }
 
     [Fact]
@@ -133,7 +138,7 @@ public class AffinityTests
         var man = Person(1, Gender.Male, 30, Trait.Brave);
         var woman = Person(2, Gender.Female, 40, Trait.Brave);
 
-        Assert.Equal(MarriageSystem.GetAffinity(man, woman), MarriageSystem.GetAffinity(woman, man));
+        Assert.Equal(MarriageSystem.GetAffinity(man, woman, Nowhere), MarriageSystem.GetAffinity(woman, man, Nowhere));
     }
 
     [Fact]

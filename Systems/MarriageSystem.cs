@@ -29,6 +29,9 @@ public static class MarriageSystem
     private const double AgeGapPenalty = 0.03; // ...за каждый год разницы в возрасте
     private const double MaxAgeGapPenalty = 0.6;
 
+    private const double SameEstateAffinity = 0.3; // Равные тянутся к равным...
+    private const double EstateGapPenalty = 0.35; // ...а через сословие переступают неохотно
+
     private const double MinAffinity = 0.1; // Совсем безнадёжных пар не бывает...
     private const double MaxAffinity = 2.5; // ...как и предрешённых
 
@@ -88,7 +91,7 @@ public static class MarriageSystem
             // Из доступных берётся не первая попавшаяся, а та, к кому больше склонности
             var woman = women
                 .Where(w => !takenWomen.Contains(w) && !AreRelated(man, w))
-                .OrderByDescending(w => GetAffinity(man, w))
+                .OrderByDescending(w => GetAffinity(man, w, world))
                 .ThenBy(w => w.Id)
                 .FirstOrDefault();
 
@@ -101,7 +104,7 @@ public static class MarriageSystem
             // чтобы один и тот же человек не участвовал в нескольких парах за год
             takenWomen.Add(woman);
 
-            var effectiveChancePercent = marriageChancePercent * GetAffinity(man, woman);
+            var effectiveChancePercent = marriageChancePercent * GetAffinity(man, woman, world);
 
             if (man.Settlement?.Religion != null &&
                 woman.Settlement?.Religion != null &&
@@ -150,9 +153,15 @@ public static class MarriageSystem
 
     // Взаимная склонность двоих: во сколько раз охотнее они пойдут под венец
     // друг с другом, чем со случайным встречным. Единица — полное безразличие
-    public static double GetAffinity(Character a, Character b)
+    public static double GetAffinity(Character a, Character b, World world)
     {
         var affinity = 1.0;
+
+        // Сословие ничем не записано — оно вычисляется по нынешнему положению
+        // обоих (см. EstateSystem), поэтому и мезальянс возникает сам собой
+        var estateGap = Math.Abs(EstateSystem.GetEstate(a, world) - EstateSystem.GetEstate(b, world));
+
+        affinity += estateGap == 0 ? SameEstateAffinity : -estateGap * EstateGapPenalty;
 
         if (a.Friends.Contains(b))
         {

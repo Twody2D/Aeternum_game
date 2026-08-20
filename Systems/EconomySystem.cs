@@ -98,7 +98,9 @@ public static class EconomySystem
 
         foreach (var character in residents)
         {
-            if (Rng.NextDouble() < starvationChance)
+            // Недород бьёт по всем, но не поровну: до чужих запасов и связей
+            // нужда добирается последней (см. EstateSystem)
+            if (Rng.NextDouble() < starvationChance * EstateSystem.GetStarvationShield(character, world))
             {
                 DeathSystem.Kill(character, world, DeathReason.Starvation);
             }

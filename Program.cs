@@ -208,6 +208,16 @@ void PrintFinalReport(WorldStatistics stats, double knowledge)
     }
 
     Console.WriteLine();
+
+    var estates = world.Characters
+        .Where(c => c.Alive)
+        .GroupBy(c => EstateSystem.GetEstate(c, world))
+        .OrderBy(g => g.Key)
+        .Select(g => $"{EstateSystem.GetName(g.Key)} {g.Count()}");
+
+    Console.WriteLine($"Сословия: {string.Join(", ", estates)}");
+
+    Console.WriteLine();
     Console.WriteLine("Распределение по возрасту:");
 
     foreach (var ageGroup in stats.AgeGroups)
