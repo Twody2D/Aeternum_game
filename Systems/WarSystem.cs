@@ -143,7 +143,8 @@ public static class WarSystem
             {
                 Year = world.CurrentYear,
                 Type = EventType.Independence,
-                Description = $"{vassal.Name} сбросило вассальную зависимость: {suzerain.Name} утратило прежний перевес"
+                Description = $"{vassal.Name} сбросило вассальную зависимость: {suzerain.Name} утратило прежний перевес",
+                Kingdoms = [vassal, suzerain]
             });
         }
     }
@@ -178,7 +179,8 @@ public static class WarSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Vassalization,
-            Description = $"{settlement.Name}: {weaker.Name} признало вассалитет {stronger.Name} вместо продолжения войны"
+            Description = $"{settlement.Name}: {weaker.Name} признало вассалитет {stronger.Name} вместо продолжения войны",
+            Kingdoms = [weaker, stronger]
         });
     }
 
@@ -195,7 +197,8 @@ public static class WarSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Peace,
-            Description = $"{settlement.Name}: затянувшаяся осада закончилась перемирием. Стороны: {claimantNames}"
+            Description = $"{settlement.Name}: затянувшаяся осада закончилась перемирием. Стороны: {claimantNames}",
+            Kingdoms = claimants
         });
     }
 
@@ -334,7 +337,8 @@ public static class WarSystem
         {
             Year = world.CurrentYear,
             Type = EventType.War,
-            Description = $"{settlement.Name}: {settlement.SiegeYears}-й год осады. Претенденты: {claimantNames}. Погибших: {casualties.Count}.{holyWarNote}"
+            Description = $"{settlement.Name}: {settlement.SiegeYears}-й год осады. Претенденты: {claimantNames}. Погибших: {casualties.Count}.{holyWarNote}",
+            Kingdoms = claimants
         });
     }
 }

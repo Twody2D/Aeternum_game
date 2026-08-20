@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using Aeternum.WorldGen.Core;
+using Aeternum.WorldGen.Events;
 using Aeternum.WorldGen.Generators;
 using Aeternum.WorldGen.Models;
 using Aeternum.WorldGen.Systems;
@@ -56,7 +57,13 @@ public static class SaveSystem
             WeatherFactor = world.WeatherFactor,
             Seed = world.Seed,
             Settings = world.Settings,
-            Events = world.Events,
+            Events = world.Events.Select(e => new WorldEventData
+            {
+                Year = e.Year,
+                Type = e.Type,
+                Description = e.Description,
+                KingdomIds = e.Kingdoms.Select(k => k.Id).ToList()
+            }).ToList(),
 
             Characters = world.Characters.Select(c => new CharacterData
             {
@@ -316,7 +323,13 @@ public static class SaveSystem
             WeatherFactor = data.WeatherFactor,
             Seed = data.Seed,
             Settings = data.Settings,
-            Events = data.Events,
+            Events = data.Events.Select(e => new WorldEvent
+            {
+                Year = e.Year,
+                Type = e.Type,
+                Description = e.Description,
+                Kingdoms = e.KingdomIds.Select(id => kingdomsById[id]).ToList()
+            }).ToList(),
             Characters = data.Characters.Select(c => charactersById[c.Id]).ToList(),
             Families = data.Families.Select(f => familiesById[f.Id]).ToList(),
             Dynasties = data.Dynasties.Select(d => dynastiesById[d.Id]).ToList(),

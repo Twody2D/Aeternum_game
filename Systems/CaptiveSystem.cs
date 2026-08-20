@@ -73,7 +73,8 @@ public static class CaptiveSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Captivity,
-            Description = $"{settlement.Name}: {captor.Name} уводит пленных — {taken} человек{ransomNote}"
+            Description = $"{settlement.Name}: {captor.Name} уводит пленных — {taken} человек{ransomNote}",
+            Kingdoms = [captor]
         });
     }
 

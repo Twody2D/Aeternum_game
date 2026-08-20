@@ -5,12 +5,19 @@ namespace Aeternum.WorldGen.Systems;
 
 // Хроника мира: сжимает весь лог World.Events в сводку по периодам (по
 // умолчанию — десятилетиям) — количество событий каждого типа за период,
-// без текста. Русские подписи типов строит вызывающий код
+// без текста. Русские подписи типов строит вызывающий код.
+//
+// С kingdom вместо мировой сводки выходит летопись одной короны — по тем
+// же периодам, но только по событиям, которые её касаются (см. WorldEvent.Kingdoms,
+// проставляется в месте создания события: KingdomSystem, WarSystem, AllianceSystem
+// и остальные системы политической жизни)
 public static class ChronicleSystem
 {
-    public static List<ChroniclePeriod> BuildChronicle(World world, int periodLength = 10)
+    public static List<ChroniclePeriod> BuildChronicle(World world, int periodLength = 10, Kingdom? kingdom = null)
     {
-        var periods = world.Events
+        var events = kingdom == null ? world.Events : world.Events.Where(e => e.Kingdoms.Contains(kingdom));
+
+        var periods = events
             .GroupBy(e => (e.Year - 1) / periodLength)
             .OrderBy(g => g.Key);
 

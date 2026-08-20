@@ -39,6 +39,14 @@ public class SaveSystemTests
 
         var family = Assert.Single(loaded.Families);
         Assert.Single(family.Children, c => c.Id == 3);
+
+        // Ссылка на государство в WorldEvent (см. WorldEvent.Kingdoms) — единственное
+        // в этом событии поле-ссылка, и единственное, что не переживёт сохранение
+        // молча, если сериализация забудет развернуть его в KingdomIds
+        var kingdomEvent = Assert.Single(loaded.Events, e => e.Type == EventType.CreationOfKingdom);
+        var loadedKingdom = Assert.Single(kingdomEvent.Kingdoms);
+        Assert.Equal("Королевство Тестов", loadedKingdom.Name);
+        Assert.Same(loadedKingdom, Assert.Single(loaded.Kingdoms)); // та же ссылка, что и в World.Kingdoms, не копия
     }
 
     private static World BuildWorld()
@@ -69,6 +77,16 @@ public class SaveSystemTests
         settlement.Members.Add(mother);
         settlement.Members.Add(child);
 
+        var kingdom = new Kingdom
+        {
+            Id = 1,
+            Name = "Королевство Тестов",
+            Dynasty = dynasty,
+            Ruler = father,
+            FoundedYear = 1,
+            Settlements = { settlement }
+        };
+
         var world = new World
         {
             CurrentYear = 5,
@@ -77,10 +95,18 @@ public class SaveSystemTests
             Dynasties = { dynasty },
             Settlements = { settlement },
             Cultures = { culture },
-            Religions = { religion }
+            Religions = { religion },
+            Kingdoms = { kingdom }
         };
 
         world.Events.Add(new WorldEvent { Year = 1, Type = EventType.Birth, Description = "Родился Ребёнок Тестов" });
+        world.Events.Add(new WorldEvent
+        {
+            Year = 1,
+            Type = EventType.CreationOfKingdom,
+            Description = "Образовано Королевство Тестов",
+            Kingdoms = { kingdom }
+        });
 
         return world;
     }

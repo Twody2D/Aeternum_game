@@ -70,7 +70,8 @@ public static class ArmySystem
             {
                 Year = world.CurrentYear,
                 Type = EventType.Desertion,
-                Description = $"{kingdom.Name}: казне нечем платить войску — разошлось {deserters.Count} человек"
+                Description = $"{kingdom.Name}: казне нечем платить войску — разошлось {deserters.Count} человек",
+                Kingdoms = [kingdom]
             });
         }
     }

@@ -56,7 +56,8 @@ public static class KingdomSystem
                     {
                         Year = world.CurrentYear,
                         Type = EventType.FallOfKingdom,
-                        Description = $"{kingdom.Name} пало: династия {kingdom.Dynasty.Name} угасла, наследников не осталось"
+                        Description = $"{kingdom.Name} пало: династия {kingdom.Dynasty.Name} угасла, наследников не осталось",
+                        Kingdoms = [kingdom]
                     });
                 }
 
@@ -74,7 +75,8 @@ public static class KingdomSystem
             {
                 Year = world.CurrentYear,
                 Type = EventType.Succession,
-                Description = $"Новым правителем {kingdomGenitive} {becameVerb} {SurnameSystem.GetDisplayFullName(newRuler)}"
+                Description = $"Новым правителем {kingdomGenitive} {becameVerb} {SurnameSystem.GetDisplayFullName(newRuler)}",
+                Kingdoms = [kingdom]
             });
 
             var isDirectHeir = newRuler.Father == previousRuler || newRuler.Mother == previousRuler;
@@ -143,7 +145,8 @@ public static class KingdomSystem
             Year = world.CurrentYear,
             Type = EventType.CivilWar,
             Description = $"{kingdom.Name}: кризис наследования — трон перешёл не к прямому потомку, а к дальней родне " +
-                          $"({SurnameSystem.GetDisplayFullName(newRuler)}). Среди наследников вспыхнула распря. Погибших: {casualties.Count}"
+                          $"({SurnameSystem.GetDisplayFullName(newRuler)}). Среди наследников вспыхнула распря. Погибших: {casualties.Count}",
+            Kingdoms = [kingdom]
         });
     }
 
@@ -193,7 +196,8 @@ public static class KingdomSystem
             {
                 Year = world.CurrentYear,
                 Type = EventType.CreationOfKingdom,
-                Description = $"Образовано {kingdom.Name}. Первый правитель — {SurnameSystem.GetDisplayFullName(ruler)}"
+                Description = $"Образовано {kingdom.Name}. Первый правитель — {SurnameSystem.GetDisplayFullName(ruler)}",
+                Kingdoms = [kingdom]
             });
         }
     }

@@ -59,7 +59,8 @@ public static class CourtSystem
                 {
                     Year = world.CurrentYear,
                     Type = EventType.Appointment,
-                    Description = $"{kingdom.Name}: {SurnameSystem.GetDisplayFullName(appointee)} — {GetTitle(office)}"
+                    Description = $"{kingdom.Name}: {SurnameSystem.GetDisplayFullName(appointee)} — {GetTitle(office)}",
+                    Kingdoms = [kingdom]
                 });
             }
         }

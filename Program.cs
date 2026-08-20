@@ -151,7 +151,8 @@ engine.Run(world, ProjectSettings.SimulationYears, w =>
 
 PrintFinalReport(StatisticsSystem.BuildFinalReport(world), world.Knowledge);
 PrintWorldMap(WorldMapSystem.Build(world));
-PrintChronicle(ChronicleSystem.BuildChronicle(world));
+PrintChronicle("Хроника мира", ChronicleSystem.BuildChronicle(world));
+PrintKingdomChronicles(world);
 var notablePeople = NotablePeopleSystem.BuildReport(world);
 PrintNotablePeople(notablePeople);
 PrintBiographies(notablePeople, world);
@@ -313,11 +314,18 @@ void PrintWorldMap(WorldMap map)
     Console.WriteLine();
 }
 
-// Хроника мира: сводка по десятилетиям вместо построчного вывода каждого события
-void PrintChronicle(List<ChroniclePeriod> periods)
+// Хроника: сводка по десятилетиям вместо построчного вывода каждого события.
+// Тот же вывод обслуживает и мировую хронику, и летопись одной короны — разница
+// только в заголовке и в том, какой список периодов ей передали (см. ChronicleSystem)
+void PrintChronicle(string title, List<ChroniclePeriod> periods)
 {
     Console.WriteLine();
-    Console.WriteLine("===== Хроника мира =====");
+    Console.WriteLine($"===== {title} =====");
+
+    if (periods.Count == 0)
+    {
+        Console.WriteLine("Ничего примечательного не случилось.");
+    }
 
     foreach (var period in periods)
     {
@@ -327,6 +335,22 @@ void PrintChronicle(List<ChroniclePeriod> periods)
     }
 
     Console.WriteLine();
+}
+
+// Летопись каждой короны, когда-либо возникавшей в мире, по тем же событиям,
+// что и мировая хроника, — только отфильтрованным по тому, кого они касались
+// (см. WorldEvent.Kingdoms). Павшие государства получают летопись наравне
+// с живыми — история государства не кончается вместе с его гибелью
+void PrintKingdomChronicles(World world)
+{
+    foreach (var kingdom in world.Kingdoms.OrderBy(k => k.FoundedYear))
+    {
+        var span = kingdom.FallenYear.HasValue
+            ? $"{kingdom.FoundedYear}-{kingdom.FallenYear} гг."
+            : $"с {kingdom.FoundedYear} года";
+
+        PrintChronicle($"Летопись: {kingdom.Name} ({span})", ChronicleSystem.BuildChronicle(world, kingdom: kingdom));
+    }
 }
 
 void PrintNotablePeople(List<NotablePerson> notable)

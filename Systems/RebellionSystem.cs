@@ -111,7 +111,8 @@ public static class RebellionSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Suppression,
-            Description = $"{crown.Name}: мятеж в {settlement.Name} подавлен. Погибших: {casualties.Count}"
+            Description = $"{crown.Name}: мятеж в {settlement.Name} подавлен. Погибших: {casualties.Count}",
+            Kingdoms = [crown]
         });
     }
 
@@ -196,7 +197,8 @@ public static class RebellionSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Rebellion,
-            Description = $"{kingdom.Name}: {settlement.Name} отказало короне в повиновении"
+            Description = $"{kingdom.Name}: {settlement.Name} отказало короне в повиновении",
+            Kingdoms = [kingdom]
         });
     }
 

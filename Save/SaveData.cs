@@ -1,5 +1,4 @@
 using Aeternum.WorldGen.Models;
-using Aeternum.WorldGen.Events;
 
 namespace Aeternum.WorldGen.Save;
 
@@ -29,8 +28,7 @@ public class SaveData
     public List<KingdomData> Kingdoms { get; set; } = new();
     public List<TradeRouteData> TradeRoutes { get; set; } = new();
 
-    // У WorldEvent нет ссылок на объекты — сохраняется как есть, без DTO-обёртки
-    public List<WorldEvent> Events { get; set; } = new();
+    public List<WorldEventData> Events { get; set; } = new();
 }
 
 public class CharacterData
@@ -144,6 +142,14 @@ public class KingdomData
     public double TributeRate { get; set; }
     public Dictionary<CourtOffice, int> CourtIds { get; set; } = new();
     public int? CapitalId { get; set; }
+}
+
+public class WorldEventData
+{
+    public int Year { get; set; }
+    public EventType Type { get; set; }
+    public string Description { get; set; } = "";
+    public List<int> KingdomIds { get; set; } = new();
 }
 
 public class TradeRouteData

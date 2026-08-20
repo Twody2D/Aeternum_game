@@ -55,7 +55,8 @@ public static class CapitalSystem
             {
                 Year = world.CurrentYear,
                 Type = EventType.CapitalMoved,
-                Description = $"{kingdom.Name}: престол перенесён из {previous.Name} в {seat.Name}"
+                Description = $"{kingdom.Name}: престол перенесён из {previous.Name} в {seat.Name}",
+                Kingdoms = [kingdom]
             });
         }
     }

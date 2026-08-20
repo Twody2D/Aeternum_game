@@ -250,7 +250,8 @@ public static class TributeSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Relief,
-            Description = $"{kingdom.Name}: корона раздала {given:0.#} хлеба нуждающимся землям ({needy.Count})"
+            Description = $"{kingdom.Name}: корона раздала {given:0.#} хлеба нуждающимся землям ({needy.Count})",
+            Kingdoms = [kingdom]
         });
     }
 }

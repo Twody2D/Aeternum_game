@@ -64,7 +64,8 @@ public static class AllianceSystem
             Type = EventType.Alliance,
             Description = $"{a.Name} и {b.Name} заключили союз на почве общей веры" +
                           (LanguageSystem.SharesLanguage(a.Ruler.Settlement, b.Ruler.Settlement) ? " и общего наречия" : "") +
-                          (DynasticSystem.AreRealmsWed(a, b, world) ? " (дома в родстве)" : "")
+                          (DynasticSystem.AreRealmsWed(a, b, world) ? " (дома в родстве)" : ""),
+            Kingdoms = [a, b]
         });
     }
 
@@ -93,7 +94,8 @@ public static class AllianceSystem
         {
             Year = world.CurrentYear,
             Type = EventType.AllianceBroken,
-            Description = $"{a.Name} и {b.Name} разорвали союз: правящие дома разошлись в вере"
+            Description = $"{a.Name} и {b.Name} разорвали союз: правящие дома разошлись в вере",
+            Kingdoms = [a, b]
         });
     }
 

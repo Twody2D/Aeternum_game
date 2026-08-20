@@ -57,7 +57,8 @@ public static class MurderSystem
                 Year = world.CurrentYear,
                 Type = EventType.Murder,
                 Description = $"{kingdom.Name}: {SurnameSystem.GetDisplayFullName(ruler)} убит(а) в результате заговора. " +
-                              $"Подозревают {SurnameSystem.GetDisplayFullName(rival)}"
+                              $"Подозревают {SurnameSystem.GetDisplayFullName(rival)}",
+                Kingdoms = [kingdom]
             });
         }
     }
