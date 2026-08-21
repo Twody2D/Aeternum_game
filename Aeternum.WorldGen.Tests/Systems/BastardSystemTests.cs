@@ -149,7 +149,7 @@ public class BastardSystemTests
 
         var newborns = RunUntilBirth(world, years: 200);
 
-        Assert.Empty(newborns.Where(n => n.Mother == sister));
+        Assert.DoesNotContain(newborns, n => n.Mother == sister);
     }
 
     [Fact]
