@@ -43,7 +43,7 @@ public class CareerSystemTests
     // всё остальное и проверять другие поводы бессмысленно
     private static void FillEssentials(World world, Settlement settlement)
     {
-        foreach (var profession in new[] { "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар" })
+        foreach (var profession in new[] { "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар", "Пастырь" })
         {
             Add(world, settlement, profession);
         }

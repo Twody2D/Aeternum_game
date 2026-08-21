@@ -48,6 +48,7 @@ public class ProfessionEntry
     public string Name { get; set; } = "";
     public ProfessionCategory Category { get; set; }
     public bool Hazardous { get; set; }
+    public bool Clergy { get; set; } // Духовное лицо — см. ClergySystem
 }
 
 public class CultureEntry

@@ -46,7 +46,7 @@
   { "Name": "Писатель", "Category": "Knowledge", "Hazardous": false },
   { "Name": "Музыкант", "Category": "Knowledge", "Hazardous": false },
   { "Name": "Артист", "Category": "Knowledge", "Hazardous": false },
-  { "Name": "Пастырь", "Category": "Knowledge", "Hazardous": false },
+  { "Name": "Пастырь", "Category": "Knowledge", "Hazardous": false, "Clergy": true },
   { "Name": "Алхимик", "Category": "Knowledge", "Hazardous": false },
   { "Name": "Астроном", "Category": "Knowledge", "Hazardous": false },
   { "Name": "Летописец", "Category": "Knowledge", "Hazardous": false },

@@ -61,16 +61,23 @@ public static class ProfessionSystem
     private const double CraftMaterialAmount = 3.0; // Годовое производство материала одним ремесленником своего типа
 
     // Профессии, которые гарантированно должны быть хотя бы у одного живого жителя
-    // поселения — по одному представителю на еду и на каждый тип материала.
-    // Без этого поселение могло случайно остаться совсем без кузнеца или земледельца
+    // поселения — по одному представителю на еду, на каждый тип материала и на
+    // духовное окормление паствы (см. ClergySystem). Без этого поселение могло
+    // случайно остаться совсем без кузнеца, земледельца или пастыря
     private static readonly string[] EssentialProfessions =
     {
-        "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар"
+        "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар", "Пастырь"
     };
 
     // Профессии с повышенным риском несчастного случая — используется DeathSystem
     private static readonly HashSet<string> HazardousProfessions = ContentData.Professions
         .Where(p => p.Hazardous)
+        .Select(p => p.Name)
+        .ToHashSet();
+
+    // Духовные лица — используется ClergySystem
+    private static readonly HashSet<string> ClergyProfessions = ContentData.Professions
+        .Where(p => p.Clergy)
         .Select(p => p.Name)
         .ToHashSet();
 
@@ -356,5 +363,10 @@ public static class ProfessionSystem
     public static bool IsHazardous(string? profession)
     {
         return profession != null && HazardousProfessions.Contains(profession);
+    }
+
+    public static bool IsClergy(string? profession)
+    {
+        return profession != null && ClergyProfessions.Contains(profession);
     }
 }

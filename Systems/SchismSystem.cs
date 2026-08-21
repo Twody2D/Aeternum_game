@@ -41,7 +41,8 @@ public static class SchismSystem
                 continue;
             }
 
-            if (Rng.NextDouble() >= world.Settings.SchismChance)
+            // Сильное духовенство держит паству крепче (см. ClergySystem)
+            if (Rng.NextDouble() >= world.Settings.SchismChance * ClergySystem.GetCohesionFactor(settlement, world))
             {
                 continue;
             }

@@ -224,9 +224,11 @@ void PrintFinalReport(WorldStatistics stats, double knowledge)
             : "нет";
 
         var legendText = settlement.LegendCount > 0 ? $", легенд {settlement.LegendCount}" : "";
+        var spiritualHead = ClergySystem.GetSpiritualHead(settlement, world);
+        var clergyText = spiritualHead != null ? $", пастырь {SurnameSystem.GetDisplayFullName(spiritualHead)}" : "";
 
         Console.WriteLine(
-            $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}, {settlement.Language?.Name}) " +
+            $"{settlement.Name} ({settlement.Culture?.Name}, {settlement.Religion?.Name}{clergyText}, {settlement.Language?.Name}) " +
             $"[{settlement.X:0}, {settlement.Y:0}, плодородие {ClimateSystem.GetFertility(settlement):0.00}, {TerrainSystem.GetName(TerrainSystem.GetRelief(settlement, world))}]: " +
             $"{settlementStat.Population} жит., домов {settlement.Houses}, больниц {settlement.Hospitals}, " +
             $"школ {settlement.Schools}, укреплений {settlement.Walls}, " +

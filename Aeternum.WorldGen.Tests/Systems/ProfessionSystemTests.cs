@@ -17,7 +17,7 @@ public class ProfessionSystemTests
     {
         var settlement = new Settlement { Id = 1, Name = "Тестовка", X = 500, Y = y };
 
-        var essentials = new[] { "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар" };
+        var essentials = new[] { "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар", "Пастырь" };
 
         for (var i = 0; i < essentials.Length; i++)
         {
@@ -130,7 +130,7 @@ public class ProfessionSystemTests
 
         Rng.Initialize(seed: 1);
 
-        var essentials = new[] { "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар" };
+        var essentials = new[] { "Фермер", "Кузнец", "Столяр", "Каменщик", "Ткач", "Гончар", "Пастырь" };
 
         for (var i = 0; i < 50; i++)
         {
