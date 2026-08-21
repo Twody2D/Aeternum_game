@@ -18,7 +18,13 @@ namespace Aeternum.WorldGen.Systems;
 // существует, и выдумывать его не из чего. Зато есть местная надбавка за
 // качество: цех умелых мастеров одного материала продаёт дороже базовой
 // цены (см. GuildSystem.GetQualityPremium) — та же земля и то же дерево,
-// но чужаку не свезло родиться в городе ремесленных династий
+// но чужаку не свезло родиться в городе ремесленных династий.
+//
+// Роскошь (см. MaterialType.Luxury, ремесло — Ювелир) — не сырьё вовсе:
+// ни одна постройка её не потребляет, единственная судьба этого товара —
+// уйти на внешний рынок по цене на порядок выше прочих. Ей же достаётся
+// и надбавка гильдии — украшения мастера ценятся ровно тем же приёмом,
+// что и кузнечная работа
 //
 // Сколько удастся сбыть — зависит от купцов: заезжий торговец подберёт
 // немного в любом поселении, но всерьёз вывозит товар только тот, кто живёт
@@ -32,6 +38,7 @@ public static class MarketSystem
     private const double MaxPriceFactor = 4.0; // В голодные дорожает, но не бесконечно
 
     private const double MaterialPrice = 0.3;
+    private const double LuxuryPrice = 2.4; // Роскошь — не сырьё для построек, ценится не по весу, а по редкости
 
     private const double SellRate = 0.5; // Купец берёт товар вдвое дешевле, чем продаёт — на разнице и живёт
 
@@ -104,9 +111,10 @@ public static class MarketSystem
             }
 
             var sold = Math.Min(surplus, carryLeft);
+            var price = type == MaterialType.Luxury ? LuxuryPrice : MaterialPrice;
 
             settlement.MaterialStocks[type] -= sold;
-            settlement.Gold += sold * MaterialPrice * GuildSystem.GetQualityPremium(settlement, type, world) * SellRate;
+            settlement.Gold += sold * price * GuildSystem.GetQualityPremium(settlement, type, world) * SellRate;
             carryLeft -= sold;
         }
     }

@@ -48,8 +48,8 @@ public static class ProfessionSystem
         ["Кожевник"] = MaterialType.Textile,
         ["Гончар"] = MaterialType.Clay,
         ["Стекольщик"] = MaterialType.Clay,
-        ["Ювелир"] = MaterialType.Clay,
         ["Ремесленник"] = MaterialType.Clay,
+        ["Ювелир"] = MaterialType.Luxury, // Не утварь — товар редкости, см. MaterialType.Luxury
     };
 
     // Обратная карта к MaterialTypeByProfession: каким ремёслам учиться в городе,
@@ -123,16 +123,21 @@ public static class ProfessionSystem
 
     private const double BraveMilitaryPull = 0.3; // Смелых (см. Trait.Brave) тянет к ратному делу
 
+    // Насколько золото поселения тянет в ремесло роскоши (см. MaterialType.Luxury):
+    // на 100 накопленного золота — примерно каждый третий, дальше рост замедляется потолком
+    private const double WealthPullReferenceGold = 100;
+    private const double MaxWealthPull = 0.3;
+
     // Случайная профессия — по цепочке приоритетов, от самого сильного довода
     // к самому слабому: нехватка обязательной профессии в поселении
     // (см. EssentialProfessions) перевешивает всё; затем семейное дело
     // (профессия родителя); затем школы поселения (категория Knowledge);
     // затем специализация самого места — его главное ремесло (мастерские),
-    // плодородие его земли и нрав самого человека (Trait.Brave — к ратному
-    // делу); затем культурный уклад (см. Culture.PreferredCategory); в
-    // остатке — чистая случайность, но не совсем слепая: слабое здоровье
-    // (Trait.Frail) не выбирает опасное ремесло, если ничто другое не потянуло
-    // туда сильнее (см. IsHazardous)
+    // плодородие его земли, накопленное богатство (тянет к роскоши) и нрав
+    // самого человека (Trait.Brave — к ратному делу); затем культурный уклад
+    // (см. Culture.PreferredCategory); в остатке — чистая случайность, но не
+    // совсем слепая: слабое здоровье (Trait.Frail) не выбирает опасное
+    // ремесло, если ничто другое не потянуло туда сильнее (см. IsHazardous)
     public static string GetRandom(Culture? culture = null, Settlement? settlement = null, string? inheritedProfession = null, HashSet<Trait>? traits = null)
     {
         if (settlement != null)
@@ -171,6 +176,11 @@ public static class ProfessionSystem
         if (settlement != null && TryPickFarming(settlement, out var farming))
         {
             return farming;
+        }
+
+        if (settlement != null && TryPickLuxuryCraft(settlement, out var luxury))
+        {
+            return luxury;
         }
 
         if (TryPickByTemperament(traits, out var temperament))
@@ -258,6 +268,25 @@ public static class ProfessionSystem
         }
 
         profession = farmers[Rng.Next(farmers.Length)];
+
+        return true;
+    }
+
+    // Богатое поселение развивает вкус к роскоши — тот же принцип, что у
+    // TryPickFarming, только тянет не земля, а накопленное золото
+    // (см. Settlement.Gold)
+    private static bool TryPickLuxuryCraft(Settlement settlement, out string profession)
+    {
+        profession = "";
+
+        var pull = Math.Min(MaxWealthPull, settlement.Gold / WealthPullReferenceGold * MaxWealthPull);
+
+        if (Rng.NextDouble() >= pull || !ProfessionsByMaterial.TryGetValue(MaterialType.Luxury, out var luxuryCrafts))
+        {
+            return false;
+        }
+
+        profession = luxuryCrafts[Rng.Next(luxuryCrafts.Length)];
 
         return true;
     }

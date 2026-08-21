@@ -117,7 +117,8 @@ var materialLabels = new Dictionary<MaterialType, string>
     [MaterialType.Stone] = "камень",
     [MaterialType.Metal] = "металл",
     [MaterialType.Textile] = "ткани",
-    [MaterialType.Clay] = "утварь"
+    [MaterialType.Clay] = "утварь",
+    [MaterialType.Luxury] = "роскошь"
 };
 
 var traitLabels = new Dictionary<Trait, string>

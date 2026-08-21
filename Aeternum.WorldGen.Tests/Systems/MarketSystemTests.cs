@@ -179,4 +179,23 @@ public class MarketSystemTests
 
         Assert.True(settlement.FoodStock > -5, "выручка того же года обязана идти в дело");
     }
+
+    [Fact]
+    public void Process_Luxury_SellsForMoreThanOrdinaryMaterial()
+    {
+        // Роскошь — не сырьё для построек, ценится по редкости, а не по весу
+        var ordinary = new Settlement { Id = 1, Name = "Ремесленная" };
+        var ordinaryWorld = WorldWith(ordinary, population: 5);
+        ordinary.MaterialStocks[MaterialType.Clay] = StorageSystem.GetMaterialCapacity(ordinary, MaterialType.Clay) + 100;
+
+        var luxurious = new Settlement { Id = 1, Name = "Ювелирная" };
+        var luxuriousWorld = WorldWith(luxurious, population: 5);
+        luxurious.MaterialStocks[MaterialType.Luxury] = StorageSystem.GetMaterialCapacity(luxurious, MaterialType.Luxury) + 100;
+
+        MarketSystem.Process(ordinaryWorld);
+        MarketSystem.Process(luxuriousWorld);
+
+        Assert.True(luxurious.Gold > ordinary.Gold,
+            $"та же сотня единиц товара сверх склада должна давать больше золота в роскоши: {luxurious.Gold} против {ordinary.Gold}");
+    }
 }

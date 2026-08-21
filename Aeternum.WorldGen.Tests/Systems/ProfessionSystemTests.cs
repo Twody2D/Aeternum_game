@@ -162,6 +162,18 @@ public class ProfessionSystemTests
     }
 
     [Fact]
+    public void GetRandom_WealthySettlement_LeansTowardLuxuryCraft()
+    {
+        // Скудная земля — тяга к земледелию не мешает разглядеть тягу к роскоши
+        var poor = SettledSettlement(y: 0);
+        var rich = SettledSettlement(y: 0);
+        rich.Gold = 300;
+
+        Assert.True(ShareOf(rich, MaterialType.Luxury) > ShareOf(poor, MaterialType.Luxury),
+            $"богатое поселение должно чаще растить ювелиров: {ShareOf(rich, MaterialType.Luxury)} против {ShareOf(poor, MaterialType.Luxury)}");
+    }
+
+    [Fact]
     public void GetRandom_BraveCharacter_LeansTowardMilitary()
     {
         // Скудная земля (см. ClimateSystem) — тяга к земледелию не мешает разглядеть тягу к ратному делу

@@ -7,5 +7,6 @@ public enum MaterialType
     Stone,
     Metal,
     Textile,
-    Clay
+    Clay,
+    Luxury // Товар редкости, не сырьё для построек — только на продажу (см. MarketSystem)
 }
