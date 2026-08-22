@@ -172,6 +172,7 @@ public static class SaveSystem
                 MaterialTreasury = k.MaterialTreasury,
                 GoldTreasury = k.GoldTreasury,
                 TributeRate = k.TributeRate,
+                MercenaryStrength = k.MercenaryStrength,
                 CourtIds = k.Court.ToDictionary(kv => kv.Key, kv => kv.Value.Id),
                 CapitalId = k.Capital?.Id
             }).ToList(),
@@ -294,6 +295,7 @@ public static class SaveSystem
                 MaterialTreasury = k.MaterialTreasury,
                 GoldTreasury = k.GoldTreasury,
                 TributeRate = k.TributeRate,
+                MercenaryStrength = k.MercenaryStrength,
                 Court = k.CourtIds.ToDictionary(kv => kv.Key, kv => charactersById[kv.Value]),
                 Capital = k.CapitalId.HasValue ? settlementsById[k.CapitalId.Value] : null
             });

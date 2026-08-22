@@ -140,6 +140,7 @@ public class KingdomData
     public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new();
     public double GoldTreasury { get; set; }
     public double TributeRate { get; set; }
+    public double MercenaryStrength { get; set; }
     public Dictionary<CourtOffice, int> CourtIds { get; set; } = new();
     public int? CapitalId { get; set; }
 }

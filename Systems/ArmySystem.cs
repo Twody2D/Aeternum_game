@@ -24,6 +24,19 @@ public static class ArmySystem
     private const double UpkeepPerSoldier = 4.0; // Сколько еды в год стоит короне один воин
     private const double DesertionShare = 0.25; // Какая часть войска расходится за год, когда платить нечем
 
+    // Наёмники — не постоянное войско, а решение на один год войны: нанимает
+    // только тот, кто прямо сейчас держит осаду (см. WarSystem.Settlement.SiegeYears)
+    // и одновременно небогат своими воинами при богатой казне. Без привязки к
+    // войне богатая корона нанимала бы наёмников каждый мирный год подряд —
+    // не "усиление войска на трудный год", а постоянная вторая армия
+    // задаром. MinTreasuryToHire — порог "большой казны" (ниже него не до
+    // наёмников, надо беречь золото на еду); тратится не вся казна сверх
+    // порога, а её доля — наём не разоряет корону подчистую
+    private const int MinSoldiersPerSettlement = 2; // Ниже этого своих воинов на поселение — уже нехватка
+    private const double MinTreasuryToHireMercenaries = 200;
+    private const double MercenaryBudgetShare = 0.3;
+    private const double MercenaryStrengthPerGold = 0.02;
+
     public static void Process(World world)
     {
         foreach (var kingdom in world.Kingdoms)
@@ -32,6 +45,8 @@ public static class ArmySystem
             {
                 continue;
             }
+
+            HireMercenaries(kingdom, world);
 
             var soldiers = GetSoldiers(kingdom);
 
@@ -76,6 +91,35 @@ public static class ArmySystem
         }
     }
 
+    // Наёмная сила на этот год: платит только тот, кому есть чем платить и
+    // некому больше воевать своими руками. Решение не хранится дольше года —
+    // не наняли сейчас, значит нечем, и MercenaryStrength обнуляется
+    private static void HireMercenaries(Kingdom kingdom, World world)
+    {
+        var isAtWar = kingdom.Settlements.Any(s => s.SiegeYears > 0);
+        var ownSoldiers = GetSoldiers(kingdom).Count;
+        var needsMercenaries = isAtWar && ownSoldiers < kingdom.Settlements.Count * MinSoldiersPerSettlement;
+
+        if (!needsMercenaries || kingdom.GoldTreasury <= MinTreasuryToHireMercenaries)
+        {
+            kingdom.MercenaryStrength = 0;
+            return;
+        }
+
+        var budget = (kingdom.GoldTreasury - MinTreasuryToHireMercenaries) * MercenaryBudgetShare;
+
+        kingdom.GoldTreasury -= budget;
+        kingdom.MercenaryStrength = budget * MercenaryStrengthPerGold;
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.Mercenaries,
+            Description = $"{kingdom.Name}: нанято наёмников за {budget:F0} золота (сила +{kingdom.MercenaryStrength:F1})",
+            Kingdoms = [kingdom]
+        });
+    }
+
     // Живые воины государства
     public static List<Character> GetSoldiers(Kingdom kingdom)
     {
@@ -85,12 +129,13 @@ public static class ArmySystem
             .ToList();
     }
 
-    // Сила войска: не число голов, а сумма их умения, усиленная воеводой
+    // Сила войска: не число голов, а сумма их умения плюс купленная на этот год
+    // наёмная сила (см. HireMercenaries), всё вместе усиленное воеводой
     public static double GetStrength(Kingdom kingdom, World world)
     {
         var skill = GetSoldiers(kingdom).Sum(s => ProfessionSystem.GetMastery(s, world));
 
-        return skill * CourtSystem.GetOfficeStrength(kingdom, CourtOffice.Marshal, world);
+        return (skill + kingdom.MercenaryStrength) * CourtSystem.GetOfficeStrength(kingdom, CourtOffice.Marshal, world);
     }
 
     // Сила гарнизона одного поселения — тем же счётом, что и сила государства,

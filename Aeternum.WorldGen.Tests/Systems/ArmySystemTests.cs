@@ -297,4 +297,96 @@ public class ArmySystemTests
 
         return suppressed;
     }
+
+    // Наёмники: решение заново каждый год, не постоянная прибавка к войску —
+    // только на год войны (Settlement.SiegeYears > 0), богатая казна и
+    // нехватка своих рук; в мирный год, при скудной казне или при достаточном
+    // своём войске — нет (см. ArmySystem.HireMercenaries)
+    [Fact]
+    public void Process_AtWarFewSoldiersAndRichTreasury_HiresMercenariesAndSpendsGold()
+    {
+        var (world, kingdom, seat) = BuildRealm();
+        kingdom.GoldTreasury = 1000;
+        seat.SiegeYears = 1;
+
+        ArmySystem.Process(world);
+
+        Assert.True(kingdom.MercenaryStrength > 0, "нехватка своих воинов на год войны при богатой казне обязана нанять наёмников");
+        Assert.True(kingdom.GoldTreasury < 1000, "наём должен стоить золота");
+        Assert.Contains(world.Events, e => e.Type == EventType.Mercenaries);
+    }
+
+    [Fact]
+    public void Process_NotAtWar_DoesNotHireMercenariesEvenWhenRichAndFewSoldiers()
+    {
+        var (world, kingdom, _) = BuildRealm();
+        kingdom.GoldTreasury = 1000; // Богатая казна и нехватка воинов сами по себе не повод — нужна война
+
+        ArmySystem.Process(world);
+
+        Assert.Equal(0, kingdom.MercenaryStrength);
+        Assert.Equal(1000, kingdom.GoldTreasury);
+        Assert.DoesNotContain(world.Events, e => e.Type == EventType.Mercenaries);
+    }
+
+    [Fact]
+    public void Process_PoorTreasury_DoesNotHireMercenaries()
+    {
+        var (world, kingdom, seat) = BuildRealm();
+        kingdom.GoldTreasury = 50; // Ниже порога "большой казны"
+        seat.SiegeYears = 1;
+
+        ArmySystem.Process(world);
+
+        Assert.Equal(0, kingdom.MercenaryStrength);
+        Assert.Equal(50, kingdom.GoldTreasury);
+        Assert.DoesNotContain(world.Events, e => e.Type == EventType.Mercenaries);
+    }
+
+    [Fact]
+    public void Process_EnoughOwnSoldiers_DoesNotHireMercenariesEvenWhenRich()
+    {
+        var (world, kingdom, seat) = BuildRealm();
+        kingdom.GoldTreasury = 1000;
+        seat.SiegeYears = 1;
+
+        for (var i = 0; i < 5; i++)
+        {
+            Add(world, seat, "Воин");
+        }
+
+        ArmySystem.Process(world);
+
+        Assert.Equal(0, kingdom.MercenaryStrength);
+        Assert.Equal(1000, kingdom.GoldTreasury);
+    }
+
+    [Fact]
+    public void Process_MercenariesHiredLastYear_VanishOnceWarEnds()
+    {
+        var (world, kingdom, seat) = BuildRealm();
+        kingdom.GoldTreasury = 1000;
+        seat.SiegeYears = 1;
+
+        ArmySystem.Process(world);
+        Assert.True(kingdom.MercenaryStrength > 0);
+
+        seat.SiegeYears = 0; // Осада разрешилась — наёмникам искать другую войну
+
+        ArmySystem.Process(world);
+
+        Assert.Equal(0, kingdom.MercenaryStrength);
+    }
+
+    [Fact]
+    public void GetStrength_IncludesHiredMercenaryStrength()
+    {
+        var (world, kingdom, _) = BuildRealm();
+
+        var without = ArmySystem.GetStrength(kingdom, world);
+
+        kingdom.MercenaryStrength = 5;
+
+        Assert.True(ArmySystem.GetStrength(kingdom, world) > without);
+    }
 }

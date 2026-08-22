@@ -38,4 +38,9 @@ public class Kingdom
     public Dictionary<MaterialType, double> MaterialTreasury { get; set; } = new(); // Казна материалов по типам — то же для материалов
 
     public double GoldTreasury { get; set; } // Казна золота — то же для золота
+
+    // Сила наёмников, купленная в этом году на золото сверх содержания своего
+    // войска: не постоянная армия, а решение, принимаемое заново каждый год
+    // (см. ArmySystem) — тот же принцип, что и у TributeRate
+    public double MercenaryStrength { get; set; }
 }
