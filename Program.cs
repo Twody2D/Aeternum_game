@@ -93,7 +93,8 @@ var eventLabels = new Dictionary<EventType, string>
     [EventType.Scandal] = "раскрытых измен",
     [EventType.Espionage] = "успешных интриг",
     [EventType.Regency] = "начатых регентств",
-    [EventType.Mercenaries] = "найма наёмников"
+    [EventType.Mercenaries] = "найма наёмников",
+    [EventType.Masterwork] = "созданных шедевров"
 };
 
 var ageGroupLabels = new Dictionary<AgeGroup, string>

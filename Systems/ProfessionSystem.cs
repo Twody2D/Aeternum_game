@@ -103,6 +103,10 @@ public static class ProfessionSystem
     private const double MasteryPerYear = 0.02;
     private const double MaxMasteryBonus = 0.5;
 
+    // Потолок GetMastery — публичный, чтобы не дублировать "1 + бонус" в системах,
+    // которым нужно знать, что мастер уже выучился до предела (см. MasterworkSystem)
+    public const double MaxMastery = 1 + MaxMasteryBonus;
+
     // Шанс, что персонаж унаследует профессию родителя своего пола вместо случайного выбора —
     // семейное ремесло/дело передаётся из поколения в поколение, но не всегда (см. LifeSystem)
     private const double InheritanceChance = 0.4;

@@ -41,5 +41,5 @@ public class Settlement
 
     public Religion? Religion { get; set; } // Религия поселения — влияет на шанс межпоселенческого брака
 
-    public int LegendCount { get; set; } // Число легендарных долгожителей, доживших здесь свой век — см. DeathSystem, MigrationSystem
+    public int LegendCount { get; set; } // Число легенд места: долгожители (DeathSystem) и шедевры цеха (MasterworkSystem) — см. также MigrationSystem
 }
