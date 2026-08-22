@@ -27,6 +27,19 @@ public static class KingdomSystem
     private const double HardworkingStabilityBonus = 0.3;
     private const double FrailStabilityPenalty = 0.3;
 
+    // Малолетний на троне — не законность, а сама способность держать власть:
+    // тот же изъян доверия, что и у рождённого вне брака (BastardPenalty), только
+    // вполовину слабее (регентство — не позор, а временная нужда) и само проходит,
+    // когда наследник дорастает до Adult
+    private const double MinorityPenalty = 0.5;
+
+    // Нижний предел знаменателя стабильности: не даёт сумме факторов "перевернуть"
+    // формулу через ноль (у отрицательной вероятности), но позволяет нескольким
+    // факторам вместе (незаконнорождённость, малолетство, чужая вера сразу везде)
+    // поднять риск ощутимо выше базового, а не просто вернуть его к неизменному
+    // потолку — так, как было бы при жёстком отсечении суммы на нуле
+    private const double MinStabilityDenominator = 0.1;
+
     public static void Process(World world)
     {
         UpdateExistingKingdoms(world);
@@ -92,7 +105,71 @@ public static class KingdomSystem
             {
                 TryTriggerSuccessionCrisis(kingdom, newRuler, aliveMembers, world);
             }
+
+            if (IsMinor(newRuler))
+            {
+                AnnounceRegency(kingdom, world);
+            }
         }
+    }
+
+    // Малолетний правитель — тот, кто по этапу жизни (см. LifeStage) ещё не считается
+    // взрослым. Не хранится отдельным флагом: то же, что и совершеннолетие персонажа
+    // в любой другой системе, просто спрошенное про правителя
+    public static bool IsMinor(Character ruler)
+    {
+        return ruler.LifeStage is LifeStage.Infant or LifeStage.Child or LifeStage.Student;
+    }
+
+    // Кто правит именем малолетнего — вычисляемый сан, как глава цеха (GuildSystem)
+    // или духовный глава (ClergySystem): не назначение, а то, кому дом и так больше
+    // доверяет на сегодняшний день. Сперва — взрослая родня по дому, тем же мерилом,
+    // что уже решает выборный обычай наследования (см. SuccessionSystem.PickWorthiest):
+    // друзья и отсутствие врагов внутри дома. Родни не нашлось — берёт лучший из двора
+    // (CourtSystem): опоре трона и так положено быть рядом. Нет и такого — регентство
+    // пустует, и это худший вариант из всех (см. MurderSystem.RegencyWeightBonus)
+    public static Character? GetRegent(Kingdom kingdom, World world)
+    {
+        if (!IsMinor(kingdom.Ruler))
+        {
+            return null;
+        }
+
+        var kin = kingdom.Dynasty.Members
+            .Where(m => m.Alive && m != kingdom.Ruler && m.LifeStage is LifeStage.Adult or LifeStage.Elder)
+            .OrderByDescending(m => m.Friends.Count(f => f.Alive) - m.Enemies.Count(e => e.Alive))
+            .ThenBy(m => m.BirthYear)
+            .FirstOrDefault();
+
+        if (kin != null)
+        {
+            return kin;
+        }
+
+        return kingdom.Court.Values
+            .Where(h => h.Alive)
+            .OrderByDescending(h => ProfessionSystem.GetMastery(h, world))
+            .FirstOrDefault();
+    }
+
+    private static void AnnounceRegency(Kingdom kingdom, World world)
+    {
+        var regent = GetRegent(kingdom, world);
+
+        if (regent == null)
+        {
+            return; // Регентствовать некому — сама пустота уже отражена в MinorityPenalty/RegencyWeightBonus
+        }
+
+        var regentVerb = regent.Gender == Gender.Female ? "стала" : "стал";
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.Regency,
+            Description = $"{kingdom.Name}: при малолетнем правителе регентом {regentVerb} {SurnameSystem.GetDisplayFullName(regent)}",
+            Kingdoms = [kingdom]
+        });
     }
 
     // Трон ушёл не к прямому ребёнку покойного правителя, а в боковую ветвь —
@@ -117,6 +194,11 @@ public static class KingdomSystem
             heirClarity -= BastardPenalty;
         }
 
+        if (IsMinor(newRuler))
+        {
+            heirClarity -= MinorityPenalty;
+        }
+
         var temperamentShift = 0.0;
 
         if (newRuler.Traits.Contains(Trait.Hardworking))
@@ -129,12 +211,12 @@ public static class KingdomSystem
             temperamentShift -= FrailStabilityPenalty;
         }
 
-        var stability = Math.Max(0, heirClarity + (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor
-                                     + kingdom.Dynasty.Reputation * ReputationWeight
-                                     - dissentingSettlements * ReligiousDiversityPenalty
-                                     - dissentingCultureSettlements * CulturalDiversityPenalty
-                                     + temperamentShift);
-        var effectiveChance = world.Settings.SuccessionCrisisChance / (1 + stability);
+        var stability = heirClarity + (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor
+                        + kingdom.Dynasty.Reputation * ReputationWeight
+                        - dissentingSettlements * ReligiousDiversityPenalty
+                        - dissentingCultureSettlements * CulturalDiversityPenalty
+                        + temperamentShift;
+        var effectiveChance = Math.Clamp(world.Settings.SuccessionCrisisChance / Math.Max(MinStabilityDenominator, 1 + stability), 0, 1);
 
         if (Rng.NextDouble() >= effectiveChance)
         {

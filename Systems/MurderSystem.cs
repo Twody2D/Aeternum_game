@@ -14,6 +14,7 @@ public static class MurderSystem
 {
     private const int BraveWeight = 2; // Смелые соперники вдвое чаще решаются на заговор
     private const int GrudgeWeight = 2; // Застарелая обида на правителя (см. Character.Enemies) толкает на заговор не хуже смелости
+    private const int RegencyWeight = 2; // Малолетний правитель (см. KingdomSystem.IsMinor) — соблазн не хуже смелости или обиды
     private const int DefaultWeight = 1;
 
     public static void Process(World world)
@@ -115,6 +116,11 @@ public static class MurderSystem
         if (rival.Enemies.Contains(ruler))
         {
             weight += GrudgeWeight - DefaultWeight;
+        }
+
+        if (KingdomSystem.IsMinor(ruler))
+        {
+            weight += RegencyWeight - DefaultWeight;
         }
 
         return weight;
