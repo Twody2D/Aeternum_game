@@ -8,9 +8,20 @@ namespace Aeternum.WorldGen.Systems;
 // Рост населения расширяет территорию: переполненное поселение с накопленными
 // материалами (первое реальное применение MaterialStocks) и с некоторым шансом
 // отпускает одну семью основать новое поселение — иначе число поселений навсегда
-// остаётся тем, с которого начался мир (ProjectSettings.SettlementCount)
+// остаётся тем, с которого начался мир (ProjectSettings.SettlementCount).
+//
+// Обычная колония садится рядом (см. SettlementGenerator.PickColonySite — в
+// пределах ColonyOffsetRange, на самом плодородном из нескольких осмотренных
+// мест). Прибрежное поселение (см. TerrainSystem.Relief.Coast) с достаточным
+// торговым богатством может вместо этого снарядить колонию за море: не
+// соседний клочок земли, а слепая высадка где-то на всей карте, тем же
+// приёмом, что и раскидывание поселений при основании мира (origin == null
+// у SettlementGenerator.Create) — колонисты плывут наугад, без разведки места
 public static class ColonizationSystem
 {
+    private const double MinGoldForOverseasColony = 100; // "Достаточный вывоз" — торговое богатство порта
+    private const double OverseasColonyChance = 0.5; // Из тех, кто вообще может, — не каждый раз, а как повезёт с ветром
+
     public static void Process(World world)
     {
         // ToList — Process может добавить новые поселения прямо в world.Settlements,
@@ -62,7 +73,11 @@ public static class ColonizationSystem
             origin.MaterialStocks[type] *= remainingRatio;
         }
 
-        var newSettlement = SettlementGenerator.Create(1, origin)[0];
+        var isOverseas = TerrainSystem.GetRelief(origin, world) == Relief.Coast
+                          && origin.Gold >= MinGoldForOverseasColony
+                          && Rng.NextDouble() < OverseasColonyChance;
+
+        var newSettlement = SettlementGenerator.Create(1, isOverseas ? null : origin)[0];
 
         newSettlement.Culture = origin.Culture;
         newSettlement.Religion = origin.Religion;
@@ -79,12 +94,14 @@ public static class ColonizationSystem
             newSettlement.Members.Add(colonist);
         }
 
+        var foundingVerb = isOverseas ? "заложила за морем" : "основала";
+
         world.Events.Add(new WorldEvent
         {
             Year = world.CurrentYear,
             Type = EventType.Colonization,
             Description = $"{origin.Name} разрослось: семья {SurnameSystem.GetDisplayFullName(foundingFamily.Father)} " +
-                          $"и {SurnameSystem.GetDisplayFullName(foundingFamily.Mother)} основала {newSettlement.Name}"
+                          $"и {SurnameSystem.GetDisplayFullName(foundingFamily.Mother)} {foundingVerb} {newSettlement.Name}"
         });
     }
 }
