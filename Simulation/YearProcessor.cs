@@ -92,25 +92,28 @@ public static class YearProcessor
         // 26. Двор: наследник, воевода, казначей и советник при короне
         CourtSystem.Process(world);
 
-        // 27. Союзы между государствами
+        // 27. Шпионаж: канцлер тайно уводит часть казны у соперника
+        IntrigueSystem.Process(world);
+
+        // 28. Союзы между государствами
         AllianceSystem.Process(world);
 
-        // 28. Войны за спорные поселения между государствами
+        // 29. Войны за спорные поселения между государствами
         WarSystem.Process(world);
 
-        // 29. Восстания: поселения отказывают короне в повиновении
+        // 30. Восстания: поселения отказывают короне в повиновении
         RebellionSystem.Process(world);
 
-        // 30. Расколы веры в общинах, отрезанных от единоверцев
+        // 31. Расколы веры в общинах, отрезанных от единоверцев
         SchismSystem.Process(world);
 
-        // 31. Накопление знаний и смена эпох
+        // 32. Накопление знаний и смена эпох
         TechnologySystem.Process(world);
 
-        // 32. Заговоры против правителя
+        // 33. Заговоры против правителя
         MurderSystem.Process(world);
 
-        // 33. Рождение детей
+        // 34. Рождение детей
         List<Character> newborns = new();
 
         BirthSystem.ProcessBirths(
@@ -121,7 +124,7 @@ public static class YearProcessor
         // ...и те, кто родился вне семьи
         BastardSystem.Process(newborns, world);
 
-        // 34. Добавляем детей
+        // 35. Добавляем детей
         world.Characters.AddRange(newborns);
     }
 }
