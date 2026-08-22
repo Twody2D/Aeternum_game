@@ -52,6 +52,16 @@ public static class WarSystem
     private const double BraveRulerWarBoost = 1.3;
     private const double PrudentRulerWarCut = 0.7;
 
+    // Ультиматум: явный перевес сил (см. TryGetLopsidedPair) даёт сильной стороне
+    // повод потребовать покорности прямо у свежего спора, не дожидаясь года
+    // осады, — та же вассализация (см. DeclareVassalization), только бескровная.
+    // Слабая сторона решает по своему нраву (см. Trait) — то же Brave/Prudent,
+    // что уже решает, ввязываться ли в войну вообще
+    private const double UltimatumChance = 0.2; // Шанс, что сильный сосед выставит ультиматум свежему спору
+    private const double BaseSubmitChance = 0.5;
+    private const double PrudentSubmitBoost = 1.5;
+    private const double BraveSubmitCut = 0.5;
+
     public static void Process(World world)
     {
         TryBreakFree(world);
@@ -71,6 +81,20 @@ public static class WarSystem
             {
                 settlement.SiegeYears = 0; // Спор разрешился или снят — осада прекращается
                 continue;
+            }
+
+            // Ультиматум — только свежему спору, ещё не ставшему осадой: если стороны
+            // уже воюют годами, требовать покорности поздно, дело решает сама война
+            if (settlement.SiegeYears == 0 && claimants.Count == 2 &&
+                TryGetLopsidedPair(claimants[0], claimants[1], out var demandant, out var target) &&
+                Rng.NextDouble() < UltimatumChance)
+            {
+                if (Rng.NextDouble() < GetSubmissionChance(target.Ruler))
+                {
+                    DeclareVassalization(settlement, target, demandant, world, viaUltimatum: true);
+                    continue;
+                }
+                // Ультиматум отвергнут — год решает обычным порядком, как если бы его не было
             }
 
             var isHolyWar = IsReligiousDispute(claimants);
@@ -169,6 +193,24 @@ public static class WarSystem
         return GetPower(stronger) >= GetPower(weaker) * VassalizationPowerRatio;
     }
 
+    // Принять ультиматум или отвергнуть — решает нрав того, кому его выставили,
+    // тем же приёмом, что и решение начать войну (см. GetRulerTemperamentFactor)
+    private static double GetSubmissionChance(Character ruler)
+    {
+        var chance = BaseSubmitChance;
+
+        if (ruler.Traits.Contains(Trait.Prudent))
+        {
+            chance *= PrudentSubmitBoost;
+        }
+        else if (ruler.Traits.Contains(Trait.Brave))
+        {
+            chance *= BraveSubmitCut;
+        }
+
+        return Math.Clamp(chance, 0, 1);
+    }
+
     // Сила государства — живое население всех подконтрольных поселений
     private static int GetPower(Kingdom kingdom)
     {
@@ -178,16 +220,18 @@ public static class WarSystem
     // Явно проигрышная позиция решается политически быстрее, чем истощает
     // обе стороны поровну (см. DeclareTruce) — слабая сторона признаёт
     // вассалитет сильной вместо продолжения бессмысленного сопротивления
-    private static void DeclareVassalization(Settlement settlement, Kingdom weaker, Kingdom stronger, World world)
+    private static void DeclareVassalization(Settlement settlement, Kingdom weaker, Kingdom stronger, World world, bool viaUltimatum = false)
     {
         weaker.Suzerain = stronger;
         settlement.SiegeYears = 0;
+
+        var reason = viaUltimatum ? "приняло ультиматум, не дожидаясь войны" : "признало вассалитет вместо продолжения войны";
 
         world.Events.Add(new WorldEvent
         {
             Year = world.CurrentYear,
             Type = EventType.Vassalization,
-            Description = $"{settlement.Name}: {weaker.Name} признало вассалитет {stronger.Name} вместо продолжения войны",
+            Description = $"{settlement.Name}: {weaker.Name} {reason} — {stronger.Name} сильнее",
             Kingdoms = [weaker, stronger]
         });
     }
