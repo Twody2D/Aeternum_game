@@ -59,7 +59,7 @@ public static class EconomySystem
         // а накопленное миром знание одинаково помогает всем (см. TechnologySystem)
         double production = residents.Sum(c =>
             ProfessionSystem.GetFoodProduction(c.Profession) * GetProductivity(c, world))
-            * ClimateSystem.GetFertility(settlement)
+            * ClimateSystem.GetFertility(settlement, world)
             * TerrainSystem.GetFertilityModifier(settlement, world)
             * WeatherSystem.GetFactor(world)
             * TechnologySystem.GetProductionMultiplier(world);

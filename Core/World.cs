@@ -29,6 +29,10 @@ public class World
 
     public double WeatherFactor { get; set; } = 1.0; //Погода этого года — множитель к плодородию, блуждает год от года, см. WeatherSystem
 
+    // Сдвиг тёплого пояса от середины карты — блуждает веками, не годами (см. ClimateSystem),
+    // в единицах Settlement.Y/ClimateSystem.MapSize. 0 — пояс там же, где был при основании мира
+    public double ClimateDrift { get; set; }
+
     public int Seed { get; set; } //Зерно, из которого порождён мир — чтобы его можно было воспроизвести, см. Rng
 
     public List<WorldEvent> Events { get; set; } = new(); //Список событий в мире

@@ -69,7 +69,7 @@ public static class SnapshotExporter
             X: Math.Round(settlement.X, 1),
             Y: Math.Round(settlement.Y, 1),
             Population: settlement.Members.Count(m => m.Alive),
-            Fertility: Math.Round(ClimateSystem.GetFertility(settlement), 2),
+            Fertility: Math.Round(ClimateSystem.GetFertility(settlement, world), 2),
             Culture: settlement.Culture?.Name,
             Religion: settlement.Religion?.Name,
             Houses: settlement.Houses,

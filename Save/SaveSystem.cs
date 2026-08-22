@@ -55,6 +55,7 @@ public static class SaveSystem
             AliveCount = world.AliveCount,
             Knowledge = world.Knowledge,
             WeatherFactor = world.WeatherFactor,
+            ClimateDrift = world.ClimateDrift,
             Seed = world.Seed,
             Settings = world.Settings,
             Events = world.Events.Select(e => new WorldEventData
@@ -323,6 +324,7 @@ public static class SaveSystem
             AliveCount = data.AliveCount,
             Knowledge = data.Knowledge,
             WeatherFactor = data.WeatherFactor,
+            ClimateDrift = data.ClimateDrift,
             Seed = data.Seed,
             Settings = data.Settings,
             Events = data.Events.Select(e => new WorldEvent
