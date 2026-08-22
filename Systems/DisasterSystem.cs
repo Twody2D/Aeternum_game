@@ -15,12 +15,26 @@ namespace Aeternum.WorldGen.Systems;
 // Одних торговых путей мало: они складываются редко и поздно (нужны государство
 // или союз и встречный дефицит с излишком), так что в большинстве вспышек
 // партнёров у поселения попросту нет. Соседство работает всегда: между
-// поселениями в дне пути люди ходят и без оформившейся торговли
+// поселениями в дне пути люди ходят и без оформившейся торговли.
+//
+// Землетрясение и паводок — третий и четвёртый вид катастрофы, привязанные
+// к рельефу (см. TerrainSystem), а не выпадающие всем поровну: горы трясёт,
+// низину и приморье topит. Это оборотная сторона уже начисленной выгоды
+// рельефа — горы дешевле не отдать силой (GetDefenseFactor), но однажды в
+// сотни лет теряют дома и стены сами; пойма и приморье родят щедрее и
+// вывозят больше (GetFertilityModifier, GetTradeCapacityMultiplier), но
+// платят паводком, смывающим часть запасов. Ни один вид земли не остаётся
+// только выигрышным
 public static class DisasterSystem
 {
     private const double ContagionChance = 0.35; // Шанс, что вспышка перекинется к связанному поселению
     private const double ContagionMortalityFactor = 0.6; // До соседа болезнь доходит ослабленной
     private const double ContagionDistance = 100; // Соседство, в пределах которого люди ходят и без торгового пути
+
+    private const double EarthquakeCasualtyRate = 0.03; // Доля жителей, гибнущих при обрушении
+    private const double EarthquakeBuildingLossShare = 0.3; // Доля домов и стен, рушащихся за одно землетрясение
+
+    private const double FloodMaterialLossShare = 0.4; // Доля запасов сырья, смытых паводком
 
     public static void Process(World world)
     {
@@ -43,20 +57,48 @@ public static class DisasterSystem
                 continue;
             }
 
-            if (Rng.Next(2) == 0)
-            {
-                TriggerEpidemic(settlement, residents, world);
-                infectedThisYear.Add(settlement);
-            }
-            else
-            {
-                TriggerCropFailure(settlement, residents, world);
-            }
+            TriggerRandomDisaster(settlement, residents, world, infectedThisYear);
         }
 
         foreach (var source in infectedThisYear)
         {
             Spread(source, world);
+        }
+    }
+
+    // Эпидемия и неурожай грозят любой земле; землетрясение — только горам,
+    // паводок — только низине и приморью (см. TerrainSystem.Relief). Выбор —
+    // равная доля среди того, что вообще может случиться в этом месте
+    private static void TriggerRandomDisaster(Settlement settlement, List<Character> residents, World world, HashSet<Settlement> infectedThisYear)
+    {
+        var relief = TerrainSystem.GetRelief(settlement, world);
+        var roll = relief switch
+        {
+            Relief.Mountain => Rng.Next(3),
+            Relief.Lowland or Relief.Coast => Rng.Next(3),
+            _ => Rng.Next(2)
+        };
+
+        if (roll == 0)
+        {
+            TriggerEpidemic(settlement, residents, world);
+            infectedThisYear.Add(settlement);
+            return;
+        }
+
+        if (roll == 1)
+        {
+            TriggerCropFailure(settlement, residents, world);
+            return;
+        }
+
+        if (relief == Relief.Mountain)
+        {
+            TriggerEarthquake(settlement, residents, world);
+        }
+        else
+        {
+            TriggerFlood(settlement, world);
         }
     }
 
@@ -131,6 +173,59 @@ public static class DisasterSystem
             Year = world.CurrentYear,
             Type = EventType.Disaster,
             Description = $"{settlement.Name}: неурожай, потеряно {loss:F0} запаса еды"
+        });
+    }
+
+    // Только горам (см. TerrainSystem.Relief.Mountain) — рушит то, что горы же
+    // и накопили: дома и стены, а не запасы, которых в каменистой земле и так меньше
+    private static void TriggerEarthquake(Settlement settlement, List<Character> residents, World world)
+    {
+        var casualtyCount = (int)(residents.Count * EarthquakeCasualtyRate);
+
+        var casualties = residents
+            .OrderBy(_ => Rng.Next())
+            .Take(casualtyCount)
+            .ToList();
+
+        foreach (var casualty in casualties)
+        {
+            DeathSystem.Kill(casualty, world, DeathReason.Accident);
+        }
+
+        var housesLost = (int)Math.Ceiling(settlement.Houses * EarthquakeBuildingLossShare);
+        var wallsLost = (int)Math.Ceiling(settlement.Walls * EarthquakeBuildingLossShare);
+
+        settlement.Houses -= housesLost;
+        settlement.Walls -= wallsLost;
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.Disaster,
+            Description = $"{settlement.Name}: землетрясение, погибших — {casualties.Count}, " +
+                          $"разрушено домов — {housesLost}, стен — {wallsLost}"
+        });
+    }
+
+    // Только низине и приморью (см. TerrainSystem.Relief.Lowland/Coast) — смывает
+    // запасы сырья, а не еду: недород урожая — уже неурожай, паводок бьёт по амбарам с товаром
+    private static void TriggerFlood(Settlement settlement, World world)
+    {
+        double lost = 0;
+
+        foreach (var type in settlement.MaterialStocks.Keys.ToList())
+        {
+            var loss = settlement.MaterialStocks[type] * FloodMaterialLossShare;
+
+            settlement.MaterialStocks[type] -= loss;
+            lost += loss;
+        }
+
+        world.Events.Add(new WorldEvent
+        {
+            Year = world.CurrentYear,
+            Type = EventType.Disaster,
+            Description = $"{settlement.Name}: паводок, смыто {lost:F0} запасов сырья"
         });
     }
 }
