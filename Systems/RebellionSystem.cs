@@ -99,7 +99,10 @@ public static class RebellionSystem
             .Take(casualtyCount)
             .ToList();
 
-        foreach (var casualty in casualties)
+        // Не каждая отобранная жертва гибнет — часть изгоняется вместо смерти (см. ExileSystem)
+        var killed = ExileSystem.SplitCasualties(casualties, crown.Ruler, world);
+
+        foreach (var casualty in killed)
         {
             DeathSystem.Kill(casualty, world, DeathReason.War);
         }
@@ -111,7 +114,7 @@ public static class RebellionSystem
         {
             Year = world.CurrentYear,
             Type = EventType.Suppression,
-            Description = $"{crown.Name}: мятеж в {settlement.Name} подавлен. Погибших: {casualties.Count}",
+            Description = $"{crown.Name}: мятеж в {settlement.Name} подавлен. Погибших: {killed.Count}",
             Kingdoms = [crown]
         });
     }

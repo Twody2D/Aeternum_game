@@ -201,4 +201,60 @@ public class KingdomSystemTests
 
         Assert.Null(KingdomSystem.GetRegent(kingdom, new World()));
     }
+
+    // Проверяет само подключение ExileSystem внутри TryTriggerSuccessionCrisis,
+    // а не только ExileSystem изолированно — иначе разрыв связи между системами
+    // прошёл бы мимо тестов, хотя ExileSystemTests целиком зелёные (см. ExileSystemTests)
+    [Fact]
+    public void Process_CivilWar_SometimesExilesARivalInsteadOfKillingEveryone()
+    {
+        var exiled = false;
+
+        for (var run = 0; run < 1000 && !exiled; run++)
+        {
+            var world = new World { CurrentYear = 100 };
+
+            var previousRuler = new Character
+            {
+                Id = 1, Name = "Прежний", LastName = "Тестов", Age = 70,
+                Alive = false, LifeStage = LifeStage.Elder
+            };
+
+            // Не связан с прежним правителем по родителям — переход трона
+            // гарантированно не прямое наследование (isDirectHeir = false)
+            var heir = new Character
+            {
+                Id = 2, Name = "Наследник", LastName = "Тестов", Age = 40,
+                Alive = true, LifeStage = LifeStage.Adult
+            };
+
+            var dynasty = new Dynasty { Id = 1, Name = "Дом Тестов", FoundedYear = 1, Founder = previousRuler };
+            dynasty.Members.AddRange([previousRuler, heir]);
+
+            // Большой пул родни — гарантирует хотя бы одну "жертву" при (int)(count * CivilWarCasualtyRate)
+            for (var i = 0; i < 25; i++)
+            {
+                var rival = new Character { Id = 100 + i, Name = $"Родич{i}", LastName = "Тестов", Age = 30, Alive = true, LifeStage = LifeStage.Adult };
+                dynasty.Members.Add(rival);
+            }
+
+            var kingdom = new Kingdom
+            {
+                Id = 1,
+                Name = "Королевство Тестов",
+                Dynasty = dynasty,
+                Ruler = previousRuler,
+                FoundedYear = 1
+            };
+
+            world.Kingdoms.Add(kingdom);
+
+            Rng.Initialize(seed: run + 1);
+            KingdomSystem.Process(world);
+
+            exiled = world.Events.Any(e => e.Type == EventType.Exile);
+        }
+
+        Assert.True(exiled, "хотя бы раз за 1000 попыток кризис наследования должен кого-то изгнать, а не только казнить");
+    }
 }

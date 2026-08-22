@@ -199,6 +199,44 @@ public class RebellionSystemTests
         Assert.Null(province.RebellingAgainst);
     }
 
+    // Проверяет само подключение ExileSystem внутри Suppress, а не только
+    // ExileSystem изолированно — иначе разрыв связи между системами прошёл бы
+    // мимо тестов, хотя ExileSystemTests целиком зелёные (см. ExileSystemTests)
+    [Fact]
+    public void Process_SuppressedRebellion_SometimesExilesInsteadOfKillingEveryone()
+    {
+        var exiled = false;
+
+        for (var run = 0; run < 300 && !exiled; run++)
+        {
+            var (world, kingdom, province) = BuildKingdomWithSettlement();
+
+            for (var i = 0; i < 30; i++)
+            {
+                AddResident(world, province, 10 + i);
+            }
+
+            var capital = kingdom.Settlements[0];
+
+            for (var i = 0; i < 20; i++)
+            {
+                AddResident(world, capital, 1000 + i, "Воин");
+            }
+
+            world.CurrentYear = 5;
+            province.RebellingUntilYear = 100;
+            province.RebellingAgainst = kingdom;
+            kingdom.FoodTreasury = 10_000;
+
+            Rng.Initialize(seed: run + 1);
+            RebellionSystem.Process(world);
+
+            exiled = world.Events.Any(e => e.Type == EventType.Exile);
+        }
+
+        Assert.True(exiled, "хотя бы раз за 300 попыток подавление мятежа должно кого-то изгнать, а не только казнить");
+    }
+
     [Fact]
     public void Process_SuppressionAttempt_DrainsTreasuryEvenWhenItFails()
     {

@@ -231,7 +231,10 @@ public static class KingdomSystem
             .Take(casualtyCount)
             .ToList();
 
-        foreach (var casualty in casualties)
+        // Не каждая отобранная жертва гибнет — часть изгоняется вместо смерти (см. ExileSystem)
+        var killed = ExileSystem.SplitCasualties(casualties, newRuler, world);
+
+        foreach (var casualty in killed)
         {
             DeathSystem.Kill(casualty, world, DeathReason.War);
         }
@@ -247,7 +250,7 @@ public static class KingdomSystem
             Year = world.CurrentYear,
             Type = EventType.CivilWar,
             Description = $"{kingdom.Name}: кризис наследования — трон перешёл не к прямому потомку, а к дальней родне " +
-                          $"({SurnameSystem.GetDisplayFullName(newRuler)}). Среди наследников вспыхнула распря. Погибших: {casualties.Count}",
+                          $"({SurnameSystem.GetDisplayFullName(newRuler)}). Среди наследников вспыхнула распря. Погибших: {killed.Count}",
             Kingdoms = [kingdom]
         });
     }
