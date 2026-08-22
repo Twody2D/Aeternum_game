@@ -1,15 +1,15 @@
-Aeternum.WorldGen.Tests
+# Aeternum.WorldGen.Tests
 
-xUnit-тесты, по одному файлу на систему (Systems/*Tests.cs — 36 файлов на
-момент написания) плюс Save/SaveSystemTests.cs на сохранение/загрузку.
+xUnit-тесты, по одному файлу на систему (Systems/*`Tests.cs` — 36 файлов на
+момент написания) плюс Save/`SaveSystemTests.cs` на сохранение/загрузку.
 Отдельный проект — .csproj игры явно исключает эту папку из своей сборки
-(см. ../Aeternum.WorldGen.csproj), а Aeternum.slnx собирает оба сразу, так
+(см. ../`Aeternum.WorldGen`.csproj), а `Aeternum.slnx` собирает оба сразу, так
 что `dotnet build`/`test` без аргументов работают из корня без указания
 конкретного проекта.
 
-  - AssemblyInfo.cs — [assembly: CollectionBehavior(DisableTestParallelization
-    = true)]. Случайность в мире — единый глобальный поток (Core.Rng), и
-    тесты, задающие ему зерно (Rng.Initialize(seed)), мешали бы друг другу,
+  - `AssemblyInfo.cs` — [assembly: `CollectionBehavior`(`DisableTestParallelization`
+    = true)]. Случайность в мире — единый глобальный поток (`Core.Rng`), и
+    тесты, задающие ему зерно (`Rng.Initialize(seed)`), мешали бы друг другу,
     идя параллельно: два одновременных вызова получили бы чужие броски.
     Набор идёт последовательно — на нём самом всё равно занимает около
     секунды.
@@ -22,7 +22,7 @@ xUnit-тесты, по одному файлу на систему (Systems/*Tes
     "за N попыток" или "за N независимых миров".
   - Поведенческие тесты пишутся не только на саму формулу, но и на систему,
     которая её действительно применяет (например, не только
-    TerrainSystem.GetDefenseFactor, но и WarSystem.Process с этим фактором) —
+    `TerrainSystem.GetDefenseFactor`, но и `WarSystem.Process` с этим фактором) —
     несколько раз в истории проекта мутация "убрать применение множителя"
     проходила незамеченной, если тест проверял только формулу отдельно.
   - Новая механика проверяется мутационно перед коммитом: сознательно

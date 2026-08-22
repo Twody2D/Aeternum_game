@@ -1,19 +1,19 @@
-Events
+# Events
 
-Один класс: WorldEvent.cs — единица лога World.Events. Год, тип
-(Models/EventType.cs) и готовый русский текст (Description) плюс список
+Один класс: `WorldEvent.cs` — единица лога `World.Events`. Год, тип
+(Models/`EventType.cs`) и готовый русский текст (Description) плюс список
 государств, которых событие касается (Kingdoms — пусто у личных и местных
 событий вроде рождения или эпидемии; заполняется в месте создания события
-теми системами, где есть политическая сторона: KingdomSystem, WarSystem,
-AllianceSystem, RebellionSystem, CapitalSystem, ArmySystem, CourtSystem,
-TributeSystem, CaptiveSystem, MurderSystem).
+теми системами, где есть политическая сторона: `KingdomSystem`, `WarSystem`,
+`AllianceSystem`, `RebellionSystem`, `CapitalSystem`, `ArmySystem`, `CourtSystem`,
+`TributeSystem`, `CaptiveSystem`, `MurderSystem`).
 
 Description — уже готовый текст, а не данные: события мира читает и
 консоль (погодовой лог, хроника), и в перспективе любой другой потребитель,
 но текст для них общий. Единственная ссылка на реальные объекты — Kingdoms:
-без неё летопись отдельной короны (см. Systems/ChronicleSystem.cs) была бы
+без неё летопись отдельной короны (см. Systems/`ChronicleSystem.cs`) была бы
 невозможна, а разбирать имя государства из готового текста означало бы
 полагаться на совпадение строк.
 
-При сохранении WorldEvent превращается в WorldEventData (см. ../Save/README) —
+При сохранении `WorldEvent` превращается в `WorldEventData` (см. ../Save/README.md) —
 Kingdoms сериализуется по Id, как и все остальные перекрёстные ссылки в мире.

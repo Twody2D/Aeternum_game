@@ -1,0 +1,29 @@
+# Data
+
+Игровой контент вынесен из кода в JSON рядом с исполняемым файлом
+(csproj копирует Data/**/*.json в выходную папку) — дизайнер редактирует
+имена, профессии, культуры, религии и названия поселений без пересборки
+проекта. Загружает всё это `ContentData.cs`, один раз при первом обращении
+к каждому файлу.
+
+  - `ContentData.cs` — загрузчик: статические свойства (Names, Professions,
+    Cultures, Religions, `SettlementNames`), плюс DTO-классы для каждой
+    JSON-записи (`ProfessionEntry`, `CultureEntry` и т.д.). Единственное место
+    в проекте, которое явно читает файлы с диска.
+  - `Names.json` — `MaleNames`/`FemaleNames`/`LastNames` (см. Generators/
+    `CharacterGenerator.cs`).
+  - `Professions.json` — список профессий: Name, Category (см. Models/Enums/
+    `ProfessionCategory.cs`), Hazardous (см. Systems/`DeathSystem.cs`,
+    `ProfessionSystem.IsHazardous`), Clergy (см. Systems/`ClergySystem.cs`,
+    `ProfessionSystem.IsClergy`). Флаги читаются как false, если не указаны —
+    добавлять их нужно только там, где они true.
+  - `Cultures.json` — Name + `PreferredCategory` (см. `ProfessionSystem.GetRandom`).
+  - `Religions.json` — только Name; вся механика — в Systems/`SchismSystem.cs`
+    и Systems/`AllianceSystem.cs`.
+  - `Settlements.json` — пул имён для новых поселений (Names), как стартовых,
+    так и колоний.
+
+Добавление новой профессии, культуры, религии или имени — правка одного
+JSON-файла, без затрагивания C#. Добавление нового флага (как Hazardous
+или Clergy) — новое поле в соответствующем классе `ContentData.cs` плюс
+разбор в потребляющей системе.
