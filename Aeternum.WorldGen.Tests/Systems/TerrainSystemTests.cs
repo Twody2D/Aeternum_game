@@ -57,6 +57,90 @@ public class TerrainSystemTests
     }
 
     [Fact]
+    public void GetRelief_MapEdges_AreAlwaysCoastal()
+    {
+        Assert.Equal(Relief.Coast, TerrainSystem.GetRelief(0, ClimateSystem.MapSize / 2, Seed));
+        Assert.Equal(Relief.Coast, TerrainSystem.GetRelief(ClimateSystem.MapSize, ClimateSystem.MapSize / 2, Seed));
+    }
+
+    [Fact]
+    public void GetRelief_WaterOccupies_ARoughlyMeasuredShareOfTheMap()
+    {
+        // Замер: у любого зерна вода (морской край плюс речная лента) занимает
+        // около 17% карты — доля должна остаться заметной, но не подавляющей
+        var water = 0;
+        var rng = new Random(1);
+
+        for (var i = 0; i < 20000; i++)
+        {
+            var x = rng.NextDouble() * ClimateSystem.MapSize;
+            var y = rng.NextDouble() * ClimateSystem.MapSize;
+
+            if (TerrainSystem.GetRelief(x, y, Seed) == Relief.Coast)
+            {
+                water++;
+            }
+        }
+
+        var share = water / 20000.0;
+        Assert.True(share is > 0.08 and < 0.3, $"вода заняла {share:P0} карты");
+    }
+
+    [Fact]
+    public void GetFertilityModifier_Coast_IsRicherThanLowland()
+    {
+        var lowland = BuildSettlement(FindCoordinate(Relief.Lowland));
+        var coast = BuildSettlement(FindCoordinate(Relief.Coast));
+        var world = new World { Seed = Seed };
+
+        Assert.True(TerrainSystem.GetFertilityModifier(coast, world) > TerrainSystem.GetFertilityModifier(lowland, world),
+            "пойма и приморье должны родить щедрее обычной низины");
+    }
+
+    [Fact]
+    public void GetTradeCapacityMultiplier_OnlyCoastExceedsTheBaseline()
+    {
+        var lowland = BuildSettlement(FindCoordinate(Relief.Lowland));
+        var mountain = BuildSettlement(FindCoordinate(Relief.Mountain));
+        var coast = BuildSettlement(FindCoordinate(Relief.Coast));
+        var world = new World { Seed = Seed };
+
+        Assert.Equal(1.0, TerrainSystem.GetTradeCapacityMultiplier(lowland, world));
+        Assert.Equal(1.0, TerrainSystem.GetTradeCapacityMultiplier(mountain, world));
+        Assert.True(TerrainSystem.GetTradeCapacityMultiplier(coast, world) > 1.0);
+    }
+
+    [Fact]
+    public void EconomyProcess_CoastalSettlement_ProducesMoreFoodThanLowland()
+    {
+        var lowlandFood = FoodProducedAt(FindCoordinate(Relief.Lowland));
+        var coastFood = FoodProducedAt(FindCoordinate(Relief.Coast));
+
+        Assert.True(coastFood > lowlandFood, $"пойма должна прокормить больше обычной низины: {coastFood} против {lowlandFood}");
+    }
+
+    [Fact]
+    public void MarketProcess_CoastalSettlement_SellsMoreThanInlandForTheSameSurplus()
+    {
+        var inlandGold = GoldFromSellingSurplusAt(FindCoordinate(Relief.Lowland));
+        var coastalGold = GoldFromSellingSurplusAt(FindCoordinate(Relief.Coast));
+
+        Assert.True(coastalGold > inlandGold, $"порт должен вывозить больше обычной подводы: {coastalGold} против {inlandGold}");
+    }
+
+    private static double GoldFromSellingSurplusAt((double X, double Y) coordinate)
+    {
+        var world = new World { CurrentYear = 1, Seed = Seed };
+        var settlement = BuildSettlement(coordinate);
+        settlement.MaterialStocks[MaterialType.Wood] = StorageSystem.GetMaterialCapacity(settlement, MaterialType.Wood) + 1000;
+        world.Settlements.Add(settlement);
+
+        MarketSystem.Process(world);
+
+        return settlement.Gold;
+    }
+
+    [Fact]
     public void GetFertilityModifier_MountainsAreScarcerThanLowlands()
     {
         var lowland = BuildSettlement(FindCoordinate(Relief.Lowland));
@@ -218,7 +302,7 @@ public class TerrainSystemTests
 
         for (double x = 0; x <= ClimateSystem.MapSize; x += 5)
         {
-            if (TerrainSystem.GetRelief(TerrainSystem.GetElevation(x, y, Seed)) == target)
+            if (TerrainSystem.GetRelief(x, y, Seed) == target)
             {
                 return (x, y);
             }

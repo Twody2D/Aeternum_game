@@ -102,7 +102,7 @@ public class DepositSystemTests
 
         for (double x = 0; x <= ClimateSystem.MapSize; x += 5)
         {
-            if (TerrainSystem.GetRelief(TerrainSystem.GetElevation(x, y, Seed)) == target)
+            if (TerrainSystem.GetRelief(x, y, Seed) == target)
             {
                 return (x, y);
             }

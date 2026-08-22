@@ -83,7 +83,8 @@ public static class MarketSystem
         var traders = settlement.Members.Count(m =>
             m.Alive && ProfessionSystem.GetCategory(m.Profession) == ProfessionCategory.Trade);
 
-        var carryLeft = BaseCarry + traders * GoodsPerTrader;
+        // Порт и пристань вывозят больше обычной подводы (см. TerrainSystem.Relief.Coast)
+        var carryLeft = (BaseCarry + traders * GoodsPerTrader) * TerrainSystem.GetTradeCapacityMultiplier(settlement, world);
 
         var foodSurplus = settlement.FoodStock - StorageSystem.GetFoodCapacity(settlement);
 

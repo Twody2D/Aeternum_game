@@ -41,7 +41,7 @@ public static class WorldMapSystem
             {
                 var centerX = (col + 0.5) * cellWidth;
                 var centerY = (row + 0.5) * cellHeight;
-                var relief = TerrainSystem.GetRelief(TerrainSystem.GetElevation(centerX, centerY, world.Seed));
+                var relief = TerrainSystem.GetRelief(centerX, centerY, world.Seed);
 
                 settlementByCell.TryGetValue((col, row), out var settlement);
 

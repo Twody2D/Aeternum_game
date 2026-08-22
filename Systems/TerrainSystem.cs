@@ -20,7 +20,18 @@ namespace Aeternum.WorldGen.Systems;
 // (см. GetFertilityModifier, применяется в EconomySystem наравне с климатом
 // и погодой), но её труднее взять силой (см. GetDefenseFactor, применяется
 // в WarSystem наравне со стенами) — своя цена и своя выгода тем, кто осел
-// в глуши, без единого нового поля в модели
+// в глуши, без единого нового поля в модели.
+//
+// Побережье и русло реки — третий вид рельефа, вода, а не высота: считается
+// раньше шума высоты и, если земля у воды, перебивает его целиком. Морской
+// берег — у обоих краёв долготы (симметрично, как полюса климата у ClimateSystem);
+// вглубь суши — вдоль виляющего русла реки, тем же зерном мира, что и сам
+// рельеф, но независимой волной, чтобы река не повторяла горный хребет.
+// На 20000 точках карты вода даёт около 17% земли при любом зерне — заметная,
+// но не подавляющая доля. Земля у воды родит охотнее прочих (см.
+// CoastFertilityBonus) и берёт больше товара на внешний рынок (см.
+// GetTradeCapacityMultiplier, применяется в MarketSystem) — порт и пристань,
+// а не просто ещё один клочок земли
 public static class TerrainSystem
 {
     private const double LowlandThreshold = 0.4; // Ниже — низина
@@ -28,9 +39,16 @@ public static class TerrainSystem
 
     private const double HillFertilityFactor = 0.9;
     private const double MountainFertilityFactor = 0.7;
+    private const double CoastFertilityBonus = 1.2; // Пойма и приморье плодороднее обычной низины
 
     private const double HillDefenseFactor = 0.9;
     private const double MountainDefenseFactor = 0.8;
+
+    private const double CoastalTradeBonus = 1.5; // Порт и пристань вывозят больше обычного
+
+    private const double CoastBand = 60; // Полоса у восточного/западного края карты — морской берег
+    private const double RiverAmplitude = 200; // Насколько далеко от середины карты может вильнуть русло
+    private const double RiverBand = 30; // Ширина полосы вдоль русла, которую считаем берегом
 
     public static double GetElevation(Settlement settlement, World world)
     {
@@ -52,7 +70,19 @@ public static class TerrainSystem
 
     public static Relief GetRelief(Settlement settlement, World world)
     {
-        return GetRelief(GetElevation(settlement, world));
+        return GetRelief(settlement.X, settlement.Y, world.Seed);
+    }
+
+    // Побережье проверяется раньше высоты — если земля у воды, дальше не важно,
+    // что сказал бы шум высоты в этой самой точке
+    public static Relief GetRelief(double x, double y, int seed)
+    {
+        if (IsCoastal(x, y, seed))
+        {
+            return Relief.Coast;
+        }
+
+        return GetRelief(GetElevation(x, y, seed));
     }
 
     public static Relief GetRelief(double elevation)
@@ -65,19 +95,38 @@ public static class TerrainSystem
         return elevation >= MountainThreshold ? Relief.Mountain : Relief.Hill;
     }
 
-    // Множитель к производству еды (см. EconomySystem) — гористая земля скупее пашни
+    // Морской берег — у обоих краёв долготы; вглубь суши — вдоль виляющего русла
+    // реки. Фаза русла — отдельная от фаз рельефа (см. GetElevation), иначе река
+    // всегда бы совпадала с горным хребтом одной и той же формулы
+    private static bool IsCoastal(double x, double y, int seed)
+    {
+        if (x <= CoastBand || x >= ClimateSystem.MapSize - CoastBand)
+        {
+            return true;
+        }
+
+        var riverPhase = (seed * 7 % 10000) / 10000.0 * Math.PI * 2;
+        var riverY = ClimateSystem.MapSize / 2 + RiverAmplitude * Math.Sin(x / ClimateSystem.MapSize * Math.PI * 2 + riverPhase);
+
+        return Math.Abs(y - riverY) <= RiverBand;
+    }
+
+    // Множитель к производству еды (см. EconomySystem) — гористая земля скупее
+    // пашни, а пойма и приморье щедрее обычной низины
     public static double GetFertilityModifier(Settlement settlement, World world)
     {
         return GetRelief(settlement, world) switch
         {
             Relief.Hill => HillFertilityFactor,
             Relief.Mountain => MountainFertilityFactor,
+            Relief.Coast => CoastFertilityBonus,
             _ => 1.0
         };
     }
 
     // Понижающий множитель для потерь при войне (см. WarSystem) — тот же принцип,
-    // что у WallSystem.GetWallFactor: 1.0 без бонуса, ниже — чем круче местность
+    // что у WallSystem.GetWallFactor: 1.0 без бонуса, ниже — чем круче местность.
+    // Побережье такого бонуса не даёт — открытая вода не защищает, в отличие от гор
     public static double GetDefenseFactor(Settlement settlement, World world)
     {
         return GetRelief(settlement, world) switch
@@ -88,12 +137,20 @@ public static class TerrainSystem
         };
     }
 
+    // Множитель к тому, сколько лишнего товара вывозит купец за год (см. MarketSystem) —
+    // порт и пристань берут больше обычной подводы
+    public static double GetTradeCapacityMultiplier(Settlement settlement, World world)
+    {
+        return GetRelief(settlement, world) == Relief.Coast ? CoastalTradeBonus : 1.0;
+    }
+
     public static string GetName(Relief relief)
     {
         return relief switch
         {
             Relief.Hill => "холмы",
             Relief.Mountain => "горы",
+            Relief.Coast => "побережье",
             _ => "низина"
         };
     }

@@ -298,6 +298,7 @@ void PrintWorldMap(WorldMap map)
                 {
                     Relief.Mountain => '^',
                     Relief.Hill => ',',
+                    Relief.Coast => '~',
                     _ => '.'
                 };
             }
@@ -309,7 +310,7 @@ void PrintWorldMap(WorldMap map)
     }
 
     Console.WriteLine();
-    Console.WriteLine(". низина   , холмы   ^ горы   * поселение вне государств");
+    Console.WriteLine(". низина   , холмы   ^ горы   ~ побережье/река   * поселение вне государств");
 
     foreach (var (kingdom, symbol) in symbolByKingdom)
     {
