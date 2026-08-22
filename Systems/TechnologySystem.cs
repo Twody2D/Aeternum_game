@@ -23,6 +23,11 @@ public static class TechnologySystem
     private const double SchoolContribution = 0.5; // Школа помогает копить знание и сама по себе
     private const double ChancellorContribution = 2.0; // Советник при короне двигает мысль сильнее книжника без покровителя
 
+    // Усердный государь (см. Trait.Hardworking) — тот же нрав, что уже держит
+    // трон крепче (см. KingdomSystem) — сам покровительствует учёности, не
+    // дожидаясь, пока при дворе найдётся советник
+    private const double HardworkingRulerContribution = 1.5;
+
     // Пороги эпох и их отдача. Первая — то состояние, в котором мир жил до сих пор,
     // поэтому её множитель равен единице: без неё прежний баланс сместился бы на ровном месте.
     //
@@ -58,9 +63,13 @@ public static class TechnologySystem
                 ? CourtSystem.GetOfficeStrength(k, CourtOffice.Chancellor, world) * ChancellorContribution
                 : 0);
 
+        var patronRulers = world.Kingdoms
+            .Count(k => k.FallenYear == null && k.Ruler.Traits.Contains(Trait.Hardworking));
+
         var previousEra = GetEraName(world.Knowledge);
 
-        world.Knowledge += scholars * KnowledgePerScholar + schools * SchoolContribution + chancellors;
+        world.Knowledge += scholars * KnowledgePerScholar + schools * SchoolContribution + chancellors
+                           + patronRulers * HardworkingRulerContribution;
 
         var currentEra = GetEraName(world.Knowledge);
 

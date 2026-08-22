@@ -20,6 +20,13 @@ public static class KingdomSystem
     private const double ReligiousDiversityPenalty = 0.15; // Штраф к стабильности за каждое инаковерующее поселение в составе государства
     private const double CulturalDiversityPenalty = 0.15; // Штраф за каждое поселение с иной культурой — независим от религиозного, оба вычитаются
 
+    // Нрав самого правителя — та же пара черт (см. Trait), что уже решает налоги,
+    // войну и союз (см. TributeSystem, WarSystem, AllianceSystem), здесь работает
+    // не через политику, а напрямую: усердный государь держит дела крепче,
+    // хворый — соблазн для соперников
+    private const double HardworkingStabilityBonus = 0.3;
+    private const double FrailStabilityPenalty = 0.3;
+
     public static void Process(World world)
     {
         UpdateExistingKingdoms(world);
@@ -110,10 +117,23 @@ public static class KingdomSystem
             heirClarity -= BastardPenalty;
         }
 
+        var temperamentShift = 0.0;
+
+        if (newRuler.Traits.Contains(Trait.Hardworking))
+        {
+            temperamentShift += HardworkingStabilityBonus;
+        }
+
+        if (newRuler.Traits.Contains(Trait.Frail))
+        {
+            temperamentShift -= FrailStabilityPenalty;
+        }
+
         var stability = Math.Max(0, heirClarity + (kingdom.FoodTreasury + kingdom.GoldTreasury) / world.Settings.TreasuryStabilityDivisor
                                      + kingdom.Dynasty.Reputation * ReputationWeight
                                      - dissentingSettlements * ReligiousDiversityPenalty
-                                     - dissentingCultureSettlements * CulturalDiversityPenalty);
+                                     - dissentingCultureSettlements * CulturalDiversityPenalty
+                                     + temperamentShift);
         var effectiveChance = world.Settings.SuccessionCrisisChance / (1 + stability);
 
         if (Rng.NextDouble() >= effectiveChance)
