@@ -120,6 +120,8 @@ public static class DeathSystem
             spouse.CurrentFamily = null; // Вдова/вдовец снова доступны для MarriageSystem
         }
 
+        BloodFeudSystem.OnViolentDeath(character, world, reason);
+
         var diedVerb = character.Gender == Gender.Female ? "умерла" : "умер";
         var name = SurnameSystem.GetDisplayFullName(character);
         var reasonText = DescribeReason(reason);
